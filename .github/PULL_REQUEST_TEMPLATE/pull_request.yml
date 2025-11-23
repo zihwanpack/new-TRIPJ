@@ -1,0 +1,88 @@
+name: '🚀 Pull Request'
+description: '기능 추가, 버그 수정 등 코드 변경 사항을 팀에 공유합니다.'
+title: '🔧 PR 제목을 명확하게 작성해주세요'
+labels: ['📌 PR']
+
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: '📝 개요 (Summary)'
+      description: |
+        어떤 변경을 했는지 요약해주세요.  
+        *팀원이 5초 안에 파악할 수 있을 정도로 간결하게!*
+      placeholder: |
+        - 로그인 리다이렉트 로직 개선
+        - 토큰 갱신 인터셉터 적용
+      render: markdown
+    validations:
+      required: true
+
+  - type: textarea
+    id: changes
+    attributes:
+      label: '✨ 주요 변경 사항 (Changes)'
+      description: |
+        코드에서 어떤 부분이 수정/추가/삭제되었는지 구체적으로 작성해주세요.
+        *리뷰어가 코드 안 들어가도 흐름을 이해할 정도로!*
+      placeholder: |
+        - AuthProvider 구조 분리 (API 호출 분리)
+        - /auth/me API 응답 타입 매핑 추가
+        - ProtectedLayout에서 토스트 중복 방지 로직 추가
+      render: markdown
+    validations:
+      required: true
+
+  - type: textarea
+    id: reason
+    attributes:
+      label: '🎯 PR 이유 (Why)'
+      description: |
+        이 변경이 왜 필요한지 작성해주세요.  
+        "왜 이걸 해야 했는가?"가 PR에서 가장 중요한 힌트가 됩니다.
+      placeholder: |
+        - 첫 렌더에서 토스트가 중복으로 노출되는 UX 문제 해결
+        - 메모리 저장소 tokenManager 사용으로 인한 타입 불일치 해결
+      render: markdown
+    validations:
+      required: true
+
+  - type: textarea
+    id: test
+    attributes:
+      label: '🧪 테스트 방법 (How to Test)'
+      description: '로컬에서 리뷰어가 어떻게 테스트할 수 있는지 상세히 적어주세요.'
+      placeholder: |
+        1. /login 페이지로 이동  
+        2. 보호된 페이지로 접근 → 토스트 1회만 뜨는지 확인  
+        3. accessToken 만료 상황에서 자동 갱신 여부 확인
+      render: markdown
+    validations:
+      required: true
+
+  - type: textarea
+    id: checklist
+    attributes:
+      label: '✔ 체크리스트 (Checklist)'
+      description: 'PR 제출 전 아래 항목들을 확인해주세요.'
+      value: |
+        - [ ] 빌드 및 타입 체크 통과  
+        - [ ] 린트/포맷 적용 완료  
+        - [ ] 브레이킹 체인지 여부 확인  
+        - [ ] 불필요한 console.log 제거  
+        - [ ] 주석/테스트 코드 확인
+      render: markdown
+    validations:
+      required: true
+
+  - type: textarea
+    id: etc
+    attributes:
+      label: '🗒 기타 (Etc)'
+      description: |
+        리뷰어에게 미리 알리고 싶은 내용이나 우려되는 부분이 있다면 작성해주세요.
+      placeholder: |
+        - authAPI 분리하면서 타입 추론이 꼬여있을 수 있음  
+        - 리팩토링 대상 파일이 많아 컨플릭트 발생 여지 있음
+    validations:
+      required: false
