@@ -11,7 +11,14 @@ export const ProtectedLayout = () => {
   }
 
   if (!user) {
-    return <Navigate to="/login" replace state={{ from: location, needAuth: true }} />;
+    const isHome = location.pathname === '/';
+    return (
+      <Navigate
+        to="/login"
+        replace
+        state={{ from: location, message: isHome ? null : '로그인이 필요합니다.' }}
+      />
+    );
   }
 
   return <Outlet />;
