@@ -2,10 +2,10 @@ import { createBrowserRouter, type RouteObject } from 'react-router-dom';
 
 import { HomePage } from '../pages/HomePage.tsx';
 import { LoginPage } from '../pages/LoginPage.tsx';
-import NotFound from '../pages/NotFound.tsx';
+import { NotFound } from '../pages/NotFound.tsx';
 import { ProtectedLayout } from '../layouts/ProtectedLayout.tsx';
 import { LoginLayout } from '../layouts/LoginLayout.tsx';
-import { HomeLayout } from '../layouts/HomeLayout.tsx';
+import { DefaultLayout } from '../layouts/DefaultLayout.tsx';
 
 const publicRoutes: RouteObject[] = [
   {
@@ -28,7 +28,7 @@ const protectedRoutes: RouteObject[] = [
     element: <ProtectedLayout />,
     children: [
       {
-        element: <HomeLayout />,
+        element: <DefaultLayout />,
         children: [
           {
             index: true,

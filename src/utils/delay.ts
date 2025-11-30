@@ -1,3 +1,3 @@
 export const delay = (task: () => void, ms: number) => {
-  return () => setTimeout(task, ms);
+  return () => new Promise((resolve) => setTimeout(resolve, ms)).then(task);
 };

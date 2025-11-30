@@ -1,6 +1,6 @@
 import { QueryClientProvider } from '@tanstack/react-query';
 import type { PropsWithChildren } from 'react';
-import { AuthProvider } from '../context/authContext.tsx';
+import { AuthProvider } from '../context/AuthContext.tsx';
 import { devtools, queryClient } from '../main.tsx';
 import { RouterProvider } from 'react-router-dom';
 import { router } from '../router/index.tsx';
