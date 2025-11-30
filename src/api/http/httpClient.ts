@@ -1,5 +1,5 @@
 import axios, { type InternalAxiosRequestConfig } from 'axios';
-import camelcaseKeys from 'camelcase-keys';
+import { camelCaseKeys } from '../../utils/camelCaseKeys';
 interface CustomInternalAxiosRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean;
 }
@@ -12,7 +12,7 @@ export const httpClient = axios.create({
 httpClient.interceptors.response.use(
   (response) => {
     if (response.data) {
-      response.data = camelcaseKeys(response.data, { deep: true });
+      response.data = camelCaseKeys(response.data);
     }
     return response;
   },
