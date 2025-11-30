@@ -10,7 +10,7 @@ export interface LogoutResponse {
   success: boolean;
 }
 
-export interface AuthContextType {
+export interface AuthContextValue {
   user: User | null;
   logout: () => Promise<void>;
   loading: boolean;

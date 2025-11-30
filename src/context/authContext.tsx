@@ -1,14 +1,9 @@
 import { createContext, useEffect, useState } from 'react';
+import { getAuthenticatedUserApi, logoutApi } from '../api/auth.ts';
 import type { User } from '../types/user.ts';
-import { getAuthedUser, logoutApi } from '../api/auth.ts';
+import type { AuthContextValue } from '../types/auth.ts';
 
-type AuthContextType = {
-  user: User | null;
-  logout: () => Promise<void>;
-  loading: boolean;
-};
-
-const AuthContext = createContext<AuthContextType | null>(null);
+const AuthContext = createContext<AuthContextValue | null>(null);
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -17,7 +12,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const authLogin = async () => {
       try {
-        const { user } = await getAuthedUser();
+        const { user } = await getAuthenticatedUserApi();
         setUser(user);
       } catch {
         setUser(null);
