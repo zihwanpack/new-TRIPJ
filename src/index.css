@@ -28,3 +28,11 @@ body {
   --color-primary-base: #3acc97;
   --color-primary-dark: #17b47b;
 }
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  scrollbar-width: none; /* Firefox */
+}
