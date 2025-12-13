@@ -2,15 +2,15 @@ import { createBrowserRouter, type RouteObject } from 'react-router-dom';
 
 import { HomePage } from '../pages/HomePage.tsx';
 import { LoginPage } from '../pages/LoginPage.tsx';
+import { TripCreatePage } from '../pages/TripCreatePage.tsx';
 import { NotFound } from '../pages/NotFound.tsx';
 import { ProtectedLayout } from '../layouts/ProtectedLayout.tsx';
-import { LoginLayout } from '../layouts/LoginLayout.tsx';
-import { DefaultLayout } from '../layouts/DefaultLayout.tsx';
+import { BaseLayout } from '../layouts/BaseLayout.tsx';
 
 const publicRoutes: RouteObject[] = [
   {
     path: '/',
-    element: <LoginLayout />,
+    element: <BaseLayout />,
     children: [
       {
         path: 'login',
@@ -28,13 +28,17 @@ const protectedRoutes: RouteObject[] = [
     element: <ProtectedLayout />,
     children: [
       {
-        element: <DefaultLayout />,
+        element: <BaseLayout />,
         children: [
           {
             index: true,
             element: <HomePage />,
           },
           { path: '*', element: <NotFound /> },
+          {
+            path: 'trips/new',
+            element: <TripCreatePage />,
+          },
         ],
       },
     ],
