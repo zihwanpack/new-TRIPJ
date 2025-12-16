@@ -153,4 +153,7 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+  input {
+    @apply appearance-none outline-none border-none bg-transparent;
+  }
 }
