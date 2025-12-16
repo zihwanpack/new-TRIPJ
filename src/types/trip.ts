@@ -9,3 +9,12 @@ export type Trip = {
   members?: string[];
   createdBy?: string;
 };
+
+export interface TripCreateRequest {
+  destination: string;
+  start_date: string;
+  end_date: string;
+  member: string[];
+  title: string;
+  created_by: string;
+}
