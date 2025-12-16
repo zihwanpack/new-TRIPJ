@@ -2,7 +2,7 @@ import { httpClient } from './http/httpClient.ts';
 import type { Trip } from '../types/trip.ts';
 import TripError from '../errors/TripError.ts';
 import { AxiosError } from 'axios';
-import type { TripCreateRequest } from '../schemas/tripSchema.ts';
+import type { TripCreateRequest } from '../types/trip.ts';
 
 const getMyAllTripsApi = async (id: string): Promise<Trip[]> => {
   try {
