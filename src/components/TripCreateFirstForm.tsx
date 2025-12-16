@@ -5,22 +5,37 @@ import { type UseFormReturn } from 'react-hook-form';
 import { ChevronDownIcon } from 'lucide-react';
 
 export const TripCreateStepFirstForm = ({
-  onNext,
+  setStep,
   form,
 }: {
-  onNext: (step: number) => void;
+  setStep: (step: number) => void;
 
   form: UseFormReturn<TripFormValues>;
 }) => {
-  const { setValue, watch } = form;
+  const { setValue, watch, getValues } = form;
   const [isRegionSelectOpen, setIsRegionSelectOpen] = useState<boolean>(false);
   const [isDestinationSelectOpen, setIsDestinationSelectOpen] = useState<boolean>(false);
-  const [regionType, setRegionType] = useState<RegionType | ''>('');
-  const destinationOptions = regionType ? Object.entries(DESTINATIONS[regionType]) : [];
-  const isDestinationSelectDisabled = !regionType;
+
   const destination = watch('destination');
   const isStep1Valid = Boolean(destination);
 
+  const [regionType, setRegionType] = useState<RegionType | ''>(() => {
+    const savedDestination = getValues('destination');
+
+    if (!savedDestination) return '';
+
+    if (Object.keys(DESTINATIONS.domestic).includes(savedDestination)) {
+      return 'domestic';
+    }
+    if (Object.keys(DESTINATIONS.overseas).includes(savedDestination)) {
+      return 'overseas';
+    }
+    return '';
+  });
+
+  const destinationOptions = regionType ? Object.entries(DESTINATIONS[regionType]) : [];
+
+  const isDestinationSelectDisabled = !regionType;
   return (
     <div className="flex flex-col h-full">
       <div className="flex gap-2 items-center mt-4 mx-4 min-h-[70px]">
@@ -123,7 +138,7 @@ ${
           type="submit"
           onClick={() => {
             if (!isStep1Valid) return;
-            onNext(2);
+            setStep(2);
           }}
           className={`
 w-full py-2 rounded-md font-semibold transition m-4 cursor-pointer
