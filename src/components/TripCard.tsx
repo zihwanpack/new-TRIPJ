@@ -1,4 +1,7 @@
+import { useNavigate } from 'react-router-dom';
+
 export interface TripCardProps {
+  id: number;
   tripImage: string;
   title: string;
   date: string;
@@ -18,10 +21,12 @@ const TRIP_CARD_STYLES = {
   },
 } as const;
 
-export const TripCard = ({ tripImage, title, date, size }: TripCardProps) => {
+export const TripCard = ({ id, tripImage, title, date, size }: TripCardProps) => {
   const cardStyles = TRIP_CARD_STYLES[size];
+  const navigate = useNavigate();
   return (
     <article
+      onClick={() => navigate(`/trips/${id}`)}
       className={`flex flex-col relative cursor-pointer flex-shrink-0 snap-start ${cardStyles.container}`}
     >
       <img src={tripImage} alt="여행 이미지" className="w-full h-full object-cover rounded-2xl" />
