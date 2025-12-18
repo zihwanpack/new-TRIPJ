@@ -34,9 +34,9 @@ export const TripCreateFourthForm = ({
     const apiData = snakeCaseKeys<TripCreateRequest>(formData);
 
     try {
-      await createTripApi(apiData);
+      const { id } = await createTripApi(apiData);
       sessionStorage.removeItem(TRIP_CREATE_FORM_LOCAL_STORAGE_KEY);
-      navigate('/');
+      navigate(`/trips/${id}`);
     } catch (err) {
       setError(err instanceof TripError ? err : new TripError('여행 추가 실패', 500));
     } finally {
