@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-export const useFetch = <T, E = Error>(requestFunction: () => Promise<T>) => {
+export const useFetch = <T, E = Error>(key: unknown[], requestFunction: () => Promise<T>) => {
   const [data, setData] = useState<T | null>(null);
   const [error, setError] = useState<E | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -18,7 +18,7 @@ export const useFetch = <T, E = Error>(requestFunction: () => Promise<T>) => {
       }
     };
     fetchData();
-  }, [requestFunction]);
+  }, [...key]);
 
   return { data, error, isLoading };
 };
