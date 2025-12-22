@@ -253,7 +253,10 @@ export const TripDetailPage = () => {
                 ))}
               </div>
             )}
-            <Button className="absolute top-80 right-0 z-10 bg-primary-base text-white p-2 rounded-3xl flex items-center gap-2 cursor-pointer shadow-lg shadow-primary-base/30">
+            <Button
+              className="absolute top-80 right-0 z-10 bg-primary-base text-white p-2 rounded-3xl flex items-center gap-2 cursor-pointer shadow-lg shadow-primary-base/30"
+              onClick={() => navigate('/events/new')}
+            >
               <Plus size={16} />
               <span className="text-sm font-medium">이벤트 추가</span>
             </Button>

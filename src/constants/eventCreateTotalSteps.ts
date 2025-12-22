@@ -1,0 +1,1 @@
+export const EVENT_CREATE_TOTAL_STEPS = 3;
