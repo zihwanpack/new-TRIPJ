@@ -4,13 +4,12 @@ import { DayPicker } from 'react-day-picker';
 import { ko } from 'date-fns/locale';
 import type { TripFormValues } from '../schemas/tripSchema.ts';
 
-export const TripCreateStepSecondForm = ({
-  setStep,
-  form,
-}: {
+interface TripCreateStepSecondFormProps {
   setStep: (step: number) => void;
   form: UseFormReturn<TripFormValues>;
-}) => {
+}
+
+export const TripCreateStepSecondForm = ({ setStep, form }: TripCreateStepSecondFormProps) => {
   const { setValue, watch } = form;
 
   const startDate = watch('startDate');

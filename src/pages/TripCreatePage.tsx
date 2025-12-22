@@ -3,8 +3,8 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import { TRIP_CREATE_TOTAL_STEPS } from '../constants/tripCreateTotalStep.ts';
-import { TRIP_CREATE_FORM_LOCAL_STORAGE_KEY } from '../constants/tripCreateFormLocalKey.ts';
+import { TRIP_CREATE_TOTAL_STEPS } from '../constants/tripCreateTotalSteps.ts';
+import { TRIP_CREATE_FORM_SESSION_STORAGE_KEY } from '../constants/tripCreateFormSessionKey.ts';
 import { tripSchema, type TripFormValues } from '../schemas/tripSchema.ts';
 import { usePersistedStep } from '../hooks/usePersistedStep.tsx';
 
@@ -17,12 +17,12 @@ import { TripCreateFourthForm } from '../components/TripCreateFourthForm.tsx';
 import { useAuth } from '../hooks/useAuth.tsx';
 
 export const TripCreatePage = () => {
-  const { step, setStep, resetStep } = usePersistedStep('trip_create_step', 1);
+  const { step, setStep, resetStep } = usePersistedStep('trip-create-step-key', 1);
 
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const initialValues = sessionStorage.getItem(TRIP_CREATE_FORM_LOCAL_STORAGE_KEY);
+  const initialValues = sessionStorage.getItem(TRIP_CREATE_FORM_SESSION_STORAGE_KEY);
   const defaultValues = initialValues
     ? JSON.parse(initialValues)
     : {
@@ -51,20 +51,20 @@ export const TripCreatePage = () => {
 
   useEffect(() => {
     const subscription = form.watch((value) => {
-      sessionStorage.setItem(TRIP_CREATE_FORM_LOCAL_STORAGE_KEY, JSON.stringify(value));
+      sessionStorage.setItem(TRIP_CREATE_FORM_SESSION_STORAGE_KEY, JSON.stringify(value));
     });
     return () => subscription.unsubscribe();
   }, [form]);
 
-  const handleCloseOrFinish = () => {
+  const handleCloseForm = () => {
     resetStep();
-    sessionStorage.removeItem(TRIP_CREATE_FORM_LOCAL_STORAGE_KEY);
+    sessionStorage.removeItem(TRIP_CREATE_FORM_SESSION_STORAGE_KEY);
     navigate('/');
   };
 
   return (
     <div className="flex flex-col h-full">
-      <Header title="여행 추가하기" onClose={handleCloseOrFinish} />
+      <Header title="여행 추가하기" onClose={handleCloseForm} />
       <ProgressBar progress={step} steps={TRIP_CREATE_TOTAL_STEPS} />
       {step === 1 && <TripCreateStepFirstForm setStep={setStep} form={form} />}
       {step === 2 && <TripCreateStepSecondForm setStep={setStep} form={form} />}

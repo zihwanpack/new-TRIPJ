@@ -10,13 +10,12 @@ import { useAuth } from '../hooks/useAuth.tsx';
 import { useFetch } from '../hooks/useFetch.tsx';
 import type UserError from '../errors/UserError.ts';
 
-export const TripCreateStepThirdForm = ({
-  setStep,
-  form,
-}: {
+interface TripCreateStepThirdFormProps {
   setStep: (step: number) => void;
   form: UseFormReturn<TripFormValues>;
-}) => {
+}
+
+export const TripCreateStepThirdForm = ({ setStep, form }: TripCreateStepThirdFormProps) => {
   const { setValue } = form;
 
   const { user: currentUser } = useAuth();

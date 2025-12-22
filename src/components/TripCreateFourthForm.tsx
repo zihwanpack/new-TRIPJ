@@ -5,16 +5,15 @@ import { createTripApi } from '../api/trip.ts';
 import { useState } from 'react';
 import TripError from '../errors/TripError.ts';
 import { snakeCaseKeys } from '../utils/snakeCaseFormatter.ts';
-import { TRIP_CREATE_FORM_LOCAL_STORAGE_KEY } from '../constants/tripCreateFormLocalKey.ts';
+import { TRIP_CREATE_FORM_SESSION_STORAGE_KEY } from '../constants/tripCreateFormSessionKey.ts';
 import { useNavigate } from 'react-router-dom';
 
-export const TripCreateFourthForm = ({
-  setStep,
-  form,
-}: {
+interface TripCreateFourthFormProps {
   setStep: (step: number) => void;
   form: UseFormReturn<TripFormValues>;
-}) => {
+}
+
+export const TripCreateFourthForm = ({ setStep, form }: TripCreateFourthFormProps) => {
   const {
     register,
     watch,
@@ -35,7 +34,7 @@ export const TripCreateFourthForm = ({
 
     try {
       const { id } = await createTripApi(apiData);
-      sessionStorage.removeItem(TRIP_CREATE_FORM_LOCAL_STORAGE_KEY);
+      sessionStorage.removeItem(TRIP_CREATE_FORM_SESSION_STORAGE_KEY);
       navigate(`/trips/${id}`);
     } catch (err) {
       setError(err instanceof TripError ? err : new TripError('여행 추가 실패', 500));

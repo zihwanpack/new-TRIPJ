@@ -4,14 +4,12 @@ import { type TripFormValues } from '../schemas/tripSchema.ts';
 import { type UseFormReturn } from 'react-hook-form';
 import { ChevronDownIcon } from 'lucide-react';
 
-export const TripCreateStepFirstForm = ({
-  setStep,
-  form,
-}: {
+interface TripCreateStepFirstFormProps {
   setStep: (step: number) => void;
-
   form: UseFormReturn<TripFormValues>;
-}) => {
+}
+
+export const TripCreateStepFirstForm = ({ setStep, form }: TripCreateStepFirstFormProps) => {
   const { setValue, watch, getValues } = form;
   const [isRegionSelectOpen, setIsRegionSelectOpen] = useState<boolean>(false);
   const [isDestinationSelectOpen, setIsDestinationSelectOpen] = useState<boolean>(false);
