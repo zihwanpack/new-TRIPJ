@@ -5,19 +5,24 @@ export interface TripCardProps {
   tripImage: string;
   title: string;
   date: string;
-  size: 'small' | 'large';
+  size: 'small' | 'large' | 'largest';
 }
 
 const TRIP_CARD_STYLES = {
   small: {
-    container: 'w-[160px] h-[140px]',
+    container: 'w-[160px] h-[120px]',
     title: 'text-[15px]',
     date: 'text-[11px]',
   },
   large: {
-    container: 'w-[180px] h-[220px]',
+    container: 'w-[180px] h-[130px]',
     title: 'text-[17px]',
     date: 'text-[13px]',
+  },
+  largest: {
+    container: 'w-[300px] h-[130px]',
+    title: 'text-[20px]',
+    date: 'text-[16px]',
   },
 } as const;
 
