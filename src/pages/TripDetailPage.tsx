@@ -3,7 +3,6 @@ import { Header } from '../layouts/Header.tsx';
 import { useFetch } from '../hooks/useFetch.tsx';
 import { deleteTripApi, getTripDetailApi } from '../api/trip.ts';
 import type { Trip } from '../types/trip.ts';
-import type TripError from '../errors/TripError.ts';
 import {
   Calendar,
   DollarSign,
@@ -15,18 +14,16 @@ import {
   Trash,
 } from 'lucide-react';
 import { formatDate } from 'date-fns';
-import type EventError from '../errors/EventError.ts';
 import { getMyAllEventsApi } from '../api/event.ts';
-import { Loader } from '../components/Loader.tsx';
+import { FullscreenLoader } from '../components/FullscreenLoader.tsx';
 import type { Event } from '../types/event.ts';
 import { getUsersByEmailApi } from '../api/user.ts';
-import type { GetUsersByEmailApiResponse } from '../types/user.ts';
-import type UserError from '../errors/UserError.ts';
+import type { UserSummary } from '../types/user.ts';
 import { Button } from '../components/Button.tsx';
-import { getDateRange } from '../utils/getDateRange.ts';
 import { useState } from 'react';
-import { filteringEvents } from '../utils/filteringEvents.ts';
+import { getDateRange, filteringByDateRange } from '../utils/date.ts';
 import { GoogleMapView } from '../components/GoogleMapView.tsx';
+import { TripError, EventError, UserError } from '../errors/customErrors.ts';
 
 export const TripDetailPage = () => {
   const navigate = useNavigate();
@@ -55,14 +52,14 @@ export const TripDetailPage = () => {
     data: usersData,
     error: usersError,
     isLoading: usersLoading,
-  } = useFetch<GetUsersByEmailApiResponse, UserError>([tripData?.members], async () => {
+  } = useFetch<UserSummary[], UserError>([tripData?.members], async () => {
     if (!tripData?.members || tripData.members.length === 0) {
       return [];
     }
     return getUsersByEmailApi(tripData?.members || []);
   });
 
-  if (tripLoading) return <Loader />;
+  if (tripLoading) return <FullscreenLoader />;
   if (tripError) return <div>에러가 발생했습니다: {tripError.message}</div>;
   if (!tripData) return <div>여행 데이터가 없습니다.</div>;
 
@@ -77,7 +74,7 @@ export const TripDetailPage = () => {
   const restUsers = usersData?.length ? usersData.length - 3 : 0;
 
   const dateList = getDateRange(startDate, endDate);
-  const filteredEvents = filteringEvents(eventsData || [], selectedDate || '');
+  const filteredEvents = filteringByDateRange<Event>(eventsData ?? [], selectedDate || '');
 
   const handleDeleteTrip = async () => {
     try {
