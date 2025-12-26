@@ -3,7 +3,7 @@ import { useFormContext } from 'react-hook-form';
 import { DayPicker } from 'react-day-picker';
 import { ko } from 'date-fns/locale';
 import type { TripFormValues } from '../schemas/tripSchema.ts';
-
+import { CTA } from './CTA.tsx';
 interface TripCreateDateStepProps {
   setStep: (step: number) => void;
 }
@@ -14,7 +14,7 @@ export const TripCreateDateStep = ({ setStep }: TripCreateDateStepProps) => {
   const startDate = watch('startDate');
   const endDate = watch('endDate');
 
-  const isStep2Valid = startDate !== '' && endDate !== '';
+  const isDateStepValid = startDate !== '' && endDate !== '';
 
   return (
     <div className="flex flex-col h-full">
@@ -90,36 +90,8 @@ export const TripCreateDateStep = ({ setStep }: TripCreateDateStepProps) => {
           disabled: 'text-gray-200',
         }}
       />
-      <div className="flex-1"></div>
-
-      <div className="flex gap-3 mb-4 px-4">
-        <button
-          type="button"
-          onClick={() => setStep(1)}
-          className="w-full py-2 rounded-md font-semibold transition cursor-pointer bg-gray-100 text-slate-600 hover:bg-gray-200"
-        >
-          이전
-        </button>
-
-        <button
-          type="submit"
-          disabled={!isStep2Valid}
-          onClick={() => {
-            if (!isStep2Valid) return;
-            setStep(3);
-          }}
-          className={`
-            w-full py-2 rounded-md font-semibold transition cursor-pointer
-            ${
-              isStep2Valid
-                ? 'bg-primary-base text-white hover:opacity-90'
-                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-            }
-          `}
-        >
-          다음
-        </button>
-      </div>
+      <div className="flex-1" />
+      <CTA isValid={isDateStepValid} setStep={setStep} currentStep={2} />
     </div>
   );
 };
