@@ -5,17 +5,15 @@ import kakaoLogo from '@/assets/login/logoKakao.svg';
 
 import { useState } from 'react';
 import { useEffect } from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
-import toast from 'react-hot-toast';
-import { useAuth } from '../hooks/useAuth.tsx';
+import { Navigate } from 'react-router-dom';
 
+import { useAuth } from '../hooks/useAuth.tsx';
 import { Button } from '../components/Button.tsx';
 import type { Provider } from '../types/user.ts';
 
 const WORDS = ['누구나', 'J처럼', '여행하기'];
 
 export const LoginPage = () => {
-  const location = useLocation();
   const { user, loading } = useAuth();
   const [index, setIndex] = useState(0);
 
@@ -26,12 +24,6 @@ export const LoginPage = () => {
 
     return () => clearInterval(interval);
   }, []);
-
-  useEffect(() => {
-    if (location.state?.message) {
-      toast.error(location.state.message);
-    }
-  }, [location.state]);
 
   if (!loading && user) {
     return <Navigate to="/" replace />;
