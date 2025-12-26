@@ -4,7 +4,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { tripSchema, type TripFormValues } from '../schemas/tripSchema.ts';
-import { usePersistedStep } from '../hooks/usePersistedStep.tsx';
+import { useStorage } from '../hooks/useStorage.tsx';
 
 import { Header } from '../layouts/Header.tsx';
 import { ProgressBar } from '../components/ProgressBar.tsx';
@@ -20,7 +20,11 @@ import {
 } from '../constants/trip.ts';
 
 export const TripCreatePage = () => {
-  const { step, setStep, resetStep } = usePersistedStep(TRIP_CREATE_STEP_KEY, 1);
+  const {
+    value: step,
+    setValue: setStep,
+    resetValue: resetStep,
+  } = useStorage<number>({ key: TRIP_CREATE_STEP_KEY, initialValue: 1, type: 'session' });
 
   const navigate = useNavigate();
   const { user } = useAuth();

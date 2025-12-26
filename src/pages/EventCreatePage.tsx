@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { ProgressBar } from '../components/ProgressBar.tsx';
-import { usePersistedStep } from '../hooks/usePersistedStep.tsx';
+import { useStorage } from '../hooks/useStorage.tsx';
 import { Header } from '../layouts/Header.tsx';
 import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -16,13 +16,19 @@ import { EventCreateCostStep } from '../components/EventCreateCostStep.tsx';
 import { useEffect } from 'react';
 
 export const EventCreatePage = () => {
-  const { step, setStep, resetStep } = usePersistedStep(EVENT_CREATE_STEP_KEY, 1);
+  const {
+    value: step,
+    setValue: setStep,
+    resetValue: resetStep,
+  } = useStorage<number>({ key: EVENT_CREATE_STEP_KEY, initialValue: 1, type: 'session' });
+
   const navigate = useNavigate();
   const handleCloseForm = () => {
     resetStep();
     sessionStorage.removeItem(EVENT_CREATE_STORAGE_KEY);
     navigate('/');
   };
+
   const initialValues = sessionStorage.getItem(EVENT_CREATE_STORAGE_KEY);
   const defaultValues = initialValues
     ? JSON.parse(initialValues)
