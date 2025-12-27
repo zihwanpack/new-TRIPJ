@@ -4,6 +4,7 @@ import { createTripApi } from '../api/trip.ts';
 import { useNavigate } from 'react-router-dom';
 import { TRIP_CREATE_STEP_KEY } from '../constants/trip.ts';
 import { useCreateAction } from '../hooks/useCreateAction.tsx';
+import { CTA } from './CTA.tsx';
 
 interface TripCreateTitleAndSubmitStepProps {
   setStep: (step: number) => void;
@@ -19,13 +20,14 @@ export const TripCreateTitleAndSubmitStep = ({ setStep }: TripCreateTitleAndSubm
 
   const navigate = useNavigate();
   const title = watch('title');
-  const isStep4Valid = title && title.trim().length > 0;
+  const isTitleStepValid = Boolean(title && title.trim().length > 0);
 
   const {
     execute,
     isLoading: isCreateTripLoading,
     error: createTripError,
   } = useCreateAction(createTripApi);
+
   const handleCreateTrip = async () => {
     const formData = getValues();
     const { id } = await execute(formData);
@@ -54,33 +56,14 @@ export const TripCreateTitleAndSubmitStep = ({ setStep }: TripCreateTitleAndSubm
         )}
       </div>
       <div className="flex-1" />
-      <div className="flex gap-3 mb-4 px-4">
-        <button
-          type="button"
-          onClick={() => setStep(3)}
-          className="w-full py-2 rounded-md font-semibold transition cursor-pointer bg-gray-100 text-slate-600 hover:bg-gray-200"
-        >
-          이전
-        </button>
-        <button
-          type="button"
-          disabled={!isStep4Valid || isCreateTripLoading}
-          onClick={() => {
-            if (!isStep4Valid) return;
-            handleCreateTrip();
-          }}
-          className={`
-            w-full py-2 rounded-md font-semibold transition cursor-pointer
-            ${
-              isStep4Valid
-                ? 'bg-primary-base text-white hover:opacity-90'
-                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-            }
-          `}
-        >
-          {isCreateTripLoading ? '여행 추가 중...' : '여행 추가'}
-        </button>
-      </div>
+      <CTA
+        isValid={isTitleStepValid}
+        setStep={setStep}
+        currentStep={4}
+        isLoading={isCreateTripLoading}
+        isLastStep={true}
+        onSubmit={handleCreateTrip}
+      />
     </div>
   );
 };

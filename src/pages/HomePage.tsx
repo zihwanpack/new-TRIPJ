@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import type { Trip } from '../types/trip.ts';
 import { TripError } from '../errors/customErrors.ts';
@@ -6,7 +6,6 @@ import { TripError } from '../errors/customErrors.ts';
 import { useAuth } from '../hooks/useAuth.tsx';
 import { useFetch } from '../hooks/useFetch.tsx';
 import { TripCard } from '../components/TripCard.tsx';
-import { AddTripCard } from '../components/AddTripCard.tsx';
 import { TRIP_IMAGE_PATHS } from '../constants/tripImages.ts';
 import { getMyPastTripsApi, getMyOnGoingTripApi, getMyUpcomingTripsApi } from '../api/trip.ts';
 import { formatDateToYearMonth, formatDateRange } from '../utils/date.ts';
@@ -16,24 +15,30 @@ import { FullscreenLoader } from '../components/FullscreenLoader.tsx';
 
 export const HomePage = () => {
   const { user } = useAuth();
-
+  const navigate = useNavigate();
   const {
     data: onGoingTrip,
     error: onGoingTripError,
     isLoading: onGoingTripLoading,
-  } = useFetch<Trip, TripError>([user?.id], async () => getMyOnGoingTripApi(user?.id || ''));
+  } = useFetch<Trip, TripError>([user?.id], async () =>
+    getMyOnGoingTripApi({ id: user?.id || '' })
+  );
 
   const {
     data: upcomingTrips,
     error: upcomingTripsError,
     isLoading: upcomingTripsLoading,
-  } = useFetch<Trip[], TripError>([user?.id], async () => getMyUpcomingTripsApi(user?.id || ''));
+  } = useFetch<Trip[], TripError>([user?.id], async () =>
+    getMyUpcomingTripsApi({ id: user?.id || '' })
+  );
 
   const {
     data: pastTrips,
     error: pastTripsError,
     isLoading: pastTripsLoading,
-  } = useFetch<Trip[], TripError>([user?.id], async () => getMyPastTripsApi(user?.id || ''));
+  } = useFetch<Trip[], TripError>([user?.id], async () =>
+    getMyPastTripsApi({ id: user?.id || '' })
+  );
 
   if (onGoingTripLoading || upcomingTripsLoading || pastTripsLoading) {
     return <FullscreenLoader />;
@@ -64,7 +69,7 @@ export const HomePage = () => {
             <div className="w-full flex gap-4 flex-nowrap snap-x snap-mandatory overflow-x-auto scrollbar-hide">
               <TripCard
                 key={onGoingTrip?.id || 0}
-                id={onGoingTrip?.id || 0}
+                onClick={() => navigate(`/trips/${onGoingTrip?.id}`)}
                 tripImage={TRIP_IMAGE_PATHS[onGoingTrip.destination] || DEFAULT_TRIP_IMAGE}
                 title={onGoingTrip.title}
                 date={formatDateRange(onGoingTrip.startDate, onGoingTrip.endDate)}
@@ -89,14 +94,14 @@ export const HomePage = () => {
             {upcomingTrips?.map((trip) => (
               <TripCard
                 key={trip.id}
-                id={trip.id}
+                onClick={() => navigate(`/trips/${trip.id}`)}
                 tripImage={TRIP_IMAGE_PATHS[trip.destination] || DEFAULT_TRIP_IMAGE}
                 title={trip.title}
                 date={formatDateRange(trip.startDate, trip.endDate)}
                 size="large"
               />
             ))}
-            <AddTripCard />
+            <TripCard variant="add" onClick={() => navigate('/trips/new')} />
           </div>
         </section>
       )}
@@ -121,7 +126,7 @@ export const HomePage = () => {
               {pastTrips?.map((trip) => (
                 <TripCard
                   key={trip.id}
-                  id={trip.id}
+                  onClick={() => navigate(`/trips/${trip.id}`)}
                   tripImage={TRIP_IMAGE_PATHS[trip.destination] || DEFAULT_TRIP_IMAGE}
                   title={trip.title}
                   date={formatDateToYearMonth(trip.startDate)}

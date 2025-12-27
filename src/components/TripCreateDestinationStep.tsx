@@ -5,6 +5,8 @@ import { useFormContext } from 'react-hook-form';
 import { ChevronDownIcon } from 'lucide-react';
 import type { DestinationKey } from '../constants/tripImages.ts';
 import type { DestinationType } from '../types/trip.ts';
+import { Button } from './Button.tsx';
+import { CTA } from './CTA.tsx';
 
 interface TripCreateDestinationStepProps {
   setStep: (step: number) => void;
@@ -17,7 +19,7 @@ export const TripCreateDestinationStep = ({ setStep }: TripCreateDestinationStep
 
   const destinationType = watch('destinationType');
   const destination = watch('destination');
-  const isStep1Valid = Boolean(destinationType && destination);
+  const isDestinationStepValid = Boolean(destinationType && destination);
   const destinationOptions = destinationType ? Object.entries(DESTINATIONS[destinationType]) : [];
   const isDestinationSelectDisabled = !destinationType;
 
@@ -34,7 +36,7 @@ export const TripCreateDestinationStep = ({ setStep }: TripCreateDestinationStep
       </div>
       <div className="mb-4 mx-4 flex gap-2">
         <div className="relative flex-[1]">
-          <button
+          <Button
             type="button"
             onClick={() => setIsRegionSelectOpen(!isRegionSelectOpen)}
             className="flex items-center gap-2 border-2 border-gray-200 hover:border-primary-base cursor-pointer p-2 rounded-md justify-between w-full"
@@ -47,28 +49,28 @@ export const TripCreateDestinationStep = ({ setStep }: TripCreateDestinationStep
                   : '국내/해외'}
             </span>
             <ChevronDownIcon className="size-5" />
-          </button>
+          </Button>
           {isRegionSelectOpen && (
             <div className="absolute z-10 top-full left-0 flex flex-col shadow-2xl w-full bg-white rounded-md p-1">
-              <button
+              <Button
                 type="button"
                 onClick={() => handleDestinationTypeChange('domestic')}
                 className="mt-1 hover:bg-gray-100 block w-full text-left p-2 rounded-md"
               >
                 국내
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
                 onClick={() => handleDestinationTypeChange('overseas')}
                 className="block w-full text-left p-2 rounded-md hover:bg-gray-100"
               >
                 해외
-              </button>
+              </Button>
             </div>
           )}
         </div>
         <div className="relative flex-[2]">
-          <button
+          <Button
             type="button"
             onClick={() => {
               if (isDestinationSelectDisabled) return;
@@ -93,11 +95,11 @@ ${
                     : '도시/국가 선택'}
             </span>
             <ChevronDownIcon className="size-5" />
-          </button>
+          </Button>
           {isDestinationSelectOpen && (
             <div className="absolute z-10 top-full left-0 flex flex-col shadow-xl min-w-full bg-white rounded-md p-1 max-h-[200px] overflow-y-auto scrollbar-hide">
               {destinationOptions.map(([value, label]) => (
-                <button
+                <Button
                   key={value}
                   type="button"
                   onClick={() => {
@@ -107,28 +109,14 @@ ${
                   className="px-2 py-2 rounded-md hover:bg-gray-100 text-left cursor-pointer w-full"
                 >
                   {label}
-                </button>
+                </Button>
               ))}
             </div>
           )}
         </div>
       </div>
       <div className="flex-1" />
-      <div className="flex justify-center">
-        <button
-          type="submit"
-          onClick={() => {
-            if (!isStep1Valid) return;
-            setStep(2);
-          }}
-          className={`
-w-full py-2 rounded-md font-semibold transition m-4 cursor-pointer
-${isStep1Valid ? 'bg-primary-base text-white' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}
-`}
-        >
-          다음
-        </button>
-      </div>
+      <CTA isValid={isDestinationStepValid} setStep={setStep} currentStep={1} />
     </div>
   );
 };

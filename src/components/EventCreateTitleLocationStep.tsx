@@ -3,6 +3,7 @@ import { useDebounce } from '../hooks/useDebounce.tsx';
 import { Loader2 } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
 import type { EventFormValues } from '../schemas/eventSchema.ts';
+import { CTA } from './CTA.tsx';
 
 interface EventCreateTitleLocationStepProps {
   setStep: (step: number) => void;
@@ -174,20 +175,7 @@ export const EventCreateTitleLocationStep = ({ setStep }: EventCreateTitleLocati
         {errors.location && <p className="text-sm text-red-500 pl-1">{errors.location.message}</p>}
       </div>
       <div className="flex-1" />
-      <div className="flex justify-center">
-        <button
-          type="button"
-          disabled={!isStep1Valid}
-          onClick={() => {
-            if (!isStep1Valid) return;
-            setStep(2);
-          }}
-          className={`w-full py-2 rounded-md font-semibold transition m-4 cursor-pointer
-            ${isStep1Valid ? 'bg-primary-base text-white hover:opacity-90' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}
-        >
-          다음
-        </button>
-      </div>
+      <CTA isValid={isStep1Valid} setStep={setStep} currentStep={1} />
     </div>
   );
 };

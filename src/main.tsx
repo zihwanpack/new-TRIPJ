@@ -4,17 +4,9 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Toaster } from 'react-hot-toast';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { QueryClient } from '@tanstack/react-query';
 import { Provider } from './providers/Provider.tsx';
-
-export const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false,
-      retry: 1,
-    },
-  },
-});
+import { RouterProvider } from 'react-router-dom';
+import { router } from './router/index.tsx';
 
 export const devtools = import.meta.env.DEV ? (
   <ReactQueryDevtools buttonPosition="bottom-left" initialIsOpen={false} />
@@ -29,6 +21,7 @@ createRoot(document.getElementById('root')!).render(
           duration: 2000,
         }}
       />
+      <RouterProvider router={router} />
     </Provider>
   </StrictMode>
 );

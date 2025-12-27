@@ -8,6 +8,8 @@ import { useDebounce } from '../hooks/useDebounce.tsx';
 import { useAuth } from '../hooks/useAuth.tsx';
 import { useFetch } from '../hooks/useFetch.tsx';
 import { UserError, TripError } from '../errors/customErrors.ts';
+import { Button } from './Button.tsx';
+import { CTA } from './CTA.tsx';
 
 interface TripCreateMembersStepProps {
   setStep: (step: number) => void;
@@ -84,7 +86,7 @@ export const TripCreateMembersStep = ({ setStep }: TripCreateMembersStepProps) =
             {users.map((user) => {
               const isAdded = members.includes(user.email);
               return (
-                <button
+                <Button
                   key={user.id}
                   type="button"
                   onClick={() => !isAdded && addMember(user)}
@@ -104,7 +106,7 @@ export const TripCreateMembersStep = ({ setStep }: TripCreateMembersStepProps) =
                   ) : (
                     <UserPlus size={18} className="text-gray-300" />
                   )}
-                </button>
+                </Button>
               );
             })}
           </div>
@@ -130,13 +132,13 @@ export const TripCreateMembersStep = ({ setStep }: TripCreateMembersStepProps) =
             ) : (
               <>
                 <span>{usersData?.find((user) => user.email === member)?.nickname}</span>
-                <button
+                <Button
                   type="button"
                   onClick={() => removeMember(member)}
                   className="p-0.5 hover:bg-primary-dark rounded-full transition-colors cursor-pointer"
                 >
                   <X size={14} />
-                </button>
+                </Button>
               </>
             )}
           </div>
@@ -145,22 +147,7 @@ export const TripCreateMembersStep = ({ setStep }: TripCreateMembersStepProps) =
 
       <div className="flex-1" />
 
-      <div className="flex gap-3 mb-4 px-4">
-        <button
-          type="button"
-          onClick={() => setStep(2)}
-          className="w-full py-2 rounded-md font-semibold transition cursor-pointer bg-gray-100 text-slate-600 hover:bg-gray-200"
-        >
-          이전
-        </button>
-        <button
-          type="submit"
-          onClick={() => setStep(4)}
-          className="w-full py-2 rounded-md font-semibold transition cursor-pointer bg-primary-base text-white hover:opacity-90"
-        >
-          다음
-        </button>
-      </div>
+      <CTA setStep={setStep} currentStep={3} isNecessary={false} />
     </div>
   );
 };
