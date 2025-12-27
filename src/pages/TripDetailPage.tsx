@@ -1,4 +1,5 @@
 import { useNavigate, useParams } from 'react-router-dom';
+
 import { Header } from '../layouts/Header.tsx';
 import { useFetch } from '../hooks/useFetch.tsx';
 import { deleteTripApi, getTripDetailApi } from '../api/trip.ts';
@@ -13,7 +14,6 @@ import {
   Plus,
   Trash,
 } from 'lucide-react';
-import { formatDate } from 'date-fns';
 import { getMyAllEventsApi } from '../api/event.ts';
 import { FullscreenLoader } from '../components/FullscreenLoader.tsx';
 import type { Event } from '../types/event.ts';
@@ -21,9 +21,10 @@ import { getUsersByEmailApi } from '../api/user.ts';
 import type { UserSummary } from '../types/user.ts';
 import { Button } from '../components/Button.tsx';
 import { useState } from 'react';
-import { getDateRange, filteringByDateRange } from '../utils/date.ts';
+import { getDateRange, filteringByDateRange, formatDate } from '../utils/date.ts';
 import { GoogleMapView } from '../components/GoogleMapView.tsx';
 import { TripError, EventError, UserError } from '../errors/customErrors.ts';
+import { getTotal } from '../utils/getTotal.ts';
 
 export const TripDetailPage = () => {
   const navigate = useNavigate();
@@ -40,13 +41,13 @@ export const TripDetailPage = () => {
     data: tripData,
     error: tripError,
     isLoading: tripLoading,
-  } = useFetch<Trip, TripError>([tripId], async () => getTripDetailApi(tripId));
+  } = useFetch<Trip, TripError>([tripId], async () => getTripDetailApi({ id: tripId }));
 
   const {
     data: eventsData,
     error: eventsError,
     isLoading: eventsLoading,
-  } = useFetch<Event[], EventError>([tripId], async () => getMyAllEventsApi(tripId));
+  } = useFetch<Event[], EventError>([tripId], async () => getMyAllEventsApi({ tripId }));
 
   const {
     data: usersData,
@@ -65,10 +66,8 @@ export const TripDetailPage = () => {
 
   const { startDate, endDate, title } = tripData;
 
-  const allCost = eventsData?.reduce(
-    (acc, event) => acc + event.cost.reduce((acc, cost) => acc + cost.value, 0),
-    0
-  );
+  const costs = eventsData?.flatMap((event) => event.cost) || [];
+  const totalCost = getTotal(costs.map((cost) => cost.value) || []);
 
   const visibleUsers = usersData?.slice(0, 3);
   const restUsers = usersData?.length ? usersData.length - 3 : 0;
@@ -78,7 +77,7 @@ export const TripDetailPage = () => {
 
   const handleDeleteTrip = async () => {
     try {
-      await deleteTripApi(tripId);
+      await deleteTripApi({ id: tripId });
       navigate('/');
     } catch (error) {
       console.error(error);
@@ -104,14 +103,14 @@ export const TripDetailPage = () => {
             />
             {isDropdownOpen && (
               <div className="absolute top-10 right-0 w-40 bg-white rounded-lg shadow-lg border z-50">
-                <button className="flex items-center gap-2 w-full text-left px-3 py-2 hover:bg-gray-100 cursor-pointer">
+                <Button className="flex items-center gap-2 w-full text-left px-3 py-2 hover:bg-gray-100 cursor-pointer">
                   <Pencil className="size-4 text-gray-500" />
                   <span>여행 정보 수정</span>
-                </button>
-                <button className="flex items-center gap-2 w-full text-left px-3 py-2 hover:bg-red-50 text-red-500 cursor-pointer">
+                </Button>
+                <Button className="flex items-center gap-2 w-full text-left px-3 py-2 hover:bg-red-50 text-red-500 cursor-pointer">
                   <Trash className="size-4" onClick={handleDeleteTrip} />
                   <span>여행 삭제</span>
-                </button>
+                </Button>
               </div>
             )}
           </div>
@@ -124,7 +123,7 @@ export const TripDetailPage = () => {
         </div>
         <div className="flex items-center gap-2 relative">
           <DollarSign className="size-4 text-gray-400" />
-          <span className=" text-gray-400">{allCost?.toLocaleString()} 원</span>
+          <span className=" text-gray-400">{totalCost?.toLocaleString()} 원</span>
           <div className="absolute right-0 top-0">
             {usersLoading ? (
               <div className="text-xs text-gray-400">멤버 불러오는 중...</div>
@@ -176,7 +175,7 @@ export const TripDetailPage = () => {
         </div>
         <div className="flex gap-2 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-2">
           {dateList.map((date) => {
-            const key = date.format('YYYY-MM-DD');
+            const key = formatDate(date, 'YYYY-MM-DD');
             const isSelected = selectedDate === key;
             return (
               <Button
@@ -190,7 +189,7 @@ export const TripDetailPage = () => {
         `}
               >
                 <div className="flex flex-col items-center">
-                  <span className="text-sm font-medium">{date.format('MM.DD (ddd)')}</span>
+                  <span className="text-sm font-medium">{formatDate(date, 'MM.DD (ddd)')}</span>
                 </div>
               </Button>
             );
@@ -235,13 +234,13 @@ export const TripDetailPage = () => {
                             {event.location.split(' ').slice(1, 4).join(' ')}
                           </div>
                           <div className="font-medium">
-                            {event.cost.reduce((sum, item) => sum + item.value, 0).toLocaleString()}{' '}
+                            {getTotal(event.cost.map((cost) => cost.value) || []).toLocaleString()}
                             원
                           </div>
                         </div>
 
                         <p className="pt-2 border-t border-gray-100 text-sm text-gray-500">
-                          {formatDate(event.startDate, 'yy. MM. dd')} ~{' '}
+                          {formatDate(event.startDate, 'yy. MM. dd')} ~
                           {formatDate(event.endDate, 'yy. MM. dd')}
                         </p>
                       </div>

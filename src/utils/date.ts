@@ -15,13 +15,13 @@ export const formatDateToYearMonth = (date: string) => {
   return `${year}년 ${month}월`;
 };
 
-export const formatDateToDotDate = (date: string) => {
-  return dayjs(date).format('YYYY.MM.DD');
+export const formatDate = (date: string | Date | dayjs.Dayjs, format: string) => {
+  return dayjs(date).format(format);
 };
 
 export const formatDateRange = (startDate: string, endDate: string) => {
-  const startDateFormatted = formatDateToDotDate(startDate);
-  const endDateFormatted = formatDateToDotDate(endDate);
+  const startDateFormatted = formatDate(startDate, 'YYYY.MM.DD');
+  const endDateFormatted = formatDate(endDate, 'YYYY.MM.DD');
   return `${startDateFormatted} ~ ${endDateFormatted}`;
 };
 
