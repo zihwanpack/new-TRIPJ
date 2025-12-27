@@ -29,7 +29,7 @@ import { getTotal } from '../utils/getTotal.ts';
 export const TripDetailPage = () => {
   const navigate = useNavigate();
 
-  const { id: paramId } = useParams();
+  const { tripId: paramId } = useParams();
 
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
@@ -118,7 +118,7 @@ export const TripDetailPage = () => {
         <div className="flex items-center gap-2">
           <Calendar className="size-4 text-gray-400" />
           <span className=" text-gray-400">
-            {formatDate(startDate, 'yyyy. MM. dd')} - {formatDate(endDate, 'yyyy. MM. dd')}
+            {formatDate(startDate, 'YYYY. MM. dd')} - {formatDate(endDate, 'YYYY. MM. dd')}
           </span>
         </div>
         <div className="flex items-center gap-2 relative">
@@ -212,7 +212,7 @@ export const TripDetailPage = () => {
             ) : (
               <div className="flex flex-col gap-3">
                 {filteredEvents?.map((event, index) => (
-                  <div key={event.id}>
+                  <div key={event.eventId}>
                     <div className="flex items-center space-x-4">
                       <div className="flex flex-col items-center gap-1">
                         <div className="flex items-center justify-center w-6 h-6 rounded-full bg-[#3ACC97] text-white text-xs font-bold">
@@ -251,7 +251,7 @@ export const TripDetailPage = () => {
             )}
             <Button
               className="absolute top-80 right-0 z-10 bg-primary-base text-white p-2 rounded-3xl flex items-center gap-2 cursor-pointer shadow-lg shadow-primary-base/30"
-              onClick={() => navigate('/events/new')}
+              onClick={() => navigate(`/trips/${tripId}/events/new`)}
             >
               <Plus size={16} />
               <span className="text-sm font-medium">이벤트 추가</span>

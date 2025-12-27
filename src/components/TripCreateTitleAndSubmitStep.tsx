@@ -2,9 +2,10 @@ import { useFormContext } from 'react-hook-form';
 import type { TripFormValues } from '../schemas/tripSchema.ts';
 import { createTripApi } from '../api/trip.ts';
 import { useNavigate } from 'react-router-dom';
-import { TRIP_CREATE_STEP_KEY } from '../constants/trip.ts';
+import { TRIP_CREATE_STEP_KEY, TRIP_CREATE_STORAGE_KEY } from '../constants/trip.ts';
 import { useCreateAction } from '../hooks/useCreateAction.tsx';
 import { CTA } from './CTA.tsx';
+import { Input } from './Input.tsx';
 
 interface TripCreateTitleAndSubmitStepProps {
   setStep: (step: number) => void;
@@ -32,6 +33,7 @@ export const TripCreateTitleAndSubmitStep = ({ setStep }: TripCreateTitleAndSubm
     const formData = getValues();
     const { id } = await execute(formData);
     sessionStorage.removeItem(TRIP_CREATE_STEP_KEY);
+    sessionStorage.removeItem(TRIP_CREATE_STORAGE_KEY);
     navigate(`/trips/${id}`);
   };
 
@@ -42,12 +44,7 @@ export const TripCreateTitleAndSubmitStep = ({ setStep }: TripCreateTitleAndSubm
         <p className="text-sm text-primary-base">필수</p>
       </div>
       <div className="mx-4 mt-6 flex items-center gap-3 border border-gray-300 rounded-lg px-4 py-3 focus-within:ring-2 focus-within:ring-primary-base focus-within:border-transparent transition-all bg-white">
-        <input
-          type="text"
-          {...register('title')}
-          placeholder="예) 서울 여행"
-          className="w-full outline-none text-slate-700 placeholder:text-gray-300"
-        />
+        <Input type="text" {...register('title')} placeholder="예) 서울 여행" />
       </div>
       <div className="mx-4 mt-1 min-h-[20px]">
         {errors.title && <p className="text-sm text-red-500 pl-1">{errors.title.message}</p>}

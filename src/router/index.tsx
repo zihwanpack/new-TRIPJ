@@ -42,11 +42,11 @@ const protectedRoutes: RouteObject[] = [
             element: <TripCreatePage />,
           },
           {
-            path: 'trips/:id',
+            path: 'trips/:tripId',
             element: <TripDetailPage />,
           },
           {
-            path: 'events/new',
+            path: 'trips/:tripId/events/new',
             element: <EventCreatePage />,
           },
         ],

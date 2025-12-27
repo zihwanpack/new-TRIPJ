@@ -4,6 +4,7 @@ import { Loader2 } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
 import type { EventFormValues } from '../schemas/eventSchema.ts';
 import { CTA } from './CTA.tsx';
+import { Input } from './Input.tsx';
 
 interface EventCreateTitleLocationStepProps {
   setStep: (step: number) => void;
@@ -27,21 +28,10 @@ export const EventCreateTitleLocationStep = ({ setStep }: EventCreateTitleLocati
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const isLocationSelectedRef = useRef<boolean>(false);
+  const sessionTokenRef = useRef<google.maps.places.AutocompleteSessionToken | null>(null);
 
   const locationValue = watch('location');
   const debouncedSearchValue = useDebounce(locationValue, 500);
-
-  const createMapSessionToken = () => {
-    const existing = sessionStorage.getItem('mapSessionToken');
-
-    if (existing) {
-      return existing;
-    }
-
-    const token = new google.maps.places.AutocompleteSessionToken();
-    sessionStorage.setItem('mapSessionToken', token.toString());
-    return token;
-  };
 
   useEffect(() => {
     if (isLocationSelectedRef.current) {
@@ -63,14 +53,20 @@ export const EventCreateTitleLocationStep = ({ setStep }: EventCreateTitleLocati
       setIsLoading(true);
 
       try {
-        const { AutocompleteSuggestion } = (await window.google.maps.importLibrary('places')) as {
-          AutocompleteSuggestion: typeof google.maps.places.AutocompleteSuggestion;
-        };
-        const sessionToken = createMapSessionToken();
+        const { AutocompleteSuggestion, AutocompleteSessionToken } =
+          (await window.google.maps.importLibrary('places')) as {
+            AutocompleteSuggestion: typeof google.maps.places.AutocompleteSuggestion;
+            AutocompleteSessionToken: typeof google.maps.places.AutocompleteSessionToken;
+          };
+
+        // 변경 3: 토큰이 없으면 새로 생성 (Ref에 저장하여 인스턴스 유지)
+        if (!sessionTokenRef.current) {
+          sessionTokenRef.current = new AutocompleteSessionToken();
+        }
         const { suggestions: fetchedSuggestions } =
           await AutocompleteSuggestion.fetchAutocompleteSuggestions({
             input: query,
-            sessionToken: sessionToken,
+            sessionToken: sessionTokenRef.current,
           });
 
         if (cancelled) return;
@@ -117,7 +113,7 @@ export const EventCreateTitleLocationStep = ({ setStep }: EventCreateTitleLocati
     setValue('location', selectedAddress);
     setIsDropdownOpen(false);
     isLocationSelectedRef.current = true;
-    sessionStorage.removeItem('mapSessionToken');
+    sessionTokenRef.current = null;
     setPlaces([]);
   };
 
@@ -128,11 +124,11 @@ export const EventCreateTitleLocationStep = ({ setStep }: EventCreateTitleLocati
         <p className="text-sm text-primary-base">필수</p>
       </div>
       <div className="mx-4 mt-2 flex items-center gap-3 border border-gray-300 rounded-lg px-4 py-3 focus-within:ring-2 focus-within:ring-primary-base focus-within:border-transparent transition-all bg-white">
-        <input
+        <Input
           type="text"
-          {...register('eventName')}
           placeholder="예) 식당 예약"
-          className="w-full outline-none text-slate-700 placeholder:text-gray-300"
+          {...register('eventName')}
+          className="w-full"
         />
       </div>
       <div className="mx-4 mt-1 min-h-[20px]">

@@ -2,7 +2,7 @@ import type { Cost } from './cost.ts';
 import type { SuccessResponse } from './defaultResponse.ts';
 
 export type Event = {
-  id: number;
+  eventId: number;
   tripId: number;
   eventName: string;
   location: string;
@@ -12,3 +12,7 @@ export type Event = {
 };
 
 export type GetMyAllEventsResponse = SuccessResponse<Event[]>;
+export type EventResponse = SuccessResponse<Event>;
+
+export type CreateEventResponse = EventResponse;
+export type CreateEventRequest = Omit<Event, 'eventId'>;

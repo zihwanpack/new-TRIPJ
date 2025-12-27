@@ -47,7 +47,7 @@ export const TripCreateDateStep = ({ setStep }: TripCreateDateStepProps) => {
 
           month: 'relative flex flex-col',
           /* 네비게이션 */
-          nav: 'absolute top-52 w-[310px] flex justify-between items-center h-10 px-1 z-10 ',
+          nav: 'absolute top-46 w-[310px] flex justify-between items-center h-10 px-1 z-10 ',
           button_previous: 'p-1 text-gray-400 hover:text-black',
           button_next: 'p-1  text-gray-400 hover:text-black',
           chevron: 'size-5 cursor-pointer',

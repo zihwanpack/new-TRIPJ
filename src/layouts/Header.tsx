@@ -11,15 +11,15 @@ export const Header = ({ title, onClose }: HeaderProps) => {
     <header className="flex items-center justify-between h-14 px-4 bg-white">
       <div className="w-6" />
       <h1 className="text-lg font-semibold text-gray-900">{title}</h1>
-      onClose && (
-      <Button
-        type="button"
-        onClick={onClose}
-        className="p-1 text-gray-500 hover:text-gray-900 cursor-pointer"
-      >
-        <X className="size-5" />
-      </Button>
-      )
+      {onClose && (
+        <Button
+          type="button"
+          onClick={onClose}
+          className="p-1 text-gray-500 hover:text-gray-900 cursor-pointer"
+        >
+          <X className="size-5" />
+        </Button>
+      )}
     </header>
   );
 };

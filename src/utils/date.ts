@@ -56,3 +56,9 @@ export const filteringByDateRange = <T extends { startDate: string; endDate: str
     );
   });
 };
+
+export const formatTimeDisplay = (isoString: string | null) => {
+  if (!isoString) return '-- : --';
+
+  return dayjs(isoString).locale('ko').format('A hh:mm');
+};
