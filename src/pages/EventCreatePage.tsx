@@ -11,8 +11,8 @@ import {
   EVENT_CREATE_TOTAL_STEPS,
 } from '../constants/event.ts';
 import { EventCreateTitleLocationStep } from '../components/EventCreateTitleLocationStep.tsx';
-import { EventCreateDateStep } from '../components/EventCreateDateStep.tsx';
-import { EventCreateCostStep } from '../components/EventCreateCostStep.tsx';
+import { EventCreateDateTimeStep } from '../components/EventCreateDateTimeStep.tsx';
+import { EventCostAndSubmitStep } from '../components/EventCostAndSubmitStep.tsx';
 import { useEffect } from 'react';
 
 export const EventCreatePage = () => {
@@ -59,8 +59,8 @@ export const EventCreatePage = () => {
       <ProgressBar progress={step} steps={EVENT_CREATE_TOTAL_STEPS} />
       <FormProvider {...form}>
         {step === 1 && <EventCreateTitleLocationStep setStep={setStep} />}
-        {step === 2 && <EventCreateDateStep setStep={setStep} />}
-        {step === 3 && <EventCreateCostStep setStep={setStep} />}
+        {step === 2 && <EventCreateDateTimeStep setStep={setStep} />}
+        {step === 3 && <EventCostAndSubmitStep setStep={setStep} />}
       </FormProvider>
     </div>
   );
