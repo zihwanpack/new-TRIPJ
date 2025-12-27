@@ -10,6 +10,7 @@ import { useFetch } from '../hooks/useFetch.tsx';
 import { UserError, TripError } from '../errors/customErrors.ts';
 import { Button } from './Button.tsx';
 import { CTA } from './CTA.tsx';
+import { Input } from './Input.tsx';
 
 interface TripCreateMembersStepProps {
   setStep: (step: number) => void;
@@ -72,12 +73,11 @@ export const TripCreateMembersStep = ({ setStep }: TripCreateMembersStepProps) =
       <div className="mx-4 mt-6 relative z-20">
         <div className="flex items-center gap-3 border border-gray-300 rounded-lg px-4 py-3 focus-within:ring-2 focus-within:ring-primary-base focus-within:border-transparent transition-all bg-white">
           <Search className="size-5 text-gray-400" />
-          <input
+          <Input
             type="text"
             value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchValue(e.target.value)}
             placeholder="이메일로 검색"
-            className="w-full outline-none text-slate-700 placeholder:text-gray-300"
           />
           {isLoading && <Loader2 className="size-5 text-primary-base animate-spin" />}
         </div>
