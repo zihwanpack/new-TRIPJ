@@ -3,16 +3,15 @@ import type {
   CreateEventRequest,
   CreateEventResponse,
   Event,
+  GetEventDetailResponse,
   GetMyAllEventsResponse,
+  GetMyAllEventsParam,
+  GetEventDetailParam,
 } from '../types/event.ts';
 import { EventError } from '../errors/customErrors.ts';
 import { requestHandler } from './util/requestHandler.ts';
 
-type GetMyAllEventsParams = {
-  tripId: number;
-};
-
-export const getMyAllEventsApi = async ({ tripId }: GetMyAllEventsParams): Promise<Event[]> => {
+export const getMyAllEventsApi = async ({ tripId }: GetMyAllEventsParam): Promise<Event[]> => {
   return requestHandler(
     () => authenticatedClient.get<GetMyAllEventsResponse>(`/event/all/${tripId}`),
     EventError
@@ -22,6 +21,13 @@ export const getMyAllEventsApi = async ({ tripId }: GetMyAllEventsParams): Promi
 export const createEventApi = async (event: CreateEventRequest): Promise<Event> => {
   return requestHandler(
     () => authenticatedClient.post<CreateEventResponse>('/event', event),
+    EventError
+  );
+};
+
+export const getEventDetailApi = async ({ id }: GetEventDetailParam): Promise<Event> => {
+  return requestHandler(
+    () => authenticatedClient.get<GetEventDetailResponse>(`/event/${id}`),
     EventError
   );
 };

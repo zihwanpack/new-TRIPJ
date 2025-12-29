@@ -3,7 +3,7 @@ import type { SuccessResponse } from './defaultResponse.ts';
 export type Provider = 'google' | 'kakao' | 'naver';
 
 export type User = {
-  id: string;
+  id: number;
   provider: Provider;
   email: string;
   userImage: string | null;

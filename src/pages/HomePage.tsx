@@ -1,51 +1,45 @@
 import { Link, useNavigate } from 'react-router-dom';
 
-import type { Trip } from '../types/trip.ts';
-import { TripError } from '../errors/customErrors.ts';
-
 import { useAuth } from '../hooks/useAuth.tsx';
-import { useFetch } from '../hooks/useFetch.tsx';
 import { TripCard } from '../components/TripCard.tsx';
 import { TRIP_IMAGE_PATHS } from '../constants/tripImages.ts';
-import { getMyPastTripsApi, getMyOnGoingTripApi, getMyUpcomingTripsApi } from '../api/trip.ts';
 import { formatDateToYearMonth, formatDateRange } from '../utils/date.ts';
 import { getWelcomeMessage } from '../utils/getWelcomeMessage.ts';
 import { Footer } from '../layouts/Footer.tsx';
 import { FullscreenLoader } from '../components/FullscreenLoader.tsx';
+import { useSelector, useDispatch } from '../hooks/useCustomRedux.tsx';
+import { fetchAllMyTrips, type TripState } from '../redux/slices/tripSlice.ts';
+import { useEffect } from 'react';
 
 export const HomePage = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const {
-    data: onGoingTrip,
-    error: onGoingTripError,
-    isLoading: onGoingTripLoading,
-  } = useFetch<Trip, TripError>([user?.id], async () =>
-    getMyOnGoingTripApi({ id: user?.id || '' })
-  );
+  const dispatch = useDispatch();
 
   const {
-    data: upcomingTrips,
-    error: upcomingTripsError,
-    isLoading: upcomingTripsLoading,
-  } = useFetch<Trip[], TripError>([user?.id], async () =>
-    getMyUpcomingTripsApi({ id: user?.id || '' })
-  );
+    ongoingTrip,
+    upcomingTrips,
+    pastTrips,
+    isTripOngoingLoading,
+    isTripUpcomingLoading,
+    isTripPastLoading,
+    tripOngoingError,
+    tripUpcomingError,
+    tripPastError,
+  } = useSelector((state: { trip: TripState }) => state.trip);
 
-  const {
-    data: pastTrips,
-    error: pastTripsError,
-    isLoading: pastTripsLoading,
-  } = useFetch<Trip[], TripError>([user?.id], async () =>
-    getMyPastTripsApi({ id: user?.id || '' })
-  );
+  useEffect(() => {
+    if (user?.id) {
+      dispatch(fetchAllMyTrips({ id: user.id }));
+    }
+  }, [dispatch, user?.id]);
 
-  if (onGoingTripLoading || upcomingTripsLoading || pastTripsLoading) {
+  if (isTripOngoingLoading || isTripUpcomingLoading || isTripPastLoading) {
     return <FullscreenLoader />;
   }
 
   const welcomeMessage = getWelcomeMessage({
-    ongoingTrip: onGoingTrip,
+    ongoingTrip,
     upcomingTrip: upcomingTrips?.[0] || null,
   });
 
@@ -56,32 +50,32 @@ export const HomePage = () => {
         <p className="text-xl font-semibold text-primary-base">{user?.nickname}님</p>
         <p className="text-xl font-semibold">{welcomeMessage}</p>
       </div>
-      {onGoingTripError ? (
+      {tripOngoingError ? (
         <div className="flex flex-col items-center justify-center ">
-          <p className="text-xl font-semibold text-red-500">{onGoingTripError.message}</p>
+          <p className="text-xl font-semibold text-red-500">{tripOngoingError}</p>
         </div>
       ) : (
-        onGoingTrip && (
+        ongoingTrip && (
           <section className="flex flex-col items-start gap-3 ">
             <div className="flex flex-row gap-3 items-center">
               <p className="text-[16px] font-semibold">진행중인 여행</p>
             </div>
             <div className="w-full flex gap-4 flex-nowrap snap-x snap-mandatory overflow-x-auto scrollbar-hide">
               <TripCard
-                key={onGoingTrip?.id || 0}
-                onClick={() => navigate(`/trips/${onGoingTrip?.id}`)}
-                tripImage={TRIP_IMAGE_PATHS[onGoingTrip.destination] || DEFAULT_TRIP_IMAGE}
-                title={onGoingTrip.title}
-                date={formatDateRange(onGoingTrip.startDate, onGoingTrip.endDate)}
+                key={ongoingTrip?.id || 0}
+                onClick={() => navigate(`/trips/${ongoingTrip?.id}`)}
+                tripImage={TRIP_IMAGE_PATHS[ongoingTrip.destination] || DEFAULT_TRIP_IMAGE}
+                title={ongoingTrip.title}
+                date={formatDateRange(ongoingTrip.startDate, ongoingTrip.endDate)}
                 size="largest"
               />
             </div>
           </section>
         )
       )}
-      {upcomingTripsError ? (
+      {tripUpcomingError ? (
         <div className="flex flex-col items-center justify-center ">
-          <p className="text-xl font-semibold text-red-500">{upcomingTripsError.message}</p>
+          <p className="text-xl font-semibold text-red-500">{tripUpcomingError}</p>
         </div>
       ) : (
         <section className="flex flex-col items-start gap-3 ">
@@ -106,9 +100,9 @@ export const HomePage = () => {
         </section>
       )}
 
-      {pastTripsError ? (
+      {tripPastError ? (
         <div className="flex flex-col items-center justify-center ">
-          <p className="text-xl font-semibold text-red-500">{pastTripsError.message}</p>
+          <p className="text-xl font-semibold text-red-500">{tripPastError}</p>
         </div>
       ) : (
         pastTrips && (

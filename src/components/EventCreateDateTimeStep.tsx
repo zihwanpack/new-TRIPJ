@@ -3,13 +3,13 @@ import { CTA } from './CTA.tsx';
 import { DayPicker } from 'react-day-picker';
 import { ko } from 'date-fns/locale';
 import { useParams } from 'react-router-dom';
-import { useFetch } from '../hooks/useFetch.tsx';
-import { getTripDetailApi } from '../api/trip.ts';
 import { FullscreenLoader } from './FullscreenLoader.tsx';
 import { useRef, useState, useEffect } from 'react';
 import { formatDate, formatTimeDisplay } from '../utils/date.ts';
 import { Button } from './Button.tsx';
 import type { EventFormValues } from '../schemas/eventSchema.ts';
+import { useDispatch, useSelector } from '../hooks/useCustomRedux.tsx';
+import { fetchTripDetail, type TripState } from '../redux/slices/tripSlice.ts';
 
 interface EventCreateDateTimeStepProps {
   setStep: (step: number) => void;
@@ -18,6 +18,17 @@ interface EventCreateDateTimeStepProps {
 export const EventCreateDateTimeStep = ({ setStep }: EventCreateDateTimeStepProps) => {
   const { watch, setValue } = useFormContext<EventFormValues>();
   const { tripId } = useParams();
+  const dispatch = useDispatch();
+
+  const { tripDetail, isTripDetailLoading, tripDetailError } = useSelector(
+    (state: { trip: TripState }) => state.trip
+  );
+
+  useEffect(() => {
+    if (tripId && !tripDetail) {
+      dispatch(fetchTripDetail({ id: Number(tripId) }));
+    }
+  }, [tripId, dispatch, tripDetail]);
 
   const [activeDate, setActiveDate] = useState<'startDate' | 'endDate' | null>(null);
 
@@ -37,12 +48,16 @@ export const EventCreateDateTimeStep = ({ setStep }: EventCreateDateTimeStepProp
     setActiveDate(null);
   };
 
-  const { data: tripDetail, isLoading: isTripDetailLoading } = useFetch([tripId], () =>
-    getTripDetailApi({ id: Number(tripId) })
-  );
-
   if (isTripDetailLoading) {
     return <FullscreenLoader />;
+  }
+
+  if (tripDetailError) {
+    return (
+      <div className="text-red-500">
+        여행 정보를 불러오는 중 오류가 발생했습니다. : {tripDetailError}
+      </div>
+    );
   }
 
   const tripStartDate = tripDetail?.startDate;

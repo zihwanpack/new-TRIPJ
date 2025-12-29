@@ -16,3 +16,17 @@ export type EventResponse = SuccessResponse<Event>;
 
 export type CreateEventResponse = EventResponse;
 export type CreateEventRequest = Omit<Event, 'eventId'>;
+
+export type GetEventDetailParams = {
+  id: number;
+};
+
+export type GetEventDetailResponse = SuccessResponse<Event>;
+
+export type GetMyAllEventsParam = {
+  tripId: number;
+};
+
+export type GetEventDetailParam = {
+  id: number;
+};

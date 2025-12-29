@@ -16,7 +16,6 @@ export type Trip = {
 
 export type TripsResponse = SuccessResponse<Trip[]>;
 
-export type GetMyAllTripsResponse = TripsResponse;
 export type GetMyPastTripsResponse = TripsResponse;
 export type GetMyOnGoingTripResponse = TripResponse;
 export type GetMyUpcomingTripsResponse = TripsResponse;
@@ -29,3 +28,15 @@ export type CreateTripRequest = Omit<Trip, 'id'>;
 export type GetTripDetailResponse = TripResponse;
 
 export type DeleteTripResponse = SuccessResponse<null>;
+
+export type GetTripDetailParam = {
+  id: number;
+};
+
+export type DeleteTripParam = GetTripDetailParam;
+
+export type GetMyPastTripsParam = GetTripDetailParam;
+
+export type GetMyOnGoingTripParam = GetTripDetailParam;
+
+export type GetMyUpcomingTripsParam = GetTripDetailParam;

@@ -1,9 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { Header } from '../layouts/Header.tsx';
-import { useFetch } from '../hooks/useFetch.tsx';
-import { deleteTripApi, getTripDetailApi } from '../api/trip.ts';
-import type { Trip } from '../types/trip.ts';
+import { deleteTripApi } from '../api/trip.ts';
 import {
   Calendar,
   DollarSign,
@@ -14,70 +12,89 @@ import {
   Plus,
   Trash,
 } from 'lucide-react';
-import { getMyAllEventsApi } from '../api/event.ts';
 import { FullscreenLoader } from '../components/FullscreenLoader.tsx';
 import type { Event } from '../types/event.ts';
-import { getUsersByEmailApi } from '../api/user.ts';
 import type { UserSummary } from '../types/user.ts';
 import { Button } from '../components/Button.tsx';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getDateRange, filteringByDateRange, formatDate } from '../utils/date.ts';
 import { GoogleMapView } from '../components/GoogleMapView.tsx';
-import { TripError, EventError, UserError } from '../errors/customErrors.ts';
+import { UserError } from '../errors/customErrors.ts';
 import { getTotal } from '../utils/getTotal.ts';
+import { useDispatch, useSelector } from '../hooks/useCustomRedux.tsx';
+import { fetchTripDetail, type TripState } from '../redux/slices/tripSlice.ts';
+import { fetchAllEvents, type EventState } from '../redux/slices/eventSlice.ts';
+import { getUsersByEmailApi } from '../api/user.ts';
 
 export const TripDetailPage = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const { tripId: paramId } = useParams();
+  const { tripDetail, isTripDetailLoading, tripDetailError } = useSelector(
+    (state: { trip: TripState }) => state.trip
+  );
+  const { allEvents, isAllEventsLoading, allEventsError } = useSelector(
+    (state: { event: EventState }) => state.event
+  );
+
+  const { tripId } = useParams();
+
+  useEffect(() => {
+    if (tripId) {
+      dispatch(fetchTripDetail({ id: Number(tripId) }));
+      dispatch(fetchAllEvents({ tripId: Number(tripId) }));
+    }
+  }, [dispatch, tripId]);
 
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
   const [isMapViewOpen, setIsMapViewOpen] = useState<boolean>(false);
 
-  const tripId = paramId ? parseInt(paramId) : 0;
+  const [usersData, setUsersData] = useState<UserSummary[]>([]);
+  const [usersLoading, setUsersLoading] = useState(false);
+  const [usersError, setUsersError] = useState<UserError | null>(null);
 
-  const {
-    data: tripData,
-    error: tripError,
-    isLoading: tripLoading,
-  } = useFetch<Trip, TripError>([tripId], async () => getTripDetailApi({ id: tripId }));
+  const OVERLAP = 18;
 
-  const {
-    data: eventsData,
-    error: eventsError,
-    isLoading: eventsLoading,
-  } = useFetch<Event[], EventError>([tripId], async () => getMyAllEventsApi({ tripId }));
+  const visibleUsers = usersData.slice(0, 3);
+  const restUsers = Math.max(usersData.length - 3, 0);
 
-  const {
-    data: usersData,
-    error: usersError,
-    isLoading: usersLoading,
-  } = useFetch<UserSummary[], UserError>([tripData?.members], async () => {
-    if (!tripData?.members || tripData.members.length === 0) {
-      return [];
-    }
-    return getUsersByEmailApi(tripData?.members || []);
-  });
+  const containerWidth = visibleUsers.length * OVERLAP + (restUsers > 0 ? OVERLAP : 0);
 
-  if (tripLoading) return <FullscreenLoader />;
-  if (tripError) return <div>에러가 발생했습니다: {tripError.message}</div>;
-  if (!tripData) return <div>여행 데이터가 없습니다.</div>;
+  useEffect(() => {
+    if (!tripDetail?.members || tripDetail.members.length === 0) return;
 
-  const { startDate, endDate, title } = tripData;
+    const fetchUsers = async () => {
+      try {
+        setUsersLoading(true);
+        const data = await getUsersByEmailApi(tripDetail.members || []);
+        setUsersData(data);
+      } catch (err) {
+        console.error(err);
+        setUsersError(err as UserError);
+      } finally {
+        setUsersLoading(false);
+      }
+    };
 
-  const costs = eventsData?.flatMap((event) => event.cost) || [];
+    fetchUsers();
+  }, [tripDetail?.members]);
+  if (isTripDetailLoading || isAllEventsLoading) return <FullscreenLoader />;
+  if (tripDetailError || allEventsError)
+    return <div>에러가 발생했습니다: {tripDetailError || allEventsError}</div>;
+  if (!tripDetail || allEvents.length === 0) return <div>여행 데이터가 없습니다.</div>;
+
+  const { startDate, endDate, title } = tripDetail;
+
+  const costs = allEvents?.flatMap((event) => event.cost) || [];
   const totalCost = getTotal(costs.map((cost) => cost.value) || []);
 
-  const visibleUsers = usersData?.slice(0, 3);
-  const restUsers = usersData?.length ? usersData.length - 3 : 0;
-
   const dateList = getDateRange(startDate, endDate);
-  const filteredEvents = filteringByDateRange<Event>(eventsData ?? [], selectedDate || '');
+  const filteredEvents = filteringByDateRange<Event>(allEvents ?? [], selectedDate || '');
 
   const handleDeleteTrip = async () => {
     try {
-      await deleteTripApi({ id: tripId });
+      await deleteTripApi({ id: Number(tripId) });
       navigate('/');
     } catch (error) {
       console.error(error);
@@ -85,9 +102,9 @@ export const TripDetailPage = () => {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-dvh overflow-hidden relative">
       <Header title="여행 상세" onClose={() => navigate('/')} />
-      <section className="flex flex-col gap-3 mt-4 mx-4">
+      <section className="flex flex-col gap-3 mt-4 mx-4 flex-1 overflow-y-auto scrollbar-hide pb-10">
         <div className="flex justify-between gap-2 w-full">
           <h1 className="text-xl font-semibold ">{title}</h1>
           <div className="flex items-center gap-2 relative">
@@ -118,30 +135,27 @@ export const TripDetailPage = () => {
         <div className="flex items-center gap-2">
           <Calendar className="size-4 text-gray-400" />
           <span className=" text-gray-400">
-            {formatDate(startDate, 'YYYY. MM. dd')} - {formatDate(endDate, 'YYYY. MM. dd')}
+            {formatDate(startDate, 'YYYY. MM. DD')} - {formatDate(endDate, 'YYYY. MM. DD')}
           </span>
         </div>
-        <div className="flex items-center gap-2 relative">
-          <DollarSign className="size-4 text-gray-400" />
-          <span className=" text-gray-400">{totalCost?.toLocaleString()} 원</span>
-          <div className="absolute right-0 top-0">
+        <div className="flex items-center justify-between w-full">
+          <div className="flex items-center gap-2">
+            <DollarSign className="size-4 text-gray-400" />
+            <span className=" text-gray-400">{totalCost?.toLocaleString()} 원</span>
+          </div>
+          <div>
             {usersLoading ? (
               <div className="text-xs text-gray-400">멤버 불러오는 중...</div>
             ) : usersError ? (
               <div className="text-xs text-gray-400">멤버 정보를 불러올 수 없습니다</div>
             ) : (
-              <div
-                className="relative h-8"
-                style={{
-                  width: `${visibleUsers?.length ? visibleUsers.length * 20 + (restUsers > 0 ? 20 : 0) : 0}px`,
-                }}
-              >
-                {visibleUsers?.map((user, index) => (
+              <div className="relative h-8 right-5" style={{ width: `${containerWidth}px` }}>
+                {visibleUsers.map((user, index) => (
                   <div
                     key={user.id}
                     className="absolute size-8 rounded-full border-2 border-white overflow-hidden bg-gray-200"
                     style={{
-                      left: `${index * 20}px`,
+                      left: index * OVERLAP,
                       zIndex: 10 - index,
                     }}
                   >
@@ -153,7 +167,7 @@ export const TripDetailPage = () => {
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-xs text-white bg-gray-400">
-                        {user.nickname[0]}
+                        {user.nickname?.[0] ?? '?'}
                       </div>
                     )}
                   </div>
@@ -161,10 +175,8 @@ export const TripDetailPage = () => {
 
                 {restUsers > 0 && (
                   <div
-                    className="absolute flex items-center justify-center size-8 text-[8px] font-semibold text-gray-600 bg-gray-100 border-2 border-white rounded-full"
-                    style={{
-                      left: `${visibleUsers?.length ? visibleUsers.length * 20 : 0}px`,
-                    }}
+                    className="absolute flex items-center justify-center size-8 text-[10px] font-semibold text-gray-600 bg-gray-100 border-2 border-white rounded-full"
+                    style={{ left: visibleUsers.length * OVERLAP }}
                   >
                     +{restUsers}
                   </div>
@@ -173,7 +185,7 @@ export const TripDetailPage = () => {
             )}
           </div>
         </div>
-        <div className="flex gap-2 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-2">
+        <div className="flex gap-2 snap-x snap-mandatory scrollbar-hide pb-2 overflow-x-auto">
           {dateList.map((date) => {
             const key = formatDate(date, 'YYYY-MM-DD');
             const isSelected = selectedDate === key;
@@ -200,12 +212,12 @@ export const TripDetailPage = () => {
             <GoogleMapView events={filteredEvents || []} />
           </div>
         ) : (
-          <div className="relative">
-            {eventsLoading ? (
+          <div>
+            {isAllEventsLoading ? (
               <div className="py-20 text-center text-gray-400 flex">
                 <Loader2 className="size-4 text-primary-base animate-spin" /> 이벤트 불러오는 중...
               </div>
-            ) : eventsError ? (
+            ) : allEventsError ? (
               <div className="py-20 text-center text-red-400">이벤트를 불러오지 못했습니다.</div>
             ) : filteredEvents?.length === 0 ? (
               <div className="py-20 text-center text-gray-400">이벤트가 없습니다. 추가해주세요</div>
@@ -240,8 +252,8 @@ export const TripDetailPage = () => {
                         </div>
 
                         <p className="pt-2 border-t border-gray-100 text-sm text-gray-500">
-                          {formatDate(event.startDate, 'yy. MM. dd')} ~
-                          {formatDate(event.endDate, 'yy. MM. dd')}
+                          {formatDate(event.startDate, 'YY. MM. DD')} ~
+                          {formatDate(event.endDate, 'YY. MM. DD')}
                         </p>
                       </div>
                     </div>
@@ -249,16 +261,16 @@ export const TripDetailPage = () => {
                 ))}
               </div>
             )}
-            <Button
-              className="absolute top-80 right-0 z-10 bg-primary-base text-white p-2 rounded-3xl flex items-center gap-2 cursor-pointer shadow-lg shadow-primary-base/30"
-              onClick={() => navigate(`/trips/${tripId}/events/new`)}
-            >
-              <Plus size={16} />
-              <span className="text-sm font-medium">이벤트 추가</span>
-            </Button>
           </div>
         )}
       </section>
+      <Button
+        className="absolute bottom-6 right-4 z-50 bg-primary-base text-white p-3 rounded-full flex items-center gap-2 cursor-pointer shadow-lg shadow-primary-base/30 transition-transform active:scale-95"
+        onClick={() => navigate(`/trips/${tripId}/events/new`)}
+      >
+        <Plus size={16} />
+        <span className="text-sm font-medium">이벤트 추가</span>
+      </Button>
     </div>
   );
 };
