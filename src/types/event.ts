@@ -30,3 +30,7 @@ export type GetMyAllEventsParam = {
 export type GetEventDetailParam = {
   id: number;
 };
+
+export type DeleteEventParam = GetEventDetailParam;
+
+export type DeleteEventResponse = SuccessResponse<null>;

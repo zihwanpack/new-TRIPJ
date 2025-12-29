@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import { Header } from '../layouts/Header.tsx';
 import { deleteTripApi } from '../api/trip.ts';
@@ -235,7 +235,10 @@ export const TripDetailPage = () => {
                         </div>
                       </div>
 
-                      <div className="flex-1 p-3 px-5 space-y-2 bg-white border border-gray-200 rounded-lg shadow-lg">
+                      <Link
+                        to={`/trips/${tripId}/events/${event.eventId}`}
+                        className="flex-1 p-3 px-5 space-y-2 bg-white border border-gray-200 rounded-lg shadow-lg"
+                      >
                         <div className="flex items-center justify-between">
                           <div className="text-base font-semibold text-gray-900">
                             {event.eventName}
@@ -255,7 +258,7 @@ export const TripDetailPage = () => {
                           {formatDate(event.startDate, 'YY. MM. DD')} ~
                           {formatDate(event.endDate, 'YY. MM. DD')}
                         </p>
-                      </div>
+                      </Link>
                     </div>
                   </div>
                 ))}
