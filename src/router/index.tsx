@@ -9,6 +9,7 @@ import { BaseLayout } from '../layouts/BaseLayout.tsx';
 import { TripDetailPage } from '../pages/TripDetailPage.tsx';
 import { EventCreatePage } from '../pages/EventCreatePage.tsx';
 import { EventDetailPage } from '../pages/EventDetailPage.tsx';
+import { MyTripsPage } from '../pages/MyTripsPage.tsx';
 
 const publicRoutes: RouteObject[] = [
   {
@@ -53,6 +54,10 @@ const protectedRoutes: RouteObject[] = [
           {
             path: 'trips/:tripId/events/:eventId',
             element: <EventDetailPage />,
+          },
+          {
+            path: 'my-trips',
+            element: <MyTripsPage />,
           },
         ],
       },

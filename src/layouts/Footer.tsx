@@ -25,10 +25,10 @@ export const Footer = () => {
         </Button>
         <Button
           className="flex flex-col items-center gap-1 text-slate-500 transition hover:text-slate-900 cursor-grab"
-          onClick={() => navigate('/mytrips')}
+          onClick={() => navigate('/my-trips')}
         >
           <img
-            src={pathname === '/mytrips' ? onSuitcaseRolling : offSuitcaseRolling}
+            src={pathname === '/my-trips' ? onSuitcaseRolling : offSuitcaseRolling}
             className="text-base"
           />
           <span>내 여행</span>

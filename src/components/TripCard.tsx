@@ -2,7 +2,7 @@ import { CirclePlus } from 'lucide-react';
 import { Card } from './Card';
 
 interface BaseTripCardProps {
-  size?: 'small' | 'large' | 'largest';
+  size?: 'small' | 'large' | 'largest' | 'myTrips';
   onClick: () => void;
 }
 
@@ -11,6 +11,7 @@ interface AddTripCardProps extends BaseTripCardProps {
   tripImage?: never;
   title?: never;
   date?: never;
+  badgeText?: never;
 }
 
 interface DisplayTripCardProps extends BaseTripCardProps {
@@ -18,6 +19,7 @@ interface DisplayTripCardProps extends BaseTripCardProps {
   tripImage: string;
   title: string;
   date: string;
+  badgeText?: string;
 }
 
 export type TripCardProps = AddTripCardProps | DisplayTripCardProps;
@@ -38,17 +40,33 @@ const TRIP_CARD_STYLES = {
     title: 'text-[20px]',
     date: 'text-[16px]',
   },
+  myTrips: {
+    container: 'w-full h-[100px]',
+    title: 'text-[16px]',
+    date: 'text-[13px]',
+  },
 } as const;
 
-export const TripCard = (props: TripCardProps) => {
-  const { size = 'large', onClick, variant = 'default' } = props;
+export const TripCard = ({
+  size = 'large',
+  onClick,
+  variant = 'default',
+  tripImage,
+  title,
+  date,
+  badgeText,
+}: TripCardProps) => {
   const cardStyles = TRIP_CARD_STYLES[size];
 
   if (variant === 'add') {
     return (
       <Card
         onClick={onClick}
-        className={`flex flex-col items-center justify-center gap-4 border-dashed border-2 border-gray-300 hover:bg-gray-50 transition-colors ${cardStyles.container}`}
+        className={[
+          'flex flex-col items-center justify-center gap-4',
+          'border-dashed border-2 border-gray-300 hover:bg-gray-50 transition-colors',
+          cardStyles.container,
+        ].join(' ')}
       >
         <p className="text-center text-gray-600 font-medium text-sm">
           새로운 여행을 <br />
@@ -59,7 +77,39 @@ export const TripCard = (props: TripCardProps) => {
     );
   }
 
-  const { tripImage, title, date } = props;
+  if (size === 'myTrips') {
+    return (
+      <Card
+        onClick={onClick}
+        className={[
+          'flex items-center gap-4',
+          'bg-white border border-gray-200 shadow-sm',
+          'rounded-2xl px-4',
+          cardStyles.container,
+        ].join(' ')}
+      >
+        <div className="size-20 rounded-xl overflow-hidden bg-gray-200 shrink-0">
+          <img
+            src={tripImage}
+            alt={`${title} 여행 이미지`}
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2 min-w-0">
+            <p className={`${cardStyles.title} font-semibold text-gray-900`}>{title}</p>
+            {badgeText && (
+              <span className="shrink-0 px-2 py-0.5 rounded-full text-[12px] font-semibold bg-emerald-50 text-emerald-600">
+                {badgeText}
+              </span>
+            )}
+          </div>
+
+          <p className={`${cardStyles.date} text-gray-500 mt-1 truncate`}>{date}</p>
+        </div>
+      </Card>
+    );
+  }
 
   return (
     <Card onClick={onClick} className={`relative ${cardStyles.container}`}>
