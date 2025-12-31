@@ -50,7 +50,7 @@ export const EventDetailPage = () => {
 
   return (
     <div className="flex flex-col h-dvh bg-gray-50 relative">
-      <Header title="일정 상세" onClose={() => navigate(-1)} />
+      <Header title="일정 상세" onClose={() => navigate(`/trips/${tripId}`)} />
       <section className="flex-1 overflow-y-auto scrollbar-hide px-5 pt-4 pb-28 space-y-4">
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
           <h1 className="text-2xl font-bold text-gray-900 mb-4 leading-tight">
