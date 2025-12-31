@@ -49,7 +49,7 @@ export const CTA = ({
         onClick={handleNextOrSubmit}
         variant={isNecessary ? (isValid ? 'primary' : 'secondary') : 'primary'}
         disabled={!isButtonEnabled || isLoading}
-        className="w-full font-semibold transition m-1 cursor-pointer"
+        className="w-full rounded-md  font-semibold transition m-1 cursor-pointer"
       >
         {isLoading ? '추가중...' : isLastStep ? '추가하기' : '다음'}
       </Button>
