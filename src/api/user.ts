@@ -1,4 +1,10 @@
-import type { GetUsersByEmailResponse, SearchUsersResponse, UserSummary } from '../types/user.ts';
+import type {
+  GetUsersByEmailResponse,
+  SearchUsersResponse,
+  UserSummary,
+  WithdrawParam,
+  WithdrawResponse,
+} from '../types/user.ts';
 import { authenticatedClient } from './client/authenticatedClient.ts';
 import { UserError } from '../errors/customErrors.ts';
 import { requestHandler } from './util/requestHandler.ts';
@@ -16,6 +22,13 @@ export const getUsersByEmailApi = async (emails: string[]): Promise<UserSummary[
       authenticatedClient.post<GetUsersByEmailResponse>(`/users/emails`, {
         emails,
       }),
+    UserError
+  );
+};
+
+export const withdrawApi = async ({ id }: WithdrawParam): Promise<null> => {
+  return requestHandler(
+    () => authenticatedClient.delete<WithdrawResponse>(`/users/${id}`),
     UserError
   );
 };

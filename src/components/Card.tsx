@@ -6,10 +6,7 @@ interface CardProps {
 
 export const Card = ({ children, onClick, className }: CardProps) => {
   return (
-    <article
-      onClick={onClick}
-      className={`relative flex-shrink-0 snap-start rounded-2xl cursor-pointer ${className}`}
-    >
+    <article onClick={onClick} className={`rounded-2xl cursor-pointer ${className}`}>
       {children}
     </article>
   );

@@ -27,9 +27,7 @@ export const Button = ({
   };
 
   const baseStyles =
-    variant === 'pill'
-      ? 'transition cursor-pointer font-medium'
-      : 'rounded-md transition cursor-pointer font-medium';
+    variant === 'pill' ? 'transition cursor-pointer font-medium' : 'cursor-pointer font-medium';
 
   const variantClass = variant ? variantClassMap[variant] : '';
   const sizeClass = sizeClassMap[size];

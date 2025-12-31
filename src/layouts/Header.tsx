@@ -9,7 +9,7 @@ type HeaderProps = {
 export const Header = ({ title, onClose }: HeaderProps) => {
   return (
     <header
-      className={`flex items-center h-14 px-4 bg-white ${onClose ? 'justify-between' : 'justify-center'}`}
+      className={`flex items-center h-14 px-4 flex-shrink-0 bg-white ${onClose ? 'justify-between' : 'justify-center'}`}
     >
       <div className="w-1" />
       <h1 className="text-lg font-semibold text-gray-900">{title}</h1>
