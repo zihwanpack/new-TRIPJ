@@ -82,7 +82,7 @@ export const TripDetailPage = () => {
   if (isTripDetailLoading || isAllEventsLoading) return <FullscreenLoader />;
   if (tripDetailError || allEventsError)
     return <div>에러가 발생했습니다: {tripDetailError || allEventsError}</div>;
-  if (!tripDetail || allEvents.length === 0) return <div>여행 데이터가 없습니다.</div>;
+  if (!tripDetail) return <div>여행 데이터가 없습니다.</div>;
 
   const { startDate, endDate, title } = tripDetail;
 
@@ -159,9 +159,9 @@ export const TripDetailPage = () => {
                       zIndex: 10 - index,
                     }}
                   >
-                    {user.userImage ? (
+                    {user.profileImage ? (
                       <img
-                        src={user.userImage}
+                        src={user.profileImage}
                         alt={user.nickname}
                         className="w-full h-full object-cover"
                       />

@@ -37,17 +37,16 @@ export const HomePage = () => {
   if (isTripOngoingLoading || isTripUpcomingLoading || isTripPastLoading) {
     return <FullscreenLoader />;
   }
-
   const welcomeMessage = getWelcomeMessage({
     ongoingTrip,
-    upcomingTrip: upcomingTrips?.[0] || null,
+    upcomingTrip: upcomingTrips[0] ?? null,
   });
 
   const DEFAULT_TRIP_IMAGE = TRIP_IMAGE_PATHS.beach;
   return (
     <div className="flex flex-col justify-between h-full overflow-hidden">
       <div className="flex flex-col justify-between h-full mx-3">
-        <div className="flex flex-col h-10">
+        <div className="flex flex-col h-10 mt-3">
           <p className="text-xl font-semibold text-primary-base">{user?.nickname}님</p>
           <p className="text-xl font-semibold">{welcomeMessage}</p>
         </div>
@@ -61,7 +60,7 @@ export const HomePage = () => {
               <div className="flex flex-row gap-3 items-center">
                 <p className="text-[16px] font-semibold">진행중인 여행</p>
               </div>
-              <div className="w-full flex gap-4 flex-nowrap snap-x snap-mandatory overflow-x-auto scrollbar-hide">
+              <div className="w-full flex">
                 <TripCard
                   key={ongoingTrip?.id || 0}
                   onClick={() => navigate(`/trips/${ongoingTrip?.id}`)}
