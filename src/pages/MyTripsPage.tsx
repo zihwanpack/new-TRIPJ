@@ -70,6 +70,7 @@ export const MyTripsPage = () => {
         const response = await getMyOnGoingTripApi({ id: user.id as number });
 
         setTrips((draft) => {
+          draft.length = 0;
           draft.push(response);
         });
         setHasNext(false);
@@ -158,23 +159,21 @@ export const MyTripsPage = () => {
         {trips.length > 0 &&
           trips.map((trip) => (
             <TripCard
-              key={trip.id}
+              key={trip?.id ?? 0}
               onClick={() => navigate(`/trips/${trip.id}`)}
-              tripImage={TRIP_IMAGE_PATHS[trip.destination]}
-              title={trip.title}
-              date={formatDateRange(trip.startDate, trip.endDate)}
+              tripImage={TRIP_IMAGE_PATHS[trip?.destination ?? '']}
+              title={trip?.title ?? ''}
+              date={formatDateRange(trip?.startDate ?? '', trip?.endDate ?? '')}
               size="myTrips"
-              badgeText={getTripBadgeLabel(tab, trip.startDate, trip.endDate)}
+              badgeText={getTripBadgeLabel(tab, trip?.startDate ?? '', trip?.endDate ?? '')}
             />
           ))}
-
         {isLoading && (
           <>
             <TripCardSkeleton />
             <TripCardSkeleton />
           </>
         )}
-
         {!isLoading && trips.length === 0 && !error && (
           <div className="flex flex-col items-center justify-center h-full text-gray-400 mt-20">
             <span className="text-4xl mb-2">✈️</span>
@@ -192,7 +191,6 @@ export const MyTripsPage = () => {
             )}
           </div>
         )}
-
         {tab !== 'ongoing' && !isLoading && hasNext && (
           <div ref={infiniteScrollTriggerRef} className="h-4" />
         )}
