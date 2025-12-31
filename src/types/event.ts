@@ -9,6 +9,9 @@ export type Event = {
   startDate: string;
   endDate: string;
   cost: Cost[];
+  latitude?: number;
+  longitude?: number;
+  placeImage?: string;
 };
 
 export type GetMyAllEventsResponse = SuccessResponse<Event[]>;

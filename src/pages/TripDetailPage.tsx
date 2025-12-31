@@ -145,9 +145,9 @@ export const TripDetailPage = () => {
           </div>
           <div>
             {usersLoading ? (
-              <div className="text-xs text-gray-400">멤버 불러오는 중...</div>
+              <div className="text-xs h-8 text-gray-400">멤버 불러오는 중...</div>
             ) : usersError ? (
-              <div className="text-xs text-gray-400">멤버 정보를 불러올 수 없습니다</div>
+              <div className="text-xs h-8 text-red-400">멤버 정보를 불러올 수 없습니다</div>
             ) : (
               <div className="relative h-8 right-5" style={{ width: `${containerWidth}px` }}>
                 {visibleUsers.map((user, index) => (
@@ -185,7 +185,7 @@ export const TripDetailPage = () => {
             )}
           </div>
         </div>
-        <div className="flex gap-2 snap-x snap-mandatory scrollbar-hide pb-2 overflow-x-auto">
+        <div className="flex gap-2 snap-x min-h-[44px] snap-mandatory scrollbar-hide pb-2 overflow-x-auto">
           {dateList.map((date) => {
             const key = formatDate(date, 'YYYY-MM-DD');
             const isSelected = selectedDate === key;
@@ -208,8 +208,8 @@ export const TripDetailPage = () => {
           })}
         </div>
         {isMapViewOpen ? (
-          <div className="w-full h-[400px] rounded-lg overflow-hidden">
-            <GoogleMapView events={filteredEvents || []} />
+          <div className="w-full h-[450px]  rounded-lg">
+            <GoogleMapView events={filteredEvents ?? []} />
           </div>
         ) : (
           <div>
