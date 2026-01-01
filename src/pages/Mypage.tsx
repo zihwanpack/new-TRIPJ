@@ -48,7 +48,7 @@ export const Mypage = () => {
   return (
     <div className="flex flex-col h-dvh">
       <Header title="마이페이지" />
-      <div className="flex flex-col bg-white border-3 border-gray-200 rounded-2xl shadow-sm mx-4">
+      <div className="flex flex-col h-full bg-white border-3 border-gray-200 rounded-2xl shadow-sm mx-4">
         <div className="text-xl font-semibold flex items-center mx-6 py-3 gap-2">
           <span className="text-primary-base">J-TRIP</span>
           <span className="text-gray-800">Passport</span>
@@ -76,7 +76,7 @@ export const Mypage = () => {
           <img src={stamp1Image} alt="유저 프로필" className="size-20 object-cover" />
           <img src={stamp3Image} alt="유저 프로필" className="size-20 object-cover" />
         </div>
-        <div className="h-10" />
+        <div className="flex-1" />
         <img src={stamp2Image} alt="유저 프로필" className="size-20 object-cover" />
         <div className="flex justify-center">
           <Button

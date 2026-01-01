@@ -44,7 +44,7 @@ export const HomePage = () => {
 
   const DEFAULT_TRIP_IMAGE = TRIP_IMAGE_PATHS.beach;
   return (
-    <div className="flex flex-col justify-between h-full overflow-hidden">
+    <div className="flex flex-col justify-between h-dvh overflow-hidden">
       <div className="flex flex-col justify-between h-full mx-3">
         <div className="flex flex-col h-10 mt-3">
           <p className="text-xl font-semibold text-primary-base">{user?.nickname}님</p>
