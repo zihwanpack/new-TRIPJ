@@ -7,6 +7,7 @@ import type { DestinationKey } from '../constants/tripImages.ts';
 import type { DestinationType } from '../types/trip.ts';
 import { Button } from './Button.tsx';
 import { CTA } from './CTA.tsx';
+import clsx from 'clsx';
 
 interface TripCreateDestinationStepProps {
   setStep: (step: number) => void;
@@ -28,6 +29,29 @@ export const TripCreateDestinationStep = ({ setStep }: TripCreateDestinationStep
     setValue('destination', '' as DestinationKey);
     setIsRegionSelectOpen(false);
   };
+
+  const REGION_LABELS: Record<DestinationType, string> = {
+    domestic: '국내',
+    overseas: '해외',
+  } as const;
+
+  const DESTINATION_PLACEHOLDERS: Record<DestinationType, string> = {
+    domestic: '국내 도시 선택',
+    overseas: '해외 국가 선택',
+  } as const;
+
+  const currentRegionLabel = destinationType ? REGION_LABELS[destinationType] : '국내/해외';
+
+  const getCurrentDestinationLabel = () => {
+    if (destination && destinationType) {
+      return DESTINATIONS[destinationType]?.[destination];
+    }
+    if (destinationType) {
+      return DESTINATION_PLACEHOLDERS[destinationType];
+    }
+    return '도시/국가 선택';
+  };
+
   return (
     <div className="flex flex-col h-full">
       <div className="flex gap-2 items-center mt-4 mx-4 min-h-[70px]">
@@ -41,13 +65,7 @@ export const TripCreateDestinationStep = ({ setStep }: TripCreateDestinationStep
             onClick={() => setIsRegionSelectOpen(!isRegionSelectOpen)}
             className="flex items-center gap-2 border-2 border-gray-200 hover:border-primary-base cursor-pointer p-2 rounded-md justify-between w-full"
           >
-            <span>
-              {destinationType === 'domestic'
-                ? '국내'
-                : destinationType === 'overseas'
-                  ? '해외'
-                  : '국내/해외'}
-            </span>
+            <span>{currentRegionLabel}</span>
             <ChevronDownIcon className="size-5" />
           </Button>
           {isRegionSelectOpen && (
@@ -74,25 +92,17 @@ export const TripCreateDestinationStep = ({ setStep }: TripCreateDestinationStep
             type="button"
             onClick={() => {
               if (isDestinationSelectDisabled) return;
-
               setIsDestinationSelectOpen(!isDestinationSelectOpen);
             }}
-            className={`flex items-center justify-between gap-2 border-2 p-2 rounded-md transition w-full
-${
-  isDestinationSelectDisabled
-    ? 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed'
-    : 'border-primary-base cursor-pointer'
-}
-`}
+            className={clsx(
+              'flex items-center justify-between gap-2 border-2 p-2 rounded-md transition w-full',
+              isDestinationSelectDisabled
+                ? 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed'
+                : 'border-primary-base cursor-pointer'
+            )}
           >
             <span className={destination ? 'text-black' : 'text-gray-400'}>
-              {destination && destinationType
-                ? DESTINATIONS[destinationType]?.[destination] // 화면에 보여줄 땐 한글 이름(Value)
-                : destinationType === 'domestic'
-                  ? '국내 도시 선택'
-                  : destinationType === 'overseas'
-                    ? '해외 국가 선택'
-                    : '도시/국가 선택'}
+              {getCurrentDestinationLabel()}
             </span>
             <ChevronDownIcon className="size-5" />
           </Button>
