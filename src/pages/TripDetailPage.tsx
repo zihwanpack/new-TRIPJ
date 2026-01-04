@@ -1,7 +1,6 @@
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import { Header } from '../layouts/Header.tsx';
-import { deleteTripApi } from '../api/trip.ts';
 import {
   Calendar,
   DollarSign,
@@ -14,17 +13,21 @@ import {
 } from 'lucide-react';
 import { FullscreenLoader } from '../components/FullscreenLoader.tsx';
 import type { Event } from '../types/event.ts';
-import type { UserSummary } from '../types/user.ts';
 import { Button } from '../components/Button.tsx';
 import { useEffect, useState } from 'react';
 import { getDateRange, filteringByDateRange, formatDate } from '../utils/date.ts';
 import { GoogleMapView } from '../components/GoogleMapView.tsx';
-import { UserError } from '../errors/customErrors.ts';
 import { getTotal } from '../utils/getTotal.ts';
-import { useDispatch, useSelector } from '../hooks/useCustomRedux.tsx';
-import { fetchTripDetail, type TripState } from '../redux/slices/tripSlice.ts';
+import { useDispatch, useSelector } from '../redux/hooks/useCustomRedux.tsx';
+import {
+  clearTripDetail,
+  deleteTrip,
+  fetchTripDetail,
+  type TripState,
+} from '../redux/slices/tripSlice.ts';
 import { fetchAllEvents, type EventState } from '../redux/slices/eventSlice.ts';
-import { getUsersByEmailApi } from '../api/user.ts';
+import { getUsersByEmails, type UserState } from '../redux/slices/userSlice.ts';
+import toast from 'react-hot-toast';
 
 export const TripDetailPage = () => {
   const navigate = useNavigate();
@@ -36,6 +39,9 @@ export const TripDetailPage = () => {
   const { allEvents, isAllEventsLoading, allEventsError } = useSelector(
     (state: { event: EventState }) => state.event
   );
+  const { usersByEmails, isUsersByEmailsLoading, usersByEmailsError } = useSelector(
+    (state: { user: UserState }) => state.user
+  );
 
   const { tripId } = useParams();
 
@@ -44,41 +50,27 @@ export const TripDetailPage = () => {
       dispatch(fetchTripDetail({ id: Number(tripId) }));
       dispatch(fetchAllEvents({ tripId: Number(tripId) }));
     }
+    return () => {
+      dispatch(clearTripDetail());
+    };
   }, [dispatch, tripId]);
+
+  useEffect(() => {
+    if (!tripDetail?.members) return;
+    dispatch(getUsersByEmails(tripDetail.members));
+  }, [dispatch, tripDetail?.members]);
 
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
   const [isMapViewOpen, setIsMapViewOpen] = useState<boolean>(false);
 
-  const [usersData, setUsersData] = useState<UserSummary[]>([]);
-  const [usersLoading, setUsersLoading] = useState(false);
-  const [usersError, setUsersError] = useState<UserError | null>(null);
-
   const OVERLAP = 18;
 
-  const visibleUsers = usersData.slice(0, 3);
-  const restUsers = Math.max(usersData.length - 3, 0);
+  const visibleUsers = usersByEmails.slice(0, 3);
+  const restUsers = Math.max(usersByEmails.length - 3, 0);
 
   const containerWidth = visibleUsers.length * OVERLAP + (restUsers > 0 ? OVERLAP : 0);
 
-  useEffect(() => {
-    if (!tripDetail?.members || tripDetail.members.length === 0) return;
-
-    const fetchUsers = async () => {
-      try {
-        setUsersLoading(true);
-        const data = await getUsersByEmailApi(tripDetail.members || []);
-        setUsersData(data);
-      } catch (err) {
-        console.error(err);
-        setUsersError(err as UserError);
-      } finally {
-        setUsersLoading(false);
-      }
-    };
-
-    fetchUsers();
-  }, [tripDetail?.members]);
   if (isTripDetailLoading || isAllEventsLoading) return <FullscreenLoader />;
   if (tripDetailError || allEventsError)
     return <div>에러가 발생했습니다: {tripDetailError || allEventsError}</div>;
@@ -93,11 +85,12 @@ export const TripDetailPage = () => {
   const filteredEvents = filteringByDateRange<Event>(allEvents ?? [], selectedDate || '');
 
   const handleDeleteTrip = async () => {
-    try {
-      await deleteTripApi({ id: Number(tripId) });
+    const result = await dispatch(deleteTrip({ id: Number(tripId) }));
+    if (deleteTrip.fulfilled.match(result)) {
+      toast.success('여행 삭제에 성공했습니다.');
       navigate('/');
-    } catch (error) {
-      console.error(error);
+    } else {
+      toast.error('여행 삭제에 실패했습니다.');
     }
   };
 
@@ -144,9 +137,9 @@ export const TripDetailPage = () => {
             <span className=" text-gray-400">{totalCost?.toLocaleString()} 원</span>
           </div>
           <div>
-            {usersLoading ? (
+            {isUsersByEmailsLoading ? (
               <div className="text-xs h-8 text-gray-400">멤버 불러오는 중...</div>
-            ) : usersError ? (
+            ) : usersByEmailsError ? (
               <div className="text-xs h-8 text-red-400">멤버 정보를 불러올 수 없습니다</div>
             ) : (
               <div className="relative h-8 right-5" style={{ width: `${containerWidth}px` }}>
