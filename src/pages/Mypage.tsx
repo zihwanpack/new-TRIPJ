@@ -11,14 +11,20 @@ import { useNavigate } from 'react-router-dom';
 import { withdrawApi } from '../api/user.ts';
 import { useState } from 'react';
 import { ConfirmModal } from '../components/ConfirmModal.tsx';
+import { useDispatch } from '../redux/hooks/useCustomRedux.tsx';
+import { resetTripState } from '../redux/slices/tripSlice.ts';
+import { resetEventState } from '../redux/slices/eventSlice.ts';
 
 export const Mypage = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const dispatch = useDispatch();
+
   const copyToClipboard = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
+
       toast.success('복사 완료');
     } catch (err) {
       toast.error('복사 실패');
@@ -29,6 +35,9 @@ export const Mypage = () => {
   const handleLogout = async () => {
     try {
       await logout();
+      dispatch(resetEventState());
+      dispatch(resetTripState());
+      sessionStorage.clear();
       navigate('/login');
     } catch {
       toast.error('로그아웃 실패');
@@ -39,6 +48,9 @@ export const Mypage = () => {
 
     try {
       await withdrawApi({ id: user.id });
+      dispatch(resetEventState());
+      dispatch(resetTripState());
+      sessionStorage.clear();
       navigate('/login');
       toast.success('회원탈퇴가 완료되었습니다.');
     } catch {
