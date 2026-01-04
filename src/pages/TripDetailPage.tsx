@@ -28,6 +28,33 @@ import {
 import { fetchAllEvents, type EventState } from '../redux/slices/eventSlice.ts';
 import { clearUsersByEmails, getUsersByEmails, type UserState } from '../redux/slices/userSlice.ts';
 import toast from 'react-hot-toast';
+import clsx from 'clsx';
+
+type EventViewState = 'loading' | 'error' | 'empty' | 'list' | 'map';
+
+type MemberViewState = 'loading' | 'error' | 'list';
+
+const getEventViewState = (
+  isMapViewOpen: boolean,
+  isAllEventsLoading: boolean,
+  allEventsError: boolean,
+  filteredEvents: Event[]
+): EventViewState => {
+  if (isMapViewOpen) return 'map';
+  if (isAllEventsLoading) return 'loading';
+  if (allEventsError) return 'error';
+  if (filteredEvents.length === 0) return 'empty';
+  return 'list';
+};
+
+const getMemberViewState = (
+  isUsersByEmailsLoading: boolean,
+  usersByEmailsError: boolean
+): MemberViewState => {
+  if (isUsersByEmailsLoading) return 'loading';
+  if (usersByEmailsError) return 'error';
+  return 'list';
+};
 
 export const TripDetailPage = () => {
   const navigate = useNavigate();
@@ -97,6 +124,15 @@ export const TripDetailPage = () => {
     }
   };
 
+  const eventViewState = getEventViewState(
+    isMapViewOpen,
+    isAllEventsLoading,
+    Boolean(allEventsError),
+    filteredEvents
+  );
+
+  const memberViewState = getMemberViewState(isUsersByEmailsLoading, Boolean(usersByEmailsError));
+
   return (
     <div className="flex flex-col h-dvh overflow-hidden relative">
       <Header title="여행 상세" onClose={() => navigate('/')} />
@@ -105,9 +141,10 @@ export const TripDetailPage = () => {
           <h1 className="text-xl font-semibold ">{title}</h1>
           <div className="flex items-center gap-2 relative">
             <MapPin
-              className={`size-6 cursor-pointer ${
+              className={clsx(
+                'size-6 cursor-pointer transition-colors duration-200',
                 isMapViewOpen ? 'text-primary-base' : 'text-gray-400'
-              }`}
+              )}
               onClick={() => setIsMapViewOpen((prev) => !prev)}
             />
             <EllipsisVertical
@@ -139,47 +176,53 @@ export const TripDetailPage = () => {
             <DollarSign className="size-4 text-gray-400" />
             <span className=" text-gray-400">{totalCost?.toLocaleString()} 원</span>
           </div>
-          <div>
-            {isUsersByEmailsLoading ? (
-              <div className="text-xs h-8 text-gray-400">멤버 불러오는 중...</div>
-            ) : usersByEmailsError ? (
-              <div className="text-xs h-8 text-red-400">멤버 정보를 불러올 수 없습니다</div>
-            ) : (
-              <div className="relative h-8 right-5" style={{ width: `${containerWidth}px` }}>
-                {visibleUsers.map((user, index) => (
-                  <div
-                    key={user.id}
-                    className="absolute size-8 rounded-full border-2 border-white overflow-hidden bg-gray-200"
-                    style={{
-                      left: index * OVERLAP,
-                      zIndex: 10 - index,
-                    }}
-                  >
-                    {user.profileImage ? (
-                      <img
-                        src={user.profileImage}
-                        alt={user.nickname}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-xs text-white bg-gray-400">
-                        {user.nickname?.[0] ?? '?'}
+          {(() => {
+            switch (memberViewState) {
+              case 'loading':
+                return <div className="text-xs h-8 text-gray-400">멤버 불러오는 중...</div>;
+
+              case 'error':
+                return (
+                  <div className="text-xs h-8 text-red-400">멤버 정보를 불러올 수 없습니다</div>
+                );
+
+              case 'list':
+                return (
+                  <div className="relative h-8 right-5" style={{ width: `${containerWidth}px` }}>
+                    {visibleUsers.map((user, index) => (
+                      <div
+                        key={user.id}
+                        className="absolute size-8 rounded-full border-2 border-white overflow-hidden bg-gray-200"
+                        style={{
+                          left: index * OVERLAP,
+                          zIndex: 10 - index,
+                        }}
+                      >
+                        {user.profileImage ? (
+                          <img
+                            src={user.profileImage}
+                            alt={user.nickname}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-xs text-white bg-gray-400">
+                            {user.nickname?.[0] ?? '?'}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                    {restUsers > 0 && (
+                      <div
+                        className="absolute flex items-center justify-center size-8 text-[10px] font-semibold text-gray-600 bg-gray-100 border-2 border-white rounded-full"
+                        style={{ left: visibleUsers.length * OVERLAP }}
+                      >
+                        +{restUsers}
                       </div>
                     )}
                   </div>
-                ))}
-
-                {restUsers > 0 && (
-                  <div
-                    className="absolute flex items-center justify-center size-8 text-[10px] font-semibold text-gray-600 bg-gray-100 border-2 border-white rounded-full"
-                    style={{ left: visibleUsers.length * OVERLAP }}
-                  >
-                    +{restUsers}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
+                );
+            }
+          })()}
         </div>
         <div className="flex gap-2 snap-x min-h-[44px] snap-mandatory scrollbar-hide pb-2 overflow-x-auto">
           {dateList.map((date) => {
@@ -189,12 +232,10 @@ export const TripDetailPage = () => {
               <Button
                 key={key}
                 onClick={() => setSelectedDate(key)}
-                className={`
-          flex-shrink-0 snap-start
-          px-4 py-2 rounded-full
-          transition cursor-pointer
-          ${isSelected ? 'bg-primary-base text-white' : 'bg-gray-100 text-gray-600'}
-        `}
+                className={clsx(
+                  'flex-shrink-0 snap-start px-4 py-2 rounded-full transition cursor-pointer',
+                  isSelected ? 'bg-primary-base text-white' : 'bg-gray-100 text-gray-600'
+                )}
               >
                 <div className="flex flex-col items-center">
                   <span className="text-sm font-medium">{formatDate(date, 'MM.DD (ddd)')}</span>
@@ -203,65 +244,81 @@ export const TripDetailPage = () => {
             );
           })}
         </div>
-        {isMapViewOpen ? (
-          <div className="w-full h-[450px]  rounded-lg">
-            <GoogleMapView events={filteredEvents ?? []} />
-          </div>
-        ) : (
-          <div>
-            {isAllEventsLoading ? (
-              <div className="py-20 text-center text-gray-400 flex">
-                <Loader2 className="size-4 text-primary-base animate-spin" /> 이벤트 불러오는 중...
-              </div>
-            ) : allEventsError ? (
-              <div className="py-20 text-center text-red-400">이벤트를 불러오지 못했습니다.</div>
-            ) : filteredEvents?.length === 0 ? (
-              <div className="py-20 text-center text-gray-400">이벤트가 없습니다. 추가해주세요</div>
-            ) : (
-              <div className="flex flex-col gap-3">
-                {filteredEvents?.map((event, index) => (
-                  <div key={event.eventId}>
-                    <div className="flex items-center space-x-4">
-                      <div className="flex flex-col items-center gap-1">
-                        <div className="flex items-center justify-center w-6 h-6 rounded-full bg-[#3ACC97] text-white text-xs font-bold">
-                          {index + 1}
+        {(() => {
+          switch (eventViewState) {
+            case 'map':
+              return (
+                <div className="w-full h-[450px] rounded-lg">
+                  <GoogleMapView events={filteredEvents} />
+                </div>
+              );
+
+            case 'loading':
+              return (
+                <div className="py-20 text-center text-gray-400 flex justify-center gap-2">
+                  <Loader2 className="size-4 text-primary-base animate-spin" />
+                  이벤트 불러오는 중...
+                </div>
+              );
+
+            case 'error':
+              return (
+                <div className="py-20 text-center text-red-400">이벤트를 불러오지 못했습니다.</div>
+              );
+
+            case 'empty':
+              return (
+                <div className="py-20 text-center text-gray-400">
+                  이벤트가 없습니다. 추가해주세요
+                </div>
+              );
+
+            case 'list':
+              return (
+                <div className="flex flex-col gap-3">
+                  {filteredEvents.map((event, index) => (
+                    <div key={event.eventId}>
+                      <div className="flex items-center space-x-4">
+                        <div className="flex flex-col items-center gap-1">
+                          <div className="flex items-center justify-center w-6 h-6 rounded-full bg-[#3ACC97] text-white text-xs font-bold">
+                            {index + 1}
+                          </div>
+                          <div className="text-[13px] font-semibold text-gray-500">
+                            {formatDate(event.startDate, 'HH:mm')}
+                          </div>
                         </div>
-                        <div className="text-[13px] font-semibold text-gray-500">
-                          {formatDate(event.startDate, 'HH:mm')}
-                        </div>
+                        <Link
+                          to={`/trips/${tripId}/events/${event.eventId}`}
+                          className="flex-1 p-3 px-5 space-y-2 bg-white border border-gray-200 rounded-lg shadow-lg"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="text-base font-semibold text-gray-900">
+                              {event.eventName}
+                            </div>
+                          </div>
+                          <div className="flex items-center justify-between text-sm text-gray-600">
+                            <div className="overflow-hidden text-ellipsis whitespace-nowrap max-w-28">
+                              {event.location.split(' ').slice(1, 4).join(' ')}
+                            </div>
+                            <div className="font-medium">
+                              {getTotal(event.cost.map((cost) => cost.value)).toLocaleString()}원
+                            </div>
+                          </div>
+                          <p className="pt-2 border-t border-gray-100 text-sm text-gray-500">
+                            {formatDate(event.startDate, 'YY. MM. DD')} ~
+                            {formatDate(event.endDate, 'YY. MM. DD')}
+                          </p>
+                        </Link>
                       </div>
-
-                      <Link
-                        to={`/trips/${tripId}/events/${event.eventId}`}
-                        className="flex-1 p-3 px-5 space-y-2 bg-white border border-gray-200 rounded-lg shadow-lg"
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="text-base font-semibold text-gray-900">
-                            {event.eventName}
-                          </div>
-                        </div>
-                        <div className="flex items-center justify-between text-sm text-gray-600">
-                          <div className="overflow-hidden text-ellipsis whitespace-nowrap max-w-28">
-                            {event.location.split(' ').slice(1, 4).join(' ')}
-                          </div>
-                          <div className="font-medium">
-                            {getTotal(event.cost.map((cost) => cost.value) || []).toLocaleString()}
-                            원
-                          </div>
-                        </div>
-
-                        <p className="pt-2 border-t border-gray-100 text-sm text-gray-500">
-                          {formatDate(event.startDate, 'YY. MM. DD')} ~
-                          {formatDate(event.endDate, 'YY. MM. DD')}
-                        </p>
-                      </Link>
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
+                  ))}
+                </div>
+              );
+
+            default:
+              return null;
+          }
+        })()}
       </section>
       <Button
         className="absolute bottom-6 right-4 z-50 bg-primary-base text-white p-3 rounded-full flex items-center gap-2 cursor-pointer shadow-lg shadow-primary-base/30 transition-transform active:scale-95"
