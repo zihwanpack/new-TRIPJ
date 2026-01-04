@@ -71,7 +71,7 @@ export const TripCreatePage = () => {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-dvh">
       <Header title="여행 추가하기" onClose={handleCloseForm} />
       <ProgressBar progress={step} steps={TRIP_CREATE_TOTAL_STEPS} />
       <FormProvider {...form}>

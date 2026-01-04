@@ -1,15 +1,16 @@
 import { Search, Loader2, X, UserPlus, Check } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
 import type { TripFormValues } from '../schemas/tripSchema.ts';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ChangeEvent } from 'react';
 import type { UserSummary } from '../types/user.ts';
-import { getSearchUsersApi } from '../api/user.ts';
 import { useDebounce } from '../hooks/useDebounce.tsx';
-import { useAuth } from '../hooks/useAuth.tsx';
-import { UserError } from '../errors/customErrors.ts';
+
 import { Button } from './Button.tsx';
 import { CTA } from './CTA.tsx';
 import { Input } from './Input.tsx';
+
+import { clearSearchedUsers, getSearchUsers, type UserState } from '../redux/slices/userSlice.ts';
+import { useDispatch, useSelector } from '../redux/hooks/useCustomRedux.tsx';
 
 interface TripCreateMembersStepProps {
   setStep: (step: number) => void;
@@ -17,51 +18,27 @@ interface TripCreateMembersStepProps {
 
 export const TripCreateMembersStep = ({ setStep }: TripCreateMembersStepProps) => {
   const { setValue, watch } = useFormContext<TripFormValues>();
+  const dispatch = useDispatch();
 
-  const { user } = useAuth();
+  const { searchedUsers, isSearchUsersLoading, searchUsersError } = useSelector(
+    (state: { user: UserState }) => state.user
+  );
 
   const members = watch('members') || [];
   const [searchValue, setSearchValue] = useState<string>('');
 
   const debouncedSearchValue = useDebounce(searchValue, 300);
 
-  const [users, setUsers] = useState<UserSummary[]>([]);
-  const [isSearchUsersLoading, setIsSearchUsersLoading] = useState(false);
-  const [searchUsersError, setSearchUsersError] = useState<UserError | null>(null);
   const [selectedMembers, setSelectedMembers] = useState<UserSummary[]>([]);
 
   useEffect(() => {
     if (!debouncedSearchValue.trim()) {
-      setUsers([]);
+      dispatch(clearSearchedUsers());
       return;
     }
-    let isActive = true;
-    const fetchSearchUsers = async () => {
-      try {
-        setIsSearchUsersLoading(true);
-        setSearchUsersError(null);
-        const data = await getSearchUsersApi(debouncedSearchValue);
-        if (isActive) {
-          const filteredUsers = data.filter((u) => u.email !== user?.email);
-          setUsers(filteredUsers);
-        }
-      } catch (err) {
-        if (isActive) {
-          console.error(err);
-          setSearchUsersError(err as UserError);
-        }
-      } finally {
-        if (isActive) {
-          setIsSearchUsersLoading(false);
-        }
-      }
-    };
 
-    fetchSearchUsers();
-    return () => {
-      isActive = false;
-    };
-  }, [debouncedSearchValue, user?.email]);
+    dispatch(getSearchUsers({ query: debouncedSearchValue }));
+  }, [debouncedSearchValue, dispatch]);
 
   const addMember = (user: UserSummary) => {
     if (!members.includes(user.email)) {
@@ -89,17 +66,17 @@ export const TripCreateMembersStep = ({ setStep }: TripCreateMembersStepProps) =
         <div className="flex items-center justify-start gap-3 border border-gray-300 rounded-lg px-4 py-3 focus-within:ring-2 focus-within:ring-primary-base focus-within:border-transparent transition-all bg-white">
           <Search className="size-5 text-gray-400" />
           <Input
-            containerClassName="min-w-4/5"
+            containerClassName="min-w-5/6"
             type="text"
             value={searchValue}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchValue(e.target.value)}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => setSearchValue(e.target.value)}
             placeholder="이메일로 검색"
           />
           {isSearchUsersLoading && <Loader2 className="size-5 text-primary-base animate-spin" />}
         </div>
-        {debouncedSearchValue && users && users.length > 0 && (
+        {debouncedSearchValue && searchedUsers && searchedUsers.length > 0 && (
           <div className="absolute top-full left-0 w-full mt-2 bg-white border border-gray-100 rounded-lg shadow-xl max-h-60 z-50">
-            {users.map((user) => {
+            {searchedUsers.map((user) => {
               const isAdded = members.includes(user.email);
               return (
                 <Button
@@ -130,14 +107,14 @@ export const TripCreateMembersStep = ({ setStep }: TripCreateMembersStepProps) =
         {searchValue &&
           debouncedSearchValue &&
           !isSearchUsersLoading &&
-          users &&
-          users.length === 0 && (
+          searchedUsers &&
+          searchedUsers.length === 0 && (
             <div className="absolute top-full left-0 w-full mt-2 bg-white border border-gray-100 rounded-lg shadow-md p-4 text-center text-gray-400 text-sm z-50">
               검색 결과가 없습니다.
             </div>
           )}
         {searchUsersError && (
-          <div className="text-red-500 text-sm mt-1 px-1">{searchUsersError.message}</div>
+          <div className="text-red-500 text-sm mt-1 px-1">{searchUsersError}</div>
         )}
       </div>
 

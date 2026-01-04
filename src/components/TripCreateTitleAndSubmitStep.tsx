@@ -1,11 +1,12 @@
 import { useFormContext } from 'react-hook-form';
 import type { TripFormValues } from '../schemas/tripSchema.ts';
-import { createTripApi } from '../api/trip.ts';
 import { useNavigate } from 'react-router-dom';
 import { TRIP_CREATE_STEP_KEY, TRIP_CREATE_STORAGE_KEY } from '../constants/trip.ts';
-import { useCreateAction } from '../hooks/useCreateAction.tsx';
 import { CTA } from './CTA.tsx';
 import { Input } from './Input.tsx';
+import { useDispatch, useSelector } from '../redux/hooks/useCustomRedux.tsx';
+import { createTrip, type TripState } from '../redux/slices/tripSlice.ts';
+import toast from 'react-hot-toast';
 
 interface TripCreateTitleAndSubmitStepProps {
   setStep: (step: number) => void;
@@ -19,22 +20,24 @@ export const TripCreateTitleAndSubmitStep = ({ setStep }: TripCreateTitleAndSubm
     formState: { errors },
   } = useFormContext<TripFormValues>();
 
+  const dispatch = useDispatch();
+  const { isCreateTripLoading, createTripError } = useSelector(
+    (state: { trip: TripState }) => state.trip
+  );
   const navigate = useNavigate();
   const title = watch('title');
   const isTitleStepValid = Boolean(title && title.trim().length > 0);
 
-  const {
-    execute,
-    isLoading: isCreateTripLoading,
-    error: createTripError,
-  } = useCreateAction(createTripApi);
-
   const handleCreateTrip = async () => {
     const formData = getValues();
-    const { id } = await execute(formData);
-    sessionStorage.removeItem(TRIP_CREATE_STEP_KEY);
-    sessionStorage.removeItem(TRIP_CREATE_STORAGE_KEY);
-    navigate(`/trips/${id}`);
+    const result = await dispatch(createTrip({ trip: formData }));
+    if (createTrip.fulfilled.match(result)) {
+      sessionStorage.removeItem(TRIP_CREATE_STEP_KEY);
+      sessionStorage.removeItem(TRIP_CREATE_STORAGE_KEY);
+      navigate(`/trips/${result.payload.id}`);
+    } else {
+      toast.error('여행 생성에 실패했습니다.');
+    }
   };
 
   return (
@@ -44,12 +47,17 @@ export const TripCreateTitleAndSubmitStep = ({ setStep }: TripCreateTitleAndSubm
         <p className="text-sm text-primary-base">필수</p>
       </div>
       <div className="mx-4 mt-6 flex items-center gap-3 border border-gray-300 rounded-lg px-4 py-3 focus-within:ring-2 focus-within:ring-primary-base focus-within:border-transparent transition-all bg-white">
-        <Input type="text" {...register('title')} placeholder="예) 서울 여행" />
+        <Input
+          containerClassName="flex-1"
+          type="text"
+          {...register('title')}
+          placeholder="예) 서울 여행"
+        />
       </div>
       <div className="mx-4 mt-1 min-h-[20px]">
         {errors.title && <p className="text-sm text-red-500 pl-1">{errors.title.message}</p>}
         {!errors.title && createTripError && (
-          <p className="text-sm text-red-500 pl-1">{createTripError.message}</p>
+          <p className="text-sm text-red-500 pl-1">{createTripError}</p>
         )}
       </div>
       <div className="flex-1" />
