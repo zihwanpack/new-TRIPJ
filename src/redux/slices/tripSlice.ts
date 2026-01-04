@@ -1,6 +1,8 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import type { Trip } from '../../types/trip.ts';
+import type { CreateTripRequest, Trip } from '../../types/trip.ts';
 import {
+  createTripApi,
+  deleteTripApi,
   getMyOnGoingTripApi,
   getMyPastTripsApi,
   getMyUpcomingTripsApi,
@@ -66,21 +68,51 @@ export const fetchAllMyTrips = createAsyncThunk<void, { id: number }, { rejectVa
   }
 );
 
+export const deleteTrip = createAsyncThunk<null, { id: number }, { rejectValue: string }>(
+  'trip/deleteTrip',
+  async ({ id }, { rejectWithValue }) => {
+    try {
+      await deleteTripApi({ id });
+      return null;
+    } catch (error) {
+      return rejectWithValue(String(error));
+    }
+  }
+);
+
+export const createTrip = createAsyncThunk<
+  Trip,
+  { trip: CreateTripRequest },
+  { rejectValue: string }
+>('trip/createTrip', async ({ trip }, { rejectWithValue }) => {
+  try {
+    return await createTripApi(trip);
+  } catch (error) {
+    return rejectWithValue(String(error));
+  }
+});
+
 export interface TripState {
   tripDetail: Trip | null;
   pastTrips: Trip[];
   ongoingTrip: Trip | null;
   upcomingTrips: Trip[];
+  deleteTrip: Trip | null;
+  createTrip: Trip | null;
 
   isTripDetailLoading: boolean;
   isTripPastLoading: boolean;
   isTripOngoingLoading: boolean;
   isTripUpcomingLoading: boolean;
+  isDeleteTripLoading: boolean;
+  isCreateTripLoading: boolean;
 
   tripDetailError: string | null;
   tripPastError: string | null;
   tripOngoingError: string | null;
   tripUpcomingError: string | null;
+  deleteTripError: string | null;
+  createTripError: string | null;
 }
 
 const initialState: TripState = {
@@ -88,16 +120,22 @@ const initialState: TripState = {
   pastTrips: [],
   ongoingTrip: null,
   upcomingTrips: [],
+  deleteTrip: null,
+  createTrip: null,
 
   isTripDetailLoading: false,
   isTripPastLoading: false,
   isTripOngoingLoading: false,
   isTripUpcomingLoading: false,
+  isDeleteTripLoading: false,
+  isCreateTripLoading: false,
 
   tripDetailError: null,
   tripPastError: null,
   tripOngoingError: null,
   tripUpcomingError: null,
+  deleteTripError: null,
+  createTripError: null,
 };
 
 export const tripSlice = createSlice({
@@ -159,6 +197,30 @@ export const tripSlice = createSlice({
     });
     builder.addCase(fetchPastTrips.pending, (state) => {
       state.isTripPastLoading = true;
+    });
+    // 여행 삭제
+    builder.addCase(deleteTrip.fulfilled, (state, action) => {
+      state.deleteTrip = action.payload;
+      state.isDeleteTripLoading = false;
+    });
+    builder.addCase(deleteTrip.rejected, (state, action) => {
+      state.isDeleteTripLoading = false;
+      state.deleteTripError = action.payload ?? null;
+    });
+    builder.addCase(deleteTrip.pending, (state) => {
+      state.isDeleteTripLoading = true;
+    });
+    // 여행 생성
+    builder.addCase(createTrip.fulfilled, (state, action) => {
+      state.createTrip = action.payload;
+      state.isCreateTripLoading = false;
+    });
+    builder.addCase(createTrip.rejected, (state, action) => {
+      state.isCreateTripLoading = false;
+      state.createTripError = action.payload ?? null;
+    });
+    builder.addCase(createTrip.pending, (state) => {
+      state.isCreateTripLoading = true;
     });
   },
 });
