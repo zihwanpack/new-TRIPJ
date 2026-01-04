@@ -68,12 +68,14 @@ export const getMyPastTripsCursorApi = async ({
   cursor,
   limit,
 }: GetMyPastTripsByCursorParam): Promise<GetMyPastTripsByCursorResponse['result']> => {
-  const cursorParam = cursor !== null ? `cursor=${cursor}&` : '';
   return requestHandler(
     () =>
-      authenticatedClient.get<GetMyPastTripsByCursorResponse>(
-        `/trips/user/${id}/past/cursor?${cursorParam}limit=${limit}`
-      ),
+      authenticatedClient.get<GetMyPastTripsByCursorResponse>(`/trips/user/${id}/past/cursor`, {
+        params: {
+          cursor,
+          limit,
+        },
+      }),
     TripError
   );
 };
@@ -83,11 +85,16 @@ export const getMyUpcomingTripsCursorApi = async ({
   cursor,
   limit,
 }: GetMyUpcomingTripsByCursorParam): Promise<GetMyUpcomingTripsByCursorResponse['result']> => {
-  const cursorParam = cursor !== null ? `cursor=${cursor}&` : '';
   return requestHandler(
     () =>
       authenticatedClient.get<GetMyUpcomingTripsByCursorResponse>(
-        `/trips/user/${id}/upcoming/cursor?${cursorParam}limit=${limit}`
+        `/trips/user/${id}/upcoming/cursor`,
+        {
+          params: {
+            cursor,
+            limit,
+          },
+        }
       ),
     TripError
   );
