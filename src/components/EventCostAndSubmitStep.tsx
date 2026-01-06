@@ -9,7 +9,7 @@ import { EVENT_CREATE_STEP_KEY, EVENT_CREATE_STORAGE_KEY } from '../constants/ev
 import { useNavigate, useParams } from 'react-router-dom';
 import { Input } from './Input.tsx';
 import { useDispatch, useSelector } from '../redux/hooks/useCustomRedux.tsx';
-import { createEvent, type EventState } from '../redux/slices/eventSlice.ts';
+import { createEvent, updateEvent, type EventState } from '../redux/slices/eventSlice.ts';
 import toast from 'react-hot-toast';
 import clsx from 'clsx';
 
@@ -17,9 +17,10 @@ const COST_CATEGORIES = ['식비', '교통비', '숙박비', '기타'];
 
 interface EventCostAndSubmitStepProps {
   setStep: (step: number) => void;
+  mode: 'create' | 'edit';
 }
 
-export const EventCostAndSubmitStep = ({ setStep }: EventCostAndSubmitStepProps) => {
+export const EventCostAndSubmitStep = ({ setStep, mode }: EventCostAndSubmitStepProps) => {
   const { watch, setValue, getValues } = useFormContext<EventFormValues>();
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const navigate = useNavigate();
@@ -27,9 +28,16 @@ export const EventCostAndSubmitStep = ({ setStep }: EventCostAndSubmitStepProps)
   const costs = watch('cost');
   const dispatch = useDispatch();
 
-  const { isCreateEventLoading, createEventError } = useSelector(
-    (state: { event: EventState }) => state.event
-  );
+  const {
+    isCreateEventLoading,
+    createEventError,
+    eventDetail,
+    isUpdateEventLoading,
+    updateEventError,
+  } = useSelector((state: { event: EventState }) => state.event);
+
+  const isLoading = mode === 'create' ? isCreateEventLoading : isUpdateEventLoading;
+  const error = mode === 'create' ? createEventError : updateEventError;
 
   const addCost = () => {
     setValue(
@@ -74,6 +82,22 @@ export const EventCostAndSubmitStep = ({ setStep }: EventCostAndSubmitStepProps)
       navigate(`/trips/${tripId}/events/${result.payload.eventId}`);
     } else {
       toast.error('이벤트 생성에 실패했습니다.');
+    }
+  };
+
+  const handleUpdateEvent = async () => {
+    const formData = getValues();
+    const result = await dispatch(
+      updateEvent({
+        id: eventDetail?.eventId ?? 0,
+        body: { ...formData, tripId: Number(tripId) },
+      })
+    );
+    if (updateEvent.fulfilled.match(result)) {
+      toast.success('이벤트 수정에 성공했습니다.');
+      navigate(`/trips/${tripId}/events/${eventDetail?.eventId}`);
+    } else {
+      toast.error('이벤트 수정에 실패했습니다.');
     }
   };
 
@@ -150,7 +174,7 @@ export const EventCostAndSubmitStep = ({ setStep }: EventCostAndSubmitStepProps)
         <Plus size={16} /> 경비 추가
       </Button>
       <div className="mx-4 mt-1 min-h-[20px]">
-        {createEventError && <p className="text-sm text-red-500 pl-1">{createEventError}</p>}
+        {error && <p className="text-sm text-red-500 pl-1">{error}</p>}
       </div>
       <div className="flex-1" />
 
@@ -159,8 +183,10 @@ export const EventCostAndSubmitStep = ({ setStep }: EventCostAndSubmitStepProps)
         currentStep={3}
         isLastStep={true}
         isNecessary={false}
-        isLoading={isCreateEventLoading}
-        onSubmit={handleCreateEvent}
+        isLoading={isLoading}
+        onSubmit={mode === 'create' ? handleCreateEvent : handleUpdateEvent}
+        previousButtonText="이전"
+        nextButtonText={mode === 'create' ? '추가하기' : '수정하기'}
       />
     </div>
   );

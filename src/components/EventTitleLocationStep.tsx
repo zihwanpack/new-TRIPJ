@@ -6,7 +6,7 @@ import type { EventFormValues } from '../schemas/eventSchema.ts';
 import { CTA } from './CTA.tsx';
 import { Input } from './Input.tsx';
 
-interface EventCreateTitleLocationStepProps {
+interface EventTitleLocationStepProps {
   setStep: (step: number) => void;
 }
 
@@ -15,7 +15,7 @@ interface PlaceSuggestionWithAddress {
   formattedAddress: string;
 }
 
-export const EventCreateTitleLocationStep = ({ setStep }: EventCreateTitleLocationStepProps) => {
+export const EventTitleLocationStep = ({ setStep }: EventTitleLocationStepProps) => {
   const {
     watch,
     formState: { errors },
@@ -171,7 +171,13 @@ export const EventCreateTitleLocationStep = ({ setStep }: EventCreateTitleLocati
         {errors.location && <p className="text-sm text-red-500 pl-1">{errors.location.message}</p>}
       </div>
       <div className="flex-1" />
-      <CTA isValid={isStep1Valid} setStep={setStep} currentStep={1} />
+      <CTA
+        isValid={isStep1Valid}
+        setStep={setStep}
+        currentStep={1}
+        previousButtonText="이전"
+        nextButtonText="다음"
+      />
     </div>
   );
 };
