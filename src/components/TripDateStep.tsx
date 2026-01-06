@@ -4,11 +4,11 @@ import { DayPicker } from 'react-day-picker';
 import { ko } from 'date-fns/locale';
 import type { TripFormValues } from '../schemas/tripSchema.ts';
 import { CTA } from './CTA.tsx';
-interface TripCreateDateStepProps {
+interface TripDateStepProps {
   setStep: (step: number) => void;
 }
 
-export const TripCreateDateStep = ({ setStep }: TripCreateDateStepProps) => {
+export const TripDateStep = ({ setStep }: TripDateStepProps) => {
   const { setValue, watch } = useFormContext<TripFormValues>();
 
   const startDate = watch('startDate');
@@ -91,7 +91,13 @@ export const TripCreateDateStep = ({ setStep }: TripCreateDateStepProps) => {
         }}
       />
       <div className="flex-1" />
-      <CTA isValid={isDateStepValid} setStep={setStep} currentStep={2} />
+      <CTA
+        isValid={isDateStepValid}
+        setStep={setStep}
+        currentStep={2}
+        previousButtonText="이전"
+        nextButtonText="다음"
+      />
     </div>
   );
 };

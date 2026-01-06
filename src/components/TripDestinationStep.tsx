@@ -9,11 +9,11 @@ import { Button } from './Button.tsx';
 import { CTA } from './CTA.tsx';
 import clsx from 'clsx';
 
-interface TripCreateDestinationStepProps {
+interface TripDestinationStepProps {
   setStep: (step: number) => void;
 }
 
-export const TripCreateDestinationStep = ({ setStep }: TripCreateDestinationStepProps) => {
+export const TripDestinationStep = ({ setStep }: TripDestinationStepProps) => {
   const { setValue, watch } = useFormContext<TripFormValues>();
   const [isRegionSelectOpen, setIsRegionSelectOpen] = useState<boolean>(false);
   const [isDestinationSelectOpen, setIsDestinationSelectOpen] = useState<boolean>(false);
@@ -126,7 +126,13 @@ export const TripCreateDestinationStep = ({ setStep }: TripCreateDestinationStep
         </div>
       </div>
       <div className="flex-1" />
-      <CTA isValid={isDestinationStepValid} setStep={setStep} currentStep={1} />
+      <CTA
+        isValid={isDestinationStepValid}
+        setStep={setStep}
+        currentStep={1}
+        previousButtonText="이전"
+        nextButtonText="다음"
+      />
     </div>
   );
 };

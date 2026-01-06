@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import type { CreateTripRequest, Trip } from '../../types/trip.ts';
+import type { CreateTripRequest, Trip, UpdateTripRequest } from '../../types/trip.ts';
 import {
   createTripApi,
   deleteTripApi,
@@ -7,6 +7,7 @@ import {
   getMyPastTripsApi,
   getMyUpcomingTripsApi,
   getTripDetailApi,
+  updateTripApi,
 } from '../../api/trip.ts';
 
 export const fetchTripDetail = createAsyncThunk<Trip, { id: number }, { rejectValue: string }>(
@@ -82,16 +83,27 @@ export const deleteTrip = createAsyncThunk<null, { id: number }, { rejectValue: 
 
 export const createTrip = createAsyncThunk<
   Trip,
-  { trip: CreateTripRequest },
+  { body: CreateTripRequest },
   { rejectValue: string }
->('trip/createTrip', async ({ trip }, { rejectWithValue }) => {
+>('trip/createTrip', async ({ body }, { rejectWithValue }) => {
   try {
-    return await createTripApi(trip);
+    return await createTripApi(body);
   } catch (error) {
     return rejectWithValue(String(error));
   }
 });
 
+export const updateTrip = createAsyncThunk<
+  Trip,
+  { id: number; body: UpdateTripRequest },
+  { rejectValue: string }
+>('trip/updateTrip', async ({ id, body }, { rejectWithValue }) => {
+  try {
+    return await updateTripApi({ id, body });
+  } catch (error) {
+    return rejectWithValue(String(error));
+  }
+});
 export interface TripState {
   tripDetail: Trip | null;
   pastTrips: Trip[];
@@ -99,6 +111,7 @@ export interface TripState {
   upcomingTrips: Trip[];
   deleteTrip: Trip | null;
   createTrip: Trip | null;
+  updateTrip: Trip | null;
 
   isTripDetailLoading: boolean;
   isTripPastLoading: boolean;
@@ -106,6 +119,7 @@ export interface TripState {
   isTripUpcomingLoading: boolean;
   isDeleteTripLoading: boolean;
   isCreateTripLoading: boolean;
+  isUpdateTripLoading: boolean;
 
   tripDetailError: string | null;
   tripPastError: string | null;
@@ -113,6 +127,7 @@ export interface TripState {
   tripUpcomingError: string | null;
   deleteTripError: string | null;
   createTripError: string | null;
+  updateTripError: string | null;
 }
 
 const initialState: TripState = {
@@ -122,6 +137,7 @@ const initialState: TripState = {
   upcomingTrips: [],
   deleteTrip: null,
   createTrip: null,
+  updateTrip: null,
 
   isTripDetailLoading: false,
   isTripPastLoading: false,
@@ -129,6 +145,7 @@ const initialState: TripState = {
   isTripUpcomingLoading: false,
   isDeleteTripLoading: false,
   isCreateTripLoading: false,
+  isUpdateTripLoading: false,
 
   tripDetailError: null,
   tripPastError: null,
@@ -136,6 +153,7 @@ const initialState: TripState = {
   tripUpcomingError: null,
   deleteTripError: null,
   createTripError: null,
+  updateTripError: null,
 };
 
 export const tripSlice = createSlice({
@@ -221,6 +239,18 @@ export const tripSlice = createSlice({
     });
     builder.addCase(createTrip.pending, (state) => {
       state.isCreateTripLoading = true;
+    });
+    // 여행 수정
+    builder.addCase(updateTrip.fulfilled, (state, action) => {
+      state.updateTrip = action.payload;
+      state.isUpdateTripLoading = false;
+    });
+    builder.addCase(updateTrip.rejected, (state, action) => {
+      state.isUpdateTripLoading = false;
+      state.updateTripError = action.payload ?? null;
+    });
+    builder.addCase(updateTrip.pending, (state) => {
+      state.isUpdateTripLoading = true;
     });
   },
 });

@@ -12,11 +12,11 @@ import { useDispatch, useSelector } from '../redux/hooks/useCustomRedux.tsx';
 import { fetchTripDetail, type TripState } from '../redux/slices/tripSlice.ts';
 import clsx from 'clsx';
 
-interface EventCreateDateTimeStepProps {
+interface EventDateTimeStepProps {
   setStep: (step: number) => void;
 }
 
-export const EventCreateDateTimeStep = ({ setStep }: EventCreateDateTimeStepProps) => {
+export const EventDateTimeStep = ({ setStep }: EventDateTimeStepProps) => {
   const { watch, setValue } = useFormContext<EventFormValues>();
   const { tripId } = useParams();
   const dispatch = useDispatch();
@@ -149,7 +149,13 @@ export const EventCreateDateTimeStep = ({ setStep }: EventCreateDateTimeStepProp
         />
       )}
       <div className="flex-1" />
-      <CTA isValid={isDateStepValid} setStep={setStep} currentStep={2} />
+      <CTA
+        isValid={isDateStepValid}
+        setStep={setStep}
+        currentStep={2}
+        previousButtonText="이전"
+        nextButtonText="다음"
+      />
     </div>
   );
 };

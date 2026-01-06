@@ -37,3 +37,9 @@ export type GetEventDetailParam = {
 export type DeleteEventParam = GetEventDetailParam;
 
 export type DeleteEventResponse = SuccessResponse<null>;
+
+export type UpdateEventRequest = Omit<Event, 'eventId'>;
+export type UpdateEventParam = GetEventDetailParam & {
+  body: UpdateEventRequest;
+};
+export type UpdateEventResponse = SuccessResponse<Event>;

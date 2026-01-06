@@ -124,6 +124,10 @@ export const TripDetailPage = () => {
     }
   };
 
+  const editTripEventHandler = () => {
+    navigate(`/trips/${tripId}/edit`);
+  };
+
   const eventViewState = getEventViewStatus(
     isMapViewOpen,
     isAllEventsLoading,
@@ -153,7 +157,10 @@ export const TripDetailPage = () => {
             />
             {isDropdownOpen && (
               <div className="absolute top-10 right-0 w-40 bg-white rounded-lg shadow-lg border z-50">
-                <Button className="flex items-center gap-2 w-full text-left px-3 py-2 hover:bg-gray-100 cursor-pointer">
+                <Button
+                  className="flex items-center gap-2 w-full text-left px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                  onClick={editTripEventHandler}
+                >
                   <Pencil className="size-4 text-gray-500" />
                   <span>여행 정보 수정</span>
                 </Button>

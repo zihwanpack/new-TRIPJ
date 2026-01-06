@@ -4,8 +4,9 @@ import {
   deleteEventApi,
   getEventDetailApi,
   getMyAllEventsApi,
+  updateEventApi,
 } from '../../api/event.ts';
-import type { CreateEventRequest, Event } from '../../types/event.ts';
+import type { CreateEventRequest, Event, UpdateEventParam } from '../../types/event.ts';
 
 export const fetchAllEvents = createAsyncThunk<
   Event[],
@@ -52,21 +53,35 @@ export const createEvent = createAsyncThunk<Event, CreateEventRequest, { rejectV
     }
   }
 );
+
+export const updateEvent = createAsyncThunk<Event, UpdateEventParam, { rejectValue: string }>(
+  'events/updateEvent',
+  async ({ id, body }, { rejectWithValue }) => {
+    try {
+      return await updateEventApi({ id, body });
+    } catch (error) {
+      return rejectWithValue(String(error));
+    }
+  }
+);
 export interface EventState {
   eventDetail: Event | null;
   allEvents: Event[];
   deleteEvent: Event | null;
   createEvent: Event | null;
+  updateEvent: Event | null;
 
   isAllEventsLoading: boolean;
   isEventDetailLoading: boolean;
   isDeleteEventLoading: boolean;
   isCreateEventLoading: boolean;
+  isUpdateEventLoading: boolean;
 
   allEventsError: string | null;
   eventDetailError: string | null;
   deleteEventError: string | null;
   createEventError: string | null;
+  updateEventError: string | null;
 }
 
 const initialState: EventState = {
@@ -74,16 +89,19 @@ const initialState: EventState = {
   allEvents: [],
   deleteEvent: null,
   createEvent: null,
+  updateEvent: null,
 
   isAllEventsLoading: false,
   isEventDetailLoading: false,
   isDeleteEventLoading: false,
   isCreateEventLoading: false,
+  isUpdateEventLoading: false,
 
   allEventsError: null,
   eventDetailError: null,
   deleteEventError: null,
   createEventError: null,
+  updateEventError: null,
 };
 
 export const eventSlice = createSlice({
@@ -142,6 +160,18 @@ export const eventSlice = createSlice({
     });
     builder.addCase(createEvent.pending, (state) => {
       state.isCreateEventLoading = true;
+    });
+    // 이벤트 수정
+    builder.addCase(updateEvent.fulfilled, (state, action) => {
+      state.updateEvent = action.payload;
+      state.isUpdateEventLoading = false;
+    });
+    builder.addCase(updateEvent.rejected, (state, action) => {
+      state.isUpdateEventLoading = false;
+      state.updateEventError = action.payload ?? null;
+    });
+    builder.addCase(updateEvent.pending, (state) => {
+      state.isUpdateEventLoading = true;
     });
   },
 });

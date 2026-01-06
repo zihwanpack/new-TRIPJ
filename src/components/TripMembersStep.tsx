@@ -1,36 +1,62 @@
 import { Search, Loader2, X, UserPlus, Check } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
 import type { TripFormValues } from '../schemas/tripSchema.ts';
-import { useEffect, useState, type ChangeEvent } from 'react';
+import { useEffect, useMemo, useState, type ChangeEvent } from 'react';
 import type { UserSummary } from '../types/user.ts';
 import { useDebounce } from '../hooks/useDebounce.tsx';
-
 import { Button } from './Button.tsx';
 import { CTA } from './CTA.tsx';
 import { Input } from './Input.tsx';
-
-import { clearSearchedUsers, getSearchUsers, type UserState } from '../redux/slices/userSlice.ts';
+import {
+  clearSearchedUsers,
+  clearUsersByEmails,
+  getSearchUsers,
+  getUsersByEmails,
+  type UserState,
+} from '../redux/slices/userSlice.ts';
 import { useDispatch, useSelector } from '../redux/hooks/useCustomRedux.tsx';
 import clsx from 'clsx';
+import type { TripState } from '../redux/slices/tripSlice.ts';
 
-interface TripCreateMembersStepProps {
+interface TripMembersStepProps {
   setStep: (step: number) => void;
 }
 
-export const TripCreateMembersStep = ({ setStep }: TripCreateMembersStepProps) => {
+export const TripMembersStep = ({ setStep }: TripMembersStepProps) => {
   const { setValue, watch } = useFormContext<TripFormValues>();
   const dispatch = useDispatch();
 
-  const { searchedUsers, isSearchUsersLoading, searchUsersError } = useSelector(
-    (state: { user: UserState }) => state.user
+  const { user: userState, trip: tripState } = useSelector(
+    (state: { user: UserState; trip: TripState }) => ({
+      user: state.user,
+      trip: state.trip,
+    })
   );
 
-  const members = watch('members') || [];
-  const [searchValue, setSearchValue] = useState<string>('');
+  const { searchedUsers, isSearchUsersLoading, searchUsersError, usersByEmails } = userState;
+  const { tripDetail } = tripState;
 
+  const members = watch('members');
+  const [searchValue, setSearchValue] = useState<string>('');
+  const [locallyAddedUsers, setLocallyAddedUsers] = useState<UserSummary[]>([]);
   const debouncedSearchValue = useDebounce(searchValue, 300);
 
-  const [selectedMembers, setSelectedMembers] = useState<UserSummary[]>([]);
+  useEffect(() => {
+    if (!tripDetail?.members?.length) return;
+    dispatch(getUsersByEmails(tripDetail.members));
+
+    return () => {
+      dispatch(clearUsersByEmails());
+    };
+  }, [tripDetail?.members]);
+
+  const selectedMembers = useMemo(() => {
+    const allUsers = [...usersByEmails, ...locallyAddedUsers];
+
+    return members.map((email) => {
+      return allUsers.find((user) => user.email === email);
+    });
+  }, [usersByEmails, locallyAddedUsers, members]);
 
   useEffect(() => {
     if (!debouncedSearchValue.trim()) {
@@ -44,17 +70,18 @@ export const TripCreateMembersStep = ({ setStep }: TripCreateMembersStepProps) =
   const addMember = (user: UserSummary) => {
     if (!members.includes(user.email)) {
       setValue('members', [...members, user.email]);
-      setSelectedMembers((prev) => [...prev, user]);
+
+      setLocallyAddedUsers((prev) => [...prev, user]);
     }
     setSearchValue('');
+    dispatch(clearSearchedUsers());
   };
+
   const removeMember = (email: string) => {
     setValue(
       'members',
       members.filter((m) => m !== email)
     );
-
-    setSelectedMembers((prev) => prev.filter((u) => u.email !== email));
   };
   return (
     <div className="flex flex-col h-full">
@@ -125,13 +152,13 @@ export const TripCreateMembersStep = ({ setStep }: TripCreateMembersStepProps) =
       <div className="mx-4 mt-80 flex flex-wrap gap-2">
         {selectedMembers.map((member) => (
           <div
-            key={member.email}
+            key={member?.email}
             className="flex items-center gap-1 pl-3 pr-2 py-1.5 bg-primary-dark text-white rounded-full text-sm font-medium border border-blue-100 cursor-pointer"
           >
-            <span>{member.nickname}</span>
+            <span>{member?.nickname}</span>
             <Button
               type="button"
-              onClick={() => removeMember(member.email)}
+              onClick={() => removeMember(member?.email ?? '')}
               className="p-0.5 hover:bg-primary-dark rounded-full transition-colors cursor-pointer"
             >
               <X size={14} />
@@ -142,7 +169,13 @@ export const TripCreateMembersStep = ({ setStep }: TripCreateMembersStepProps) =
 
       <div className="flex-1" />
 
-      <CTA setStep={setStep} currentStep={3} isNecessary={false} />
+      <CTA
+        setStep={setStep}
+        currentStep={3}
+        isNecessary={false}
+        previousButtonText="이전"
+        nextButtonText="다음"
+      />
     </div>
   );
 };
