@@ -11,6 +11,8 @@ import { EventCreatePage } from '../pages/EventCreatePage.tsx';
 import { EventDetailPage } from '../pages/EventDetailPage.tsx';
 import { MyTripsPage } from '../pages/MyTripsPage.tsx';
 import { Mypage } from '../pages/Mypage.tsx';
+import { TripEditPage } from '../pages/TripEditPage.tsx';
+import { EventEditPage } from '../pages/EventEditPage.tsx';
 
 const publicRoutes: RouteObject[] = [
   {
@@ -45,12 +47,21 @@ const protectedRoutes: RouteObject[] = [
             element: <TripCreatePage />,
           },
           {
+            path: 'trips/:tripId/edit',
+            element: <TripEditPage />,
+          },
+          {
             path: 'trips/:tripId',
             element: <TripDetailPage />,
           },
           {
             path: 'trips/:tripId/events/new',
             element: <EventCreatePage />,
+          },
+
+          {
+            path: 'trips/:tripId/events/:eventId/edit',
+            element: <EventEditPage />,
           },
           {
             path: 'trips/:tripId/events/:eventId',

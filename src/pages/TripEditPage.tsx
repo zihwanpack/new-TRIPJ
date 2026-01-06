@@ -8,7 +8,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { FullscreenLoader } from '../components/FullscreenLoader.tsx';
 
-const TripEditPage = () => {
+export const TripEditPage = () => {
   const navigate = useNavigate();
   const { tripId } = useParams();
   const [step, setStep] = useState(1);
@@ -76,5 +76,3 @@ const TripEditPage = () => {
     />
   );
 };
-
-export default TripEditPage;
