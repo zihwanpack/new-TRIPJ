@@ -9,6 +9,8 @@ import type {
   GetEventDetailParam,
   DeleteEventParam,
   DeleteEventResponse,
+  UpdateEventResponse,
+  UpdateEventParam,
 } from '../types/event.ts';
 import { EventError } from '../errors/customErrors.ts';
 import { requestHandler } from './util/requestHandler.ts';
@@ -20,9 +22,9 @@ export const getMyAllEventsApi = async ({ tripId }: GetMyAllEventsParam): Promis
   );
 };
 
-export const createEventApi = async (event: CreateEventRequest): Promise<Event> => {
+export const createEventApi = async (body: CreateEventRequest): Promise<Event> => {
   return requestHandler(
-    () => authenticatedClient.post<CreateEventResponse>('/event', event),
+    () => authenticatedClient.post<CreateEventResponse>('/event', body),
     EventError
   );
 };
@@ -37,6 +39,13 @@ export const getEventDetailApi = async ({ id }: GetEventDetailParam): Promise<Ev
 export const deleteEventApi = async ({ id }: DeleteEventParam): Promise<null> => {
   return requestHandler(
     () => authenticatedClient.delete<DeleteEventResponse>(`/event/${id}`),
+    EventError
+  );
+};
+
+export const updateEventApi = async ({ id, body }: UpdateEventParam): Promise<Event> => {
+  return requestHandler(
+    () => authenticatedClient.patch<UpdateEventResponse>(`/event/${id}`, body),
     EventError
   );
 };

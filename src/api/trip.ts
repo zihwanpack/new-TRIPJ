@@ -17,13 +17,15 @@ import type {
   GetTripDetailParam,
   GetTripDetailResponse,
   Trip,
+  UpdateTripParam,
+  UpdateTripResponse,
 } from '../types/trip.ts';
 import { TripError } from '../errors/customErrors.ts';
 import { requestHandler } from './util/requestHandler.ts';
 
-export const createTripApi = async (trip: CreateTripRequest): Promise<Trip> => {
+export const createTripApi = async (body: CreateTripRequest): Promise<Trip> => {
   return requestHandler(
-    () => authenticatedClient.post<CreateTripResponse>('/trips', trip),
+    () => authenticatedClient.post<CreateTripResponse>('/trips', body),
     TripError
   );
 };
@@ -96,6 +98,13 @@ export const getMyUpcomingTripsCursorApi = async ({
           },
         }
       ),
+    TripError
+  );
+};
+
+export const updateTripApi = async ({ id, body }: UpdateTripParam): Promise<Trip> => {
+  return requestHandler(
+    () => authenticatedClient.patch<UpdateTripResponse>(`/trips/${id}`, body),
     TripError
   );
 };
