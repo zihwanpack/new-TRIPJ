@@ -138,16 +138,16 @@ export const TripDetailPage = () => {
   const memberViewState = getMemberViewStatus(isUsersByEmailsLoading, Boolean(usersByEmailsError));
 
   return (
-    <div className="flex flex-col h-dvh overflow-hidden relative">
+    <div className="flex flex-col h-dvh overflow-hidden relative bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
       <Header title="여행 상세" onClose={() => navigate('/')} />
       <section className="flex flex-col gap-3 mt-4 mx-4 flex-1 overflow-y-auto scrollbar-hide pb-10">
         <div className="flex justify-between gap-2 w-full">
-          <h1 className="text-xl font-semibold ">{title}</h1>
+          <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">{title}</h1>
           <div className="flex items-center gap-2 relative">
             <MapPin
               className={clsx(
                 'size-6 cursor-pointer transition-colors duration-200',
-                isMapViewOpen ? 'text-primary-base' : 'text-gray-400'
+                isMapViewOpen ? 'text-primary-base' : 'text-gray-400 dark:text-gray-500'
               )}
               onClick={() => setIsMapViewOpen((prev) => !prev)}
             />
@@ -156,15 +156,15 @@ export const TripDetailPage = () => {
               onClick={() => setIsDropdownOpen((prev) => !prev)}
             />
             {isDropdownOpen && (
-              <div className="absolute top-10 right-0 w-40 bg-white rounded-lg shadow-lg border z-50">
+              <div className="absolute top-10 right-0 w-40 bg-white dark:bg-slate-900 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
                 <Button
-                  className="flex items-center gap-2 w-full text-left px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                  className="flex items-center gap-2 w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
                   onClick={editTripEventHandler}
                 >
                   <Pencil className="size-4 text-gray-500" />
                   <span>여행 정보 수정</span>
                 </Button>
-                <Button className="flex items-center gap-2 w-full text-left px-3 py-2 hover:bg-red-50 text-red-500 cursor-pointer">
+                <Button className="flex items-center gap-2 w-full text-left px-3 py-2 hover:bg-red-50 dark:hover:bg-red-950/40 text-red-500 cursor-pointer">
                   <Trash className="size-4" onClick={handleDeleteTrip} />
                   <span>여행 삭제</span>
                 </Button>
@@ -173,20 +173,26 @@ export const TripDetailPage = () => {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Calendar className="size-4 text-gray-400" />
-          <span className=" text-gray-400">
+          <Calendar className="size-4 text-gray-400 dark:text-gray-500" />
+          <span className=" text-gray-400 dark:text-gray-500">
             {formatDate(startDate, 'YYYY. MM. DD')} - {formatDate(endDate, 'YYYY. MM. DD')}
           </span>
         </div>
         <div className="flex items-center justify-between w-full">
           <div className="flex items-center gap-2">
-            <DollarSign className="size-4 text-gray-400" />
-            <span className=" text-gray-400">{totalCost?.toLocaleString()} 원</span>
+            <DollarSign className="size-4 text-gray-400 dark:text-gray-500" />
+            <span className=" text-gray-400 dark:text-gray-500">
+              {totalCost?.toLocaleString()} 원
+            </span>
           </div>
           {(() => {
             switch (memberViewState) {
               case 'loading':
-                return <div className="text-xs h-8 text-gray-400">멤버 불러오는 중...</div>;
+                return (
+                  <div className="text-xs h-8 text-gray-400 dark:text-gray-500">
+                    멤버 불러오는 중...
+                  </div>
+                );
 
               case 'error':
                 return (
@@ -199,7 +205,7 @@ export const TripDetailPage = () => {
                     {visibleUsers.map((user, index) => (
                       <div
                         key={user.id}
-                        className="absolute size-8 rounded-full border-2 border-white overflow-hidden bg-gray-200"
+                        className="absolute size-8 rounded-full border-2 border-white dark:border-slate-900 overflow-hidden bg-gray-200 dark:bg-gray-700"
                         style={{
                           left: index * OVERLAP,
                           zIndex: 10 - index,
@@ -220,7 +226,7 @@ export const TripDetailPage = () => {
                     ))}
                     {restUsers > 0 && (
                       <div
-                        className="absolute flex items-center justify-center size-8 text-[10px] font-semibold text-gray-600 bg-gray-100 border-2 border-white rounded-full"
+                        className="absolute flex items-center justify-center size-8 text-[10px] font-semibold text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 border-2 border-white dark:border-slate-900 rounded-full"
                         style={{ left: visibleUsers.length * OVERLAP }}
                       >
                         +{restUsers}
@@ -241,7 +247,9 @@ export const TripDetailPage = () => {
                 onClick={() => setSelectedDate(key)}
                 className={clsx(
                   'flex-shrink-0 snap-start px-4 py-2 rounded-full transition cursor-pointer',
-                  isSelected ? 'bg-primary-base text-white' : 'bg-gray-100 text-gray-600'
+                  isSelected
+                    ? 'bg-primary-base text-white'
+                    : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300'
                 )}
               >
                 <div className="flex flex-col items-center">
@@ -255,14 +263,14 @@ export const TripDetailPage = () => {
           switch (eventViewState) {
             case 'map':
               return (
-                <div className="w-full h-[450px] rounded-lg">
+                <div className="w-full h-[450px] rounded-lg overflow-hidden">
                   <GoogleMapView events={filteredEvents} />
                 </div>
               );
 
             case 'loading':
               return (
-                <div className="py-20 text-center text-gray-400 flex justify-center gap-2">
+                <div className="py-20 text-center text-gray-400 dark:text-gray-500 flex justify-center gap-2">
                   <Loader2 className="size-4 text-primary-base animate-spin" />
                   이벤트 불러오는 중...
                 </div>
@@ -275,7 +283,7 @@ export const TripDetailPage = () => {
 
             case 'empty':
               return (
-                <div className="py-20 text-center text-gray-400">
+                <div className="py-20 text-center text-gray-400 dark:text-gray-500">
                   이벤트가 없습니다. 추가해주세요
                 </div>
               );
@@ -290,20 +298,20 @@ export const TripDetailPage = () => {
                           <div className="flex items-center justify-center w-6 h-6 rounded-full bg-[#3ACC97] text-white text-xs font-bold">
                             {index + 1}
                           </div>
-                          <div className="text-[13px] font-semibold text-gray-500">
+                          <div className="text-[13px] font-semibold text-gray-500 dark:text-gray-400">
                             {formatDate(event.startDate, 'HH:mm')}
                           </div>
                         </div>
                         <Link
                           to={`/trips/${tripId}/events/${event.eventId}`}
-                          className="flex-1 p-3 px-5 space-y-2 bg-white border border-gray-200 rounded-lg shadow-lg"
+                          className="flex-1 p-3 px-5 space-y-2 bg-white dark:bg-slate-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg"
                         >
                           <div className="flex items-center justify-between">
-                            <div className="text-base font-semibold text-gray-900">
+                            <div className="text-base font-semibold text-gray-900 dark:text-gray-100">
                               {event.eventName}
                             </div>
                           </div>
-                          <div className="flex items-center justify-between text-sm text-gray-600">
+                          <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-300">
                             <div className="overflow-hidden text-ellipsis whitespace-nowrap max-w-28">
                               {event.location.split(' ').slice(1, 4).join(' ')}
                             </div>
@@ -311,7 +319,7 @@ export const TripDetailPage = () => {
                               {getTotal(event.cost.map((cost) => cost.value)).toLocaleString()}원
                             </div>
                           </div>
-                          <p className="pt-2 border-t border-gray-100 text-sm text-gray-500">
+                          <p className="pt-2 border-t border-gray-100 dark:border-gray-700 text-sm text-gray-500 dark:text-gray-400">
                             {formatDate(event.startDate, 'YY. MM. DD')} ~
                             {formatDate(event.endDate, 'YY. MM. DD')}
                           </p>

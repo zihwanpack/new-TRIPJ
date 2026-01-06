@@ -18,7 +18,7 @@ export const Modal = ({ open, onClose, children, closeOnBackdrop = true }: Modal
         onClick={closeOnBackdrop ? onClose : undefined}
       />
 
-      <div className="relative z-10 w-[90%] max-w-sm rounded-2xl bg-white p-6 shadow-xl">
+      <div className="relative z-10 w-[90%] max-w-sm rounded-2xl bg-white dark:bg-slate-900 p-6 shadow-xl dark:shadow-slate-900/80 text-gray-900 dark:text-gray-100">
         {children}
       </div>
     </div>,

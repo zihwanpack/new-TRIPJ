@@ -4,6 +4,7 @@ import { AuthProvider } from '../context/AuthContext.tsx';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { store } from '../redux/store.ts';
 import { Provider as ReduxProvider } from 'react-redux';
+import { ThemeProvider } from '../context/ThemeContext.tsx';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -18,12 +19,14 @@ export const Provider = ({ children }: PropsWithChildren) => {
   return (
     <QueryClientProvider client={queryClient}>
       <ReduxProvider store={store}>
-        <AuthProvider>
-          {children}
-          {import.meta.env.VITE_ENV === 'development' && (
-            <ReactQueryDevtools buttonPosition="bottom-left" initialIsOpen={false} />
-          )}
-        </AuthProvider>
+        <ThemeProvider defaultTheme="dark" storageKey="theme-storage-key">
+          <AuthProvider>
+            {children}
+            {import.meta.env.VITE_ENV === 'development' && (
+              <ReactQueryDevtools buttonPosition="bottom-left" initialIsOpen={false} />
+            )}
+          </AuthProvider>
+        </ThemeProvider>
       </ReduxProvider>
     </QueryClientProvider>
   );

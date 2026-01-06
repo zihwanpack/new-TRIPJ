@@ -62,7 +62,7 @@ export const TripTitleAndSubmitStep = ({ setStep, mode }: TripTitleAndSubmitStep
         <h1 className="text-xl font-semibold">여행의 이름을 적어주세요</h1>
         <p className="text-sm text-primary-base">필수</p>
       </div>
-      <div className="mx-4 mt-6 flex items-center gap-3 border border-gray-300 rounded-lg px-4 py-3 focus-within:ring-2 focus-within:ring-primary-base focus-within:border-transparent transition-all bg-white">
+      <div className="mx-4 mt-6 flex items-center gap-3 border border-gray-300 rounded-lg px-4 py-3 focus-within:ring-2 focus-within:ring-primary-base focus-within:border-transparent transition-all bg-white dark:bg-slate-900">
         <Input
           containerClassName="flex-1"
           type="text"

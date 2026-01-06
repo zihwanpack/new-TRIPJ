@@ -26,7 +26,7 @@ export const TripFormTemplate = ({
   mode,
 }: TripFormTemplateProps) => {
   return (
-    <div className="flex flex-col h-dvh">
+    <div className="flex flex-col h-dvh bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
       <Header title={headerTitle} onClose={handleCloseForm} />
       <ProgressBar progress={step} steps={TRIP_FORM_TOTAL_STEPS} />
       <FormProvider {...form}>

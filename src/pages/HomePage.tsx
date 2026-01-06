@@ -44,11 +44,13 @@ export const HomePage = () => {
 
   const DEFAULT_TRIP_IMAGE = TRIP_IMAGE_PATHS.beach;
   return (
-    <div className="flex flex-col justify-between h-dvh overflow-hidden">
+    <div className="flex flex-col justify-between h-dvh overflow-hidden bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
       <div className="flex flex-col justify-between h-full mx-3">
         <div className="flex flex-col h-10 mt-3">
           <p className="text-xl font-semibold text-primary-base">{user?.nickname}님</p>
-          <p className="text-xl font-semibold">{welcomeMessage}</p>
+          <p className="text-xl font-semibold text-slate-900 dark:text-slate-100">
+            {welcomeMessage}
+          </p>
         </div>
         {tripOngoingError ? (
           <div className="flex flex-col items-center justify-center ">

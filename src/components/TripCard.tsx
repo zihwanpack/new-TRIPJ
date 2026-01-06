@@ -65,11 +65,11 @@ export const TripCard = ({
         onClick={onClick}
         className={clsx(
           'flex flex-col items-center justify-center gap-4',
-          'border-dashed border-2 border-gray-300 hover:bg-gray-50 transition-colors',
+          'border-dashed border-2 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors',
           cardStyles.container
         )}
       >
-        <p className="text-center text-gray-600 font-medium text-sm">
+        <p className="text-center text-gray-600 dark:text-gray-300 font-medium text-sm">
           새로운 여행을 <br />
           시작해보세요.
         </p>
@@ -84,12 +84,12 @@ export const TripCard = ({
         onClick={onClick}
         className={clsx(
           'flex items-center gap-4',
-          'bg-white border border-gray-200 shadow-sm',
+          'bg-white dark:bg-slate-900 border border-gray-200 dark:border-gray-700 shadow-sm',
           'rounded-2xl px-4',
           cardStyles.container
         )}
       >
-        <div className="size-20 rounded-xl overflow-hidden bg-gray-200 shrink-0">
+        <div className="size-20 rounded-xl overflow-hidden bg-gray-200 dark:bg-gray-700 shrink-0">
           <img
             src={tripImage}
             alt={`${title} 여행 이미지`}
@@ -98,15 +98,19 @@ export const TripCard = ({
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 min-w-0">
-            <p className={clsx(cardStyles.title, 'font-semibold text-gray-900')}>{title}</p>
+            <p className={clsx(cardStyles.title, 'font-semibold text-gray-900 dark:text-gray-100')}>
+              {title}
+            </p>
             {badgeText && (
-              <span className="shrink-0 px-2 py-0.5 rounded-full text-[12px] font-semibold bg-emerald-50 text-emerald-600">
+              <span className="shrink-0 px-2 py-0.5 rounded-full text-[12px] font-semibold bg-emerald-50 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-300">
                 {badgeText}
               </span>
             )}
           </div>
 
-          <p className={clsx(cardStyles.date, 'text-gray-500 mt-1 truncate')}>{date}</p>
+          <p className={clsx(cardStyles.date, 'text-gray-500 dark:text-gray-400 mt-1 truncate')}>
+            {date}
+          </p>
         </div>
       </Card>
     );

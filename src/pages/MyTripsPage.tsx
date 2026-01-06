@@ -149,9 +149,9 @@ export const MyTripsPage = () => {
   const tabUI = TRIP_TAB_UI[tabStatus];
 
   return (
-    <div className="flex flex-col h-dvh relative">
+    <div className="flex flex-col h-dvh relative bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
       <Header title="나의 여행" />
-      <div className="flex justify-around items-center p-2 bg-white shadow-sm z-10">
+      <div className="flex justify-around items-center p-2 bg-white dark:bg-slate-900 shadow-sm z-10">
         <Button
           onClick={() => setTabStatus('upcoming')}
           className={tabStatus === 'upcoming' ? 'text-primary-base font-bold' : 'text-gray-500'}
@@ -173,7 +173,7 @@ export const MyTripsPage = () => {
       </div>
 
       <div
-        className="flex-1 overflow-y-auto scrollbar-hide flex flex-col gap-4 p-4 bg-gray-100"
+        className="flex-1 overflow-y-auto scrollbar-hide flex flex-col gap-4 p-4 bg-gray-100 dark:bg-slate-900"
         ref={scrollContainerRef}
         onScroll={handleScroll}
       >
@@ -196,7 +196,7 @@ export const MyTripsPage = () => {
           </>
         )}
         {!isLoading && trips.length === 0 && !error && (
-          <div className="flex flex-col items-center justify-center h-full text-gray-400 mt-20">
+          <div className="flex flex-col items-center justify-center h-full text-gray-400 dark:text-gray-500 mt-20">
             <span className="text-4xl mb-2">✈️</span>
             <p>{tabUI.emptyText}</p>
             {tabUI.showButton && (
@@ -216,7 +216,7 @@ export const MyTripsPage = () => {
         <Button
           onClick={handleScrollToTop}
           className={clsx(
-            'absolute bottom-30 right-5 z-50 p-3 rounded-full shadow-lg bg-white border border-gray-100 transition-all duration-300 ease-in-out active:scale-90 active:bg-gray-50',
+            'absolute bottom-30 right-5 z-50 p-3 rounded-full shadow-lg bg-white dark:bg-slate-900 border border-gray-100 dark:border-gray-700 transition-all duration-300 ease-in-out active:scale-90 active:bg-gray-50 dark:active:bg-slate-800',
             showTopBtn
               ? 'opacity-100 translate-y-0'
               : 'opacity-0 translate-y-10 pointer-events-none'
@@ -232,7 +232,7 @@ export const MyTripsPage = () => {
 
 const TripCardSkeleton = () => {
   return (
-    <div className="h-[100px] flex items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border border-transparent shrink-0">
+    <div className="h-[100px] flex items-center gap-4 bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-transparent shrink-0">
       <Skeleton width="70px" height="70px" className="rounded-xl" />
       <div className="flex flex-col gap-2 flex-1">
         <Skeleton width="60%" height="1.25rem" className="rounded-md" />

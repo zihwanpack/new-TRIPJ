@@ -52,40 +52,46 @@ export const EventDetailPage = () => {
 
   if (isEventDetailLoading) return <FullscreenLoader />;
   if (eventDetailError)
-    return <div className="p-4 text-center text-gray-500">에러가 발생했습니다.</div>;
+    return (
+      <div className="p-4 text-center text-gray-500 dark:text-gray-400">에러가 발생했습니다.</div>
+    );
   if (!eventDetail)
-    return <div className="p-4 text-center text-gray-500">이벤트 데이터가 없습니다.</div>;
+    return (
+      <div className="p-4 text-center text-gray-500 dark:text-gray-400">
+        이벤트 데이터가 없습니다.
+      </div>
+    );
 
   const totalCost = getTotal(eventDetail.cost.map((c) => c.value) || []);
 
   return (
-    <div className="flex flex-col h-dvh bg-gray-50 relative">
+    <div className="flex flex-col h-dvh bg-gray-50 dark:bg-slate-950 relative text-gray-900 dark:text-gray-100">
       <Header title="일정 상세" onClose={() => navigate(`/trips/${tripId}`)} />
       <section className="flex-1 overflow-y-auto scrollbar-hide px-5 pt-4 pb-28 space-y-4">
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4 leading-tight">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm p-5">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4 leading-tight">
             {eventDetail.eventName}
           </h1>
 
-          <div className="bg-gray-50 rounded-xl p-4 space-y-3">
+          <div className="bg-gray-50 dark:bg-slate-800 rounded-xl p-4 space-y-3">
             <div className="flex items-center gap-3">
               <Calendar className="size-5 mt-0.5 shrink-0 text-primary-dark/80" />
               <div className="flex flex-col">
                 <span className="text-xs font-semibold text-gray-400 mb-0.5">날짜</span>
-                <span className="text-sm font-medium text-gray-700">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
                   {formatDate(eventDetail.startDate, 'YYYY. MM. DD')} ~{' '}
                   {formatDate(eventDetail.endDate, 'YYYY. MM. DD')}
                 </span>
               </div>
             </div>
 
-            <div className="w-full h-px bg-gray-200 border-dashed" />
+            <div className="w-full h-px bg-gray-200 dark:bg-gray-700 border-dashed" />
 
             <div className="flex items-center gap-3">
               <Clock className="size-5  mt-0.5 shrink-0 text-primary-dark/80" />
               <div className="flex flex-col">
                 <span className="text-xs font-semibold text-gray-400 mb-0.5">시간</span>
-                <span className="text-sm font-medium text-gray-700">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
                   {formatDate(eventDetail.startDate, 'HH:mm')} ~{' '}
                   {formatDate(eventDetail.endDate, 'HH:mm')}
                 </span>
@@ -94,52 +100,56 @@ export const EventDetailPage = () => {
           </div>
         </div>
 
-        <div className="flex bg-white rounded-2xl border border-gray-100 shadow-sm p-5 items-center gap-3">
-          <div className="bg-primary-base/10 p-2 rounded-full shrink-0 text-primary-dark">
+        <div className="flex bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm p-5 items-center gap-3">
+          <div className="bg-primary-base/10 dark:bg-primary-base/20 p-2 rounded-full shrink-0 text-primary-dark">
             <MapPin className="size-5 text-primary-dark" />
           </div>
           <div className="flex-1">
             <span className="text-xs font-semibold text-gray-400 block mb-1">장소</span>
-            <span className="text-base font-medium text-gray-800 leading-snug block">
+            <span className="text-base font-medium text-gray-800 dark:text-gray-100 leading-snug block">
               {eventDetail.location || '장소 정보 없음'}
             </span>
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-          <div className="p-5 border-b border-gray-100 bg-white">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden">
+          <div className="p-5 border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-slate-900">
             <div className="flex items-center gap-2 mb-1">
               <DollarSign className="size-5 text-primary-dark/80" />
-              <span className="text-sm font-semibold text-gray-500">예상 비용</span>
+              <span className="text-sm font-semibold text-gray-500 dark:text-gray-400">
+                예상 비용
+              </span>
             </div>
-            <p className="text-2xl font-bold text-gray-900 mt-1">
+            <p className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">
               {totalCost.toLocaleString()}{' '}
-              <span className="text-base font-medium text-gray-500">원</span>
+              <span className="text-base font-medium text-gray-500 dark:text-gray-400">원</span>
             </p>
           </div>
 
           {eventDetail.cost.length > 0 ? (
-            <div className="bg-gray-50/50 divide-y divide-gray-100/80">
+            <div className="bg-gray-50/50 dark:bg-slate-900 divide-y divide-gray-100/80 dark:divide-gray-700/80">
               {eventDetail.cost.map((cost, index) => (
                 <div key={index} className="flex items-center justify-between px-5 py-4">
-                  <span className="text-sm text-gray-600 font-medium">{cost.category}</span>
-                  <span className="text-sm font-semibold text-gray-900">
+                  <span className="text-sm text-gray-600 dark:text-gray-300 font-medium">
+                    {cost.category}
+                  </span>
+                  <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
                     {cost.value.toLocaleString()} 원
                   </span>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="p-5 text-center text-sm text-gray-400 bg-gray-50/50">
+            <div className="p-5 text-center text-sm text-gray-400 dark:text-gray-500 bg-gray-50/50 dark:bg-slate-900">
               입력된 상세 비용이 없습니다.
             </div>
           )}
         </div>
       </section>
 
-      <div className="absolute bottom-0 left-0 right-0 p-4 pb-8 bg-white/90 backdrop-blur-md border-t border-gray-100 flex gap-3 z-10">
+      <div className="absolute bottom-0 left-0 right-0 p-4 pb-8 bg-white/90 dark:bg-slate-950/95 backdrop-blur-md border-t border-gray-100 dark:border-gray-800 flex gap-3 z-10">
         <Button
-          className="flex-1 h-12 bg-primary-base/90 border border-gray-200 text-white hover:bg-primary-dark rounded-xl shadow-sm flex items-center justify-center gap-2 transition-colors"
+          className="flex-1 h-12 bg-primary-base/90 border border-gray-200 dark:border-primary-base/50 text-white hover:bg-primary-dark rounded-xl shadow-sm flex items-center justify-center gap-2 transition-colors"
           onClick={() => navigate(`/trips/${tripId}/events/${eventId}/edit`)}
         >
           <Pencil className="size-4" />
@@ -149,7 +159,7 @@ export const EventDetailPage = () => {
         </Button>
 
         <Button
-          className="flex-1 h-12 bg-red-500 hover:bg-red-600 text-white rounded-xl shadow-sm border border-red-100 flex items-center justify-center gap-2 transition-colors"
+          className="flex-1 h-12 bg-red-500 hover:bg-red-600 text-white rounded-xl shadow-sm border border-red-100 dark:border-red-500/40 flex items-center justify-center gap-2 transition-colors"
           onClick={deleteEventHandler}
         >
           <Trash className="size-4" />

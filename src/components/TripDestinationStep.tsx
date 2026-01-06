@@ -55,7 +55,9 @@ export const TripDestinationStep = ({ setStep }: TripDestinationStepProps) => {
   return (
     <div className="flex flex-col h-full">
       <div className="flex gap-2 items-center mt-4 mx-4 min-h-[70px]">
-        <h1 className="text-xl font-semibold">어디로 떠나시나요</h1>
+        <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
+          어디로 떠나시나요
+        </h1>
         <p className="text-sm text-primary-base">필수</p>
       </div>
       <div className="mb-4 mx-4 flex gap-2">
@@ -63,24 +65,24 @@ export const TripDestinationStep = ({ setStep }: TripDestinationStepProps) => {
           <Button
             type="button"
             onClick={() => setIsRegionSelectOpen(!isRegionSelectOpen)}
-            className="flex items-center gap-2 border-2 border-gray-200 hover:border-primary-base cursor-pointer p-2 rounded-md justify-between w-full"
+            className="flex items-center gap-2 border-2 border-gray-200 dark:border-gray-700 hover:border-primary-base dark:hover:border-primary-base cursor-pointer p-2 rounded-md justify-between w-full bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100"
           >
             <span>{currentRegionLabel}</span>
             <ChevronDownIcon className="size-5" />
           </Button>
           {isRegionSelectOpen && (
-            <div className="absolute z-10 top-full left-0 flex flex-col shadow-2xl w-full bg-white rounded-md p-1">
+            <div className="absolute z-10 top-full left-0 flex flex-col shadow-2xl w-full bg-white dark:bg-slate-900 rounded-md p-1 border border-gray-100 dark:border-gray-700">
               <Button
                 type="button"
                 onClick={() => handleDestinationTypeChange('domestic')}
-                className="mt-1 hover:bg-gray-100 block w-full text-left p-2 rounded-md"
+                className="mt-1 hover:bg-gray-100 dark:hover:bg-gray-800 block w-full text-left p-2 rounded-md text-slate-900 dark:text-slate-100"
               >
                 국내
               </Button>
               <Button
                 type="button"
                 onClick={() => handleDestinationTypeChange('overseas')}
-                className="block w-full text-left p-2 rounded-md hover:bg-gray-100"
+                className="block w-full text-left p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 text-slate-900 dark:text-slate-100"
               >
                 해외
               </Button>
@@ -95,19 +97,23 @@ export const TripDestinationStep = ({ setStep }: TripDestinationStepProps) => {
               setIsDestinationSelectOpen(!isDestinationSelectOpen);
             }}
             className={clsx(
-              'flex items-center justify-between gap-2 border-2 p-2 rounded-md transition w-full',
+              'flex items-center justify-between gap-2 border-2 p-2 rounded-md transition w-full bg-white dark:bg-slate-900',
               isDestinationSelectDisabled
-                ? 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed'
-                : 'border-primary-base cursor-pointer'
+                ? 'border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed'
+                : 'border-primary-base dark:border-primary-base cursor-pointer text-slate-900 dark:text-slate-100'
             )}
           >
-            <span className={destination ? 'text-black' : 'text-gray-400'}>
+            <span
+              className={clsx(
+                destination ? 'text-black dark:text-slate-100' : 'text-gray-400 dark:text-gray-500'
+              )}
+            >
               {getCurrentDestinationLabel()}
             </span>
             <ChevronDownIcon className="size-5" />
           </Button>
           {isDestinationSelectOpen && (
-            <div className="absolute z-10 top-full left-0 flex flex-col shadow-xl min-w-full bg-white rounded-md p-1 max-h-[200px] overflow-y-auto scrollbar-hide">
+            <div className="absolute z-10 top-full left-0 flex flex-col shadow-xl min-w-full bg-white dark:bg-slate-900 rounded-md p-1 max-h-[200px] overflow-y-auto scrollbar-hide border border-gray-100 dark:border-gray-700">
               {destinationOptions.map(([value, label]) => (
                 <Button
                   key={value}
@@ -116,7 +122,7 @@ export const TripDestinationStep = ({ setStep }: TripDestinationStepProps) => {
                     setValue('destination', value as DestinationKey);
                     setIsDestinationSelectOpen(false);
                   }}
-                  className="px-2 py-2 rounded-md hover:bg-gray-100 text-left cursor-pointer w-full"
+                  className="px-2 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 text-left cursor-pointer w-full text-slate-900 dark:text-slate-100"
                 >
                   {label}
                 </Button>

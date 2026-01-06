@@ -86,13 +86,17 @@ export const TripMembersStep = ({ setStep }: TripMembersStepProps) => {
   return (
     <div className="flex flex-col h-full">
       <div className="flex gap-2 flex-col justify-center mt-4 mx-4 min-h-[70px]">
-        <h1 className="text-xl font-semibold">누구와 함께 가나요?</h1>
-        <p className="text-sm text-gray-400">일행을 추가하면 여행 계획을 공유할 수 있어요</p>
+        <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
+          누구와 함께 가나요?
+        </h1>
+        <p className="text-sm text-gray-400 dark:text-gray-500">
+          일행을 추가하면 여행 계획을 공유할 수 있어요
+        </p>
       </div>
 
       <div className="mx-4 mt-6 relative z-20">
-        <div className="flex items-center justify-start gap-3 border border-gray-300 rounded-lg px-4 py-3 focus-within:ring-2 focus-within:ring-primary-base focus-within:border-transparent transition-all bg-white">
-          <Search className="size-5 text-gray-400" />
+        <div className="flex items-center justify-start gap-3 border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-3 focus-within:ring-2 focus-within:ring-primary-base focus-within:border-transparent transition-all bg-white dark:bg-slate-900">
+          <Search className="size-5 text-gray-400 dark:text-gray-500" />
           <Input
             containerClassName="min-w-5/6"
             type="text"
@@ -103,7 +107,7 @@ export const TripMembersStep = ({ setStep }: TripMembersStepProps) => {
           {isSearchUsersLoading && <Loader2 className="size-5 text-primary-base animate-spin" />}
         </div>
         {debouncedSearchValue && searchedUsers && searchedUsers.length > 0 && (
-          <div className="absolute top-full left-0 w-full mt-2 bg-white border border-gray-100 rounded-lg shadow-xl max-h-60 z-50">
+          <div className="absolute top-full left-0 w-full mt-2 bg-white dark:bg-slate-900 border border-gray-100 dark:border-gray-700 rounded-lg shadow-xl max-h-60 z-50">
             {searchedUsers.map((user) => {
               const isAdded = members.includes(user.email);
               return (
@@ -115,20 +119,22 @@ export const TripMembersStep = ({ setStep }: TripMembersStepProps) => {
                   className={clsx(
                     'w-full text-left px-4 py-3 flex items-center justify-between transition-colors',
                     isAdded
-                      ? 'bg-gray-50 cursor-default opacity-60'
-                      : 'hover:bg-primary-50 cursor-pointer'
+                      ? 'bg-gray-50 dark:bg-slate-800 cursor-default opacity-60'
+                      : 'hover:bg-primary-50 dark:hover:bg-slate-800 cursor-pointer'
                   )}
                 >
                   <div className="flex flex-col">
-                    <span className="font-medium text-slate-800">{user.nickname}</span>
-                    <span className="text-xs text-gray-400">{user.email}</span>
+                    <span className="font-medium text-slate-800 dark:text-slate-100">
+                      {user.nickname}
+                    </span>
+                    <span className="text-xs text-gray-400 dark:text-gray-500">{user.email}</span>
                   </div>
                   {isAdded ? (
-                    <span className="text-xs font-semibold text-gray-400 flex items-center gap-1">
+                    <span className="text-xs font-semibold text-gray-400 dark:text-gray-500 flex items-center gap-1">
                       <Check size={14} /> 추가됨
                     </span>
                   ) : (
-                    <UserPlus size={18} className="text-gray-300" />
+                    <UserPlus size={18} className="text-gray-300 dark:text-gray-500" />
                   )}
                 </Button>
               );
@@ -140,7 +146,7 @@ export const TripMembersStep = ({ setStep }: TripMembersStepProps) => {
           !isSearchUsersLoading &&
           searchedUsers &&
           searchedUsers.length === 0 && (
-            <div className="absolute top-full left-0 w-full mt-2 bg-white border border-gray-100 rounded-lg shadow-md p-4 text-center text-gray-400 text-sm z-50">
+            <div className="absolute top-full left-0 w-full mt-2 bg-white dark:bg-slate-900 border border-gray-100 dark:border-gray-700 rounded-lg shadow-md p-4 text-center text-gray-400 dark:text-gray-500 text-sm z-50">
               검색 결과가 없습니다.
             </div>
           )}
@@ -149,17 +155,17 @@ export const TripMembersStep = ({ setStep }: TripMembersStepProps) => {
         )}
       </div>
 
-      <div className="mx-4 mt-80 flex flex-wrap gap-2">
+      <div className="mx-4 mt-70 flex flex-wrap gap-2 dark:bg-slate-900">
         {selectedMembers.map((member) => (
           <div
             key={member?.email}
-            className="flex items-center gap-1 pl-3 pr-2 py-1.5 bg-primary-dark text-white rounded-full text-sm font-medium border border-blue-100 cursor-pointer"
+            className="flex items-center gap-1 pl-3 pr-2 py-1.5 bg-primary-dark dark:bg-slate-800 text-white rounded-full text-sm font-medium border border-blue-100 cursor-pointer"
           >
-            <span>{member?.nickname}</span>
+            <span className="text-slate-900 dark:text-slate-100">{member?.nickname}</span>
             <Button
               type="button"
               onClick={() => removeMember(member?.email ?? '')}
-              className="p-0.5 hover:bg-primary-dark rounded-full transition-colors cursor-pointer"
+              className="p-0.5 hover:bg-primary-dark dark:hover:bg-primary-dark rounded-full transition-colors cursor-pointer"
             >
               <X size={14} />
             </Button>

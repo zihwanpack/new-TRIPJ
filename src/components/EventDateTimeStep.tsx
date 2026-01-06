@@ -71,10 +71,12 @@ export const EventDateTimeStep = ({ setStep }: EventDateTimeStepProps) => {
   return (
     <div className="flex flex-col h-full">
       <div className="flex gap-2 items-center mt-4 mx-4 min-h-[70px]">
-        <h1 className="text-xl font-semibold">일정을 선택해주세요</h1>
+        <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
+          일정을 선택해주세요
+        </h1>
         <p className="text-sm text-primary-base">필수</p>
       </div>
-      <div className="mx-4 mb-2 text-sm text-gray-500">
+      <div className="mx-4 mb-2 text-sm text-gray-500 dark:text-gray-400">
         여행 기간: {formatDate(tripStartDate ?? '', 'YYYY. MM. DD')} ~
         {formatDate(tripEndDate ?? '', 'YYYY. MM. DD')}
       </div>
@@ -96,27 +98,29 @@ export const EventDateTimeStep = ({ setStep }: EventDateTimeStepProps) => {
             setValue('endDate', range?.to?.toISOString() ?? '');
           }}
           classNames={{
-            root: 'w-full max-w-[360px] rounded-xl border border-gray-200 justify-center items-center p-6 bg-white mx-auto',
+            root: 'w-full max-w-[360px] rounded-xl border border-gray-200 dark:border-gray-700 justify-center items-center p-6 bg-white dark:bg-slate-900 mx-auto text-slate-900 dark:text-slate-100',
             month_caption:
-              'flex justify-center items-center h-10 mb-4 font-bold text-lg text-slate-900 relative',
-            caption_label: 'text-xl font-semibold text-slate-800',
+              'flex justify-center items-center h-10 mb-4 font-bold text-lg text-slate-900 dark:text-slate-100 relative',
+            caption_label: 'text-xl font-semibold text-slate-800 dark:text-slate-100',
             month: 'relative flex flex-col',
             nav: 'absolute top-55 w-[310px] flex justify-between items-center h-10 px-1 z-10 ',
-            button_previous: 'p-1 text-gray-400 hover:text-black',
-            button_next: 'p-1  text-gray-400 hover:text-black',
+            button_previous:
+              'p-1 text-gray-400 dark:text-gray-400 hover:text-black dark:hover:text-white',
+            button_next:
+              'p-1 text-gray-400 dark:text-gray-400 hover:text-black dark:hover:text-white',
             chevron: 'size-5 cursor-pointer',
             weekdays: 'w-full flex justify-between items-center h-10 mb-3',
             weekday: 'w-10 text-center text-sm font-medium',
             weeks: 'space-y-2',
             week: 'flex justify-between',
             day: 'size-10 text-sm cursor-pointer',
-            day_button: 'size-10 cursor-pointer',
+            day_button: 'size-10 cursor-pointer rounded-full',
             today: `text-primary-base font-bold`,
-            range_start: `relative bg-black text-white rounded-full after:content-[''] after:absolute after:top-0 after:left-[50%] after:w-[50%] after:h-full after:bg-black/8`,
-            range_middle: 'bg-black/8 text-black',
-            range_end: `relative bg-black text-white rounded-full after:content-[''] after:absolute after:top-0 after:right-[50%] after:w-[50%] after:h-full after:bg-black/8`,
-            outside: 'text-gray-200',
-            disabled: 'text-gray-200',
+            range_start: `relative bg-black text-white rounded-full dark:bg-primary-base after:content-[''] after:absolute after:top-0 after:left-[50%] after:w-[50%] after:h-full after:bg-black/8 dark:after:bg-primary-base/30`,
+            range_middle: 'bg-black/8 text-black dark:bg-primary-base/30 dark:text-white',
+            range_end: `relative bg-black text-white rounded-full dark:bg-primary-base after:content-[''] after:absolute after:top-0 after:right-[50%] after:w-[50%] after:h-full after:bg-black/8 dark:after:bg-primary-base/30`,
+            outside: 'text-gray-200 dark:text-gray-700',
+            disabled: 'text-gray-200 dark:text-gray-700',
           }}
         />
       </div>
@@ -125,19 +129,23 @@ export const EventDateTimeStep = ({ setStep }: EventDateTimeStepProps) => {
         <Button
           onClick={() => startDate && setActiveDate('startDate')}
           disabled={!startDate}
-          className="flex-1 p-1 rounded-xl border text-left hover:border-primary-base"
+          className="flex-1 p-1 rounded-xl border border-gray-200 dark:border-gray-700 text-left hover:border-primary-base dark:hover:border-primary-base bg-white dark:bg-slate-900"
         >
-          <div className="text-xs text-gray-500 mb-1">시작</div>
-          <div className="text-lg font-bold text-slate-800">{formatTimeDisplay(startDate)}</div>
+          <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">시작</div>
+          <div className="text-lg font-bold text-slate-800 dark:text-slate-100">
+            {formatTimeDisplay(startDate)}
+          </div>
         </Button>
 
         <Button
           onClick={() => endDate && setActiveDate('endDate')}
           disabled={!endDate}
-          className="flex-1 p-1 rounded-xl border text-left hover:border-primary-base"
+          className="flex-1 p-1 rounded-xl border border-gray-200 dark:border-gray-700 text-left hover:border-primary-base dark:hover:border-primary-base bg-white dark:bg-slate-900"
         >
-          <div className="text-xs text-gray-500 mb-1">종료</div>
-          <div className="text-lg font-bold text-slate-800">{formatTimeDisplay(endDate)}</div>
+          <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">종료</div>
+          <div className="text-lg font-bold text-slate-800 dark:text-slate-100">
+            {formatTimeDisplay(endDate)}
+          </div>
         </Button>
       </div>
 
@@ -198,7 +206,9 @@ export const ScrollWheel = ({
           key={item}
           className={clsx(
             'h-[40px] snap-center flex items-center justify-center',
-            item === value ? 'font-bold' : 'text-gray-400'
+            item === value
+              ? 'font-bold text-slate-900 dark:text-slate-100'
+              : 'text-gray-400 dark:text-gray-500'
           )}
         >
           {item}
@@ -223,7 +233,7 @@ export const TimePicker = ({
 }) => {
   const { hour, minute, meridiem } = initial;
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center text-slate-900 dark:text-slate-100">
       <div className="flex gap-2">
         <ScrollWheel
           items={HOURS}
@@ -280,7 +290,7 @@ const TimeBottomSheet = ({
     <div className="fixed inset-0 z-50">
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
 
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] bg-white rounded-t-2xl px-4 pt-3 pb-6 animate-slide-up">
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] bg-white dark:bg-slate-900 rounded-t-2xl px-4 pt-3 pb-6 animate-slide-up">
         <TimePicker initial={time} onConfirm={() => onConfirm(time)} onChange={setTime} />
       </div>
     </div>

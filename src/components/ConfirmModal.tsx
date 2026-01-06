@@ -26,19 +26,21 @@ export const ConfirmModal = ({
 }: ConfirmModalProps) => {
   return (
     <Modal open={open} onClose={onClose} closeOnBackdrop={false}>
-      <div className="flex flex-col items-center text-center p-4">
+      <div className="flex flex-col items-center text-center p-4 text-gray-900 dark:text-gray-100">
         <div
           className={clsx(
             'mb-4 flex h-12 w-12 items-center justify-center rounded-full',
-            danger ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-primary-base'
+            danger
+              ? 'bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-300'
+              : 'bg-blue-100 dark:bg-blue-500/20 text-primary-base dark:text-blue-300'
           )}
         >
           {danger ? <AlertCircle className="h-6 w-6" /> : <CheckCircle2 className="h-6 w-6" />}
         </div>
 
-        <h2 className="text-xl font-bold text-gray-900">{title}</h2>
+        <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{title}</h2>
         {description && (
-          <p className="mt-2 text-sm text-gray-500 whitespace-pre-wrap leading-relaxed">
+          <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 whitespace-pre-wrap leading-relaxed">
             {description}
           </p>
         )}
@@ -46,7 +48,7 @@ export const ConfirmModal = ({
         <div className="mt-6 flex w-full gap-3">
           <Button
             variant="secondary"
-            className="flex-1 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 border-none rounded-lg"
+            className="flex-1 py-3 text-gray-700 dark:text-gray-100 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 border-none rounded-lg"
             onClick={onClose}
           >
             {cancelText}

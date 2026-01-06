@@ -104,7 +104,7 @@ export const EventCostAndSubmitStep = ({ setStep, mode }: EventCostAndSubmitStep
   return (
     <div className="flex flex-col h-full">
       <div className="flex gap-2 items-center mt-4 mx-4 min-h-[70px]">
-        <h1 className="text-xl font-semibold">경비</h1>
+        <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">경비</h1>
         <p className="text-sm text-primary-base">선택</p>
       </div>
       <div className="mx-4 space-y-3">
@@ -115,8 +115,10 @@ export const EventCostAndSubmitStep = ({ setStep, mode }: EventCostAndSubmitStep
                 type="button"
                 onClick={() => setOpenIndex(openIndex === item.id ? null : item.id)}
                 className={clsx(
-                  'flex items-center justify-between gap-2 border-2 rounded-xl p-3 w-full text-sm',
-                  item.category ? 'border-primary-base text-black' : 'border-gray-200 text-gray-400'
+                  'flex items-center justify-between gap-2 border-2 rounded-xl p-3 w-full text-sm bg-white dark:bg-slate-900',
+                  item.category
+                    ? 'border-primary-base text-black dark:text-slate-100'
+                    : 'border-gray-200 dark:border-gray-700 text-gray-400 dark:text-gray-500'
                 )}
               >
                 <span>{item.category || '항목 선택'}</span>
@@ -124,7 +126,7 @@ export const EventCostAndSubmitStep = ({ setStep, mode }: EventCostAndSubmitStep
               </Button>
 
               {openIndex === item.id && (
-                <div className="absolute z-10 top-full left-0 mt-1 w-full bg-white rounded-xl shadow-xl p-1">
+                <div className="absolute z-10 top-full left-0 mt-1 w-full bg-white dark:bg-slate-900 rounded-xl shadow-xl p-1 border border-gray-100 dark:border-gray-700">
                   {COST_CATEGORIES.map((cost) => (
                     <Button
                       key={cost}
@@ -133,7 +135,7 @@ export const EventCostAndSubmitStep = ({ setStep, mode }: EventCostAndSubmitStep
                         updateCost(item.id, { category: cost });
                         setOpenIndex(null);
                       }}
-                      className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100"
+                      className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800"
                     >
                       {cost}
                     </Button>
@@ -142,7 +144,7 @@ export const EventCostAndSubmitStep = ({ setStep, mode }: EventCostAndSubmitStep
               )}
             </div>
 
-            <div className="flex items-center flex-1 border rounded-xl px-3">
+            <div className="flex items-center flex-1 border border-gray-200 dark:border-gray-700 rounded-xl px-3 bg-white dark:bg-slate-900">
               <Input
                 type="text"
                 inputMode="numeric"
@@ -153,13 +155,13 @@ export const EventCostAndSubmitStep = ({ setStep, mode }: EventCostAndSubmitStep
                 }
                 className="py-3 text-right"
               />
-              <span className="ml-1 text-sm text-gray-500">원</span>
+              <span className="ml-1 text-sm text-gray-500 dark:text-gray-400">원</span>
             </div>
 
             <Button
               type="button"
               onClick={() => removeCost(item.id)}
-              className="p-3 rounded-xl bg-gray-100 hover:bg-gray-200"
+              className="p-3 rounded-xl bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700"
             >
               <Trash2 size={18} />
             </Button>
@@ -169,7 +171,7 @@ export const EventCostAndSubmitStep = ({ setStep, mode }: EventCostAndSubmitStep
       <Button
         type="button"
         onClick={addCost}
-        className="mx-4 mt-4 py-4 rounded-xl bg-gray-100 flex items-center justify-center gap-2 text-sm font-medium"
+        className="mx-4 mt-4 py-4 rounded-xl bg-gray-100 dark:bg-slate-800 flex items-center justify-center gap-2 text-sm font-medium text-slate-900 dark:text-slate-100"
       >
         <Plus size={16} /> 경비 추가
       </Button>
