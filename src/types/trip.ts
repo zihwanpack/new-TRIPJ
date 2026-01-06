@@ -51,3 +51,11 @@ export type GetMyPastTripsByCursorResponse = CursorResponse<Trip>;
 export type GetMyUpcomingTripsByCursorParam = GetMyPastTripsByCursorParam;
 
 export type GetMyUpcomingTripsByCursorResponse = GetMyPastTripsByCursorResponse;
+
+export type UpdateTripRequest = CreateTripRequest;
+
+export type UpdateTripParam = GetTripDetailParam & {
+  body: UpdateTripRequest;
+};
+
+export type UpdateTripResponse = SuccessResponse<Trip>;
