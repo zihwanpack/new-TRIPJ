@@ -46,6 +46,10 @@ export const EventDetailPage = () => {
     }
   };
 
+  const editEventHandler = () => {
+    navigate(`/trips/${tripId}/events/${eventId}/edit`);
+  };
+
   if (isEventDetailLoading) return <FullscreenLoader />;
   if (eventDetailError)
     return <div className="p-4 text-center text-gray-500">에러가 발생했습니다.</div>;
@@ -139,7 +143,9 @@ export const EventDetailPage = () => {
           onClick={() => navigate(`/trips/${tripId}/events/${eventId}/edit`)}
         >
           <Pencil className="size-4" />
-          <span className="font-semibold">수정하기</span>
+          <span onClick={editEventHandler} className="font-semibold">
+            수정하기
+          </span>
         </Button>
 
         <Button

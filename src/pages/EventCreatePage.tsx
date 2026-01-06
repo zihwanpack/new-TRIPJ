@@ -1,19 +1,13 @@
 import { useNavigate } from 'react-router-dom';
-import { ProgressBar } from '../components/ProgressBar.tsx';
+
 import { useStorage } from '../hooks/useStorage.tsx';
-import { Header } from '../layouts/Header.tsx';
-import { FormProvider, useForm } from 'react-hook-form';
+
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { eventSchema, type EventFormValues } from '../schemas/eventSchema.ts';
-import {
-  EVENT_CREATE_STEP_KEY,
-  EVENT_CREATE_STORAGE_KEY,
-  EVENT_CREATE_TOTAL_STEPS,
-} from '../constants/event.ts';
-import { EventCreateTitleLocationStep } from '../components/EventCreateTitleLocationStep.tsx';
-import { EventCreateDateTimeStep } from '../components/EventCreateDateTimeStep.tsx';
-import { EventCostAndSubmitStep } from '../components/EventCostAndSubmitStep.tsx';
+import { EVENT_CREATE_STEP_KEY, EVENT_CREATE_STORAGE_KEY } from '../constants/event.ts';
 import { useEffect } from 'react';
+import { EventFormTemplate } from '../components/EventFormTemplate.tsx';
 
 export const EventCreatePage = () => {
   const {
@@ -54,14 +48,13 @@ export const EventCreatePage = () => {
   }, [form]);
 
   return (
-    <div className="flex flex-col h-dvh">
-      <Header title="이벤트 추가하기" onClose={handleCloseForm} />
-      <ProgressBar progress={step} steps={EVENT_CREATE_TOTAL_STEPS} />
-      <FormProvider {...form}>
-        {step === 1 && <EventCreateTitleLocationStep setStep={setStep} />}
-        {step === 2 && <EventCreateDateTimeStep setStep={setStep} />}
-        {step === 3 && <EventCostAndSubmitStep setStep={setStep} />}
-      </FormProvider>
-    </div>
+    <EventFormTemplate
+      mode="create"
+      step={step}
+      headerTitle="이벤트 추가하기"
+      setStep={setStep}
+      handleCloseForm={handleCloseForm}
+      form={form}
+    />
   );
 };
