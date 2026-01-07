@@ -7,6 +7,7 @@ import { Input } from './Input.tsx';
 import { useDispatch, useSelector } from '../redux/hooks/useCustomRedux.tsx';
 import { createTrip, updateTrip, type TripState } from '../redux/slices/tripSlice.ts';
 import toast from 'react-hot-toast';
+import { Typography } from './Typography.tsx';
 
 interface TripTitleAndSubmitStepProps {
   setStep: (step: number) => void;
@@ -59,8 +60,9 @@ export const TripTitleAndSubmitStep = ({ setStep, mode }: TripTitleAndSubmitStep
   return (
     <div className="flex flex-col h-full">
       <div className="flex gap-2 items-center mt-4 mx-4 min-h-[70px]">
-        <h1 className="text-xl font-semibold">여행의 이름을 적어주세요</h1>
-        <p className="text-sm text-primary-base">필수</p>
+        <Typography variant="body" color="primary">
+          필수
+        </Typography>
       </div>
       <div className="mx-4 mt-6 flex items-center gap-3 border border-gray-300 rounded-lg px-4 py-3 focus-within:ring-2 focus-within:ring-primary-base focus-within:border-transparent transition-all bg-white dark:bg-slate-900">
         <Input

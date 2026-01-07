@@ -48,9 +48,8 @@ export const Typography = ({
   color = 'default',
   children,
   className,
-  as,
 }: TypographyProps) => {
-  const Component = as || defaultElements[variant];
+  const Component = defaultElements[variant];
 
   return (
     <Component className={clsx(variantStyles[variant], colorStyles[color], className)}>
