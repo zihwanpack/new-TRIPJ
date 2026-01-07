@@ -1,6 +1,6 @@
 import { Header } from '../layouts/Header.tsx';
 import { Footer } from '../layouts/Footer.tsx';
-import { useAuth } from '../hooks/useAuth.tsx';
+import { useAuthStatus } from '../hooks/useAuthStatus.tsx';
 import { Moon, SquareArrowOutUpRight, UserRound, Sun, Monitor, ArrowRight } from 'lucide-react';
 import stamp1Image from '@/assets/mypage/stamp1.webp';
 import stamp2Image from '@/assets/mypage/stamp2.webp';
@@ -10,7 +10,7 @@ import { Button } from '../components/Button.tsx';
 import { useNavigate } from 'react-router-dom';
 import { withdrawApi } from '../api/user.ts';
 import { useState } from 'react';
-import { ConfirmModal } from '../components/ConfirmModal.tsx';
+import { Modal } from '../components/Modal.tsx';
 import { useDispatch } from '../redux/hooks/useCustomRedux.tsx';
 import { resetTripState } from '../redux/slices/tripSlice.ts';
 import { resetEventState } from '../redux/slices/eventSlice.ts';
@@ -18,7 +18,7 @@ import { resetUserState } from '../redux/slices/userSlice.ts';
 import { useTheme } from '../hooks/useTheme.tsx';
 
 export const Mypage = () => {
-  const { user, logout } = useAuth();
+  const { user, logout } = useAuthStatus();
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const dispatch = useDispatch();
@@ -189,14 +189,30 @@ export const Mypage = () => {
         </section>
       </div>
 
-      <ConfirmModal
+      <Modal
         open={isModalOpen}
-        title="회원탈퇴"
-        description="정말 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다."
-        confirmText="탈퇴"
-        danger
         onClose={() => setIsModalOpen(false)}
-        onConfirm={executeWithdrawal}
+        title="정말 탈퇴하시겠습니까?"
+        description={`회원탈퇴시 유저 정보는 되돌릴 수 없습니다.
+                      신중하게 결정해주세요`}
+        closeOnBackdrop={false}
+        children={
+          <div className="flex gap-2">
+            <Button
+              onClick={() => setIsModalOpen(false)}
+              className="flex-1 bg-gray-100 text-gray-700 hover:bg-gray-200 active:scale-[0.98] border-2 border-gray-100 rounded-xl"
+            >
+              취소
+            </Button>
+
+            <Button
+              onClick={executeWithdrawal}
+              className="flex-1 bg-red-500 text-white hover:bg-red-600 active:scale-[0.98] border-2 border-red-500 rounded-xl"
+            >
+              탈퇴
+            </Button>
+          </div>
+        }
       />
       <Footer />
     </div>
