@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 import { forwardRef } from 'react';
+import { Typography } from './Typography.tsx';
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -11,9 +12,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className={containerClassName}>
         {label && (
-          <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-gray-300">
+          <Typography variant="label" className="mb-1 block" color="muted">
             {label}
-          </label>
+          </Typography>
         )}
         <input
           ref={ref}

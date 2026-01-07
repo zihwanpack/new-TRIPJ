@@ -29,6 +29,7 @@ import { fetchAllEvents, type EventState } from '../redux/slices/eventSlice.ts';
 import { clearUsersByEmails, getUsersByEmails, type UserState } from '../redux/slices/userSlice.ts';
 import toast from 'react-hot-toast';
 import clsx from 'clsx';
+import { Typography } from '../components/Typography.tsx';
 
 type EventViewStatus = 'loading' | 'error' | 'empty' | 'success' | 'map';
 
@@ -142,7 +143,9 @@ export const TripDetailPage = () => {
       <Header title="여행 상세" onClose={() => navigate('/')} />
       <section className="flex flex-col gap-3 mt-4 mx-4 flex-1 overflow-y-auto scrollbar-hide pb-10">
         <div className="flex justify-between gap-2 w-full">
-          <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">{title}</h1>
+          <Typography variant="h1" color="secondary" className="mb-3">
+            {title}
+          </Typography>
           <div className="flex items-center gap-2 relative">
             <MapPin
               className={clsx(

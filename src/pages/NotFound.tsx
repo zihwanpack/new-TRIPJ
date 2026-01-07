@@ -1,9 +1,12 @@
 import { Link } from 'react-router-dom';
+import { Typography } from '../components/Typography.tsx';
 
 export const NotFound = () => {
   return (
     <div className="h-dvh w-full flex flex-col items-center justify-center text-center p-6 bg-slate-50 dark:bg-slate-950">
-      <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-3">404 😥</h1>
+      <Typography variant="h1" color="secondary" className="mb-3">
+        404 😥
+      </Typography>
       <p className="text-slate-600 dark:text-slate-400 whitespace-pre-line mb-6">
         페이지를 찾을 수 없어요
       </p>

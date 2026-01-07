@@ -7,6 +7,7 @@ import { useDebounce } from '../hooks/useDebounce.tsx';
 import { Button } from './Button.tsx';
 import { CTA } from './CTA.tsx';
 import { Input } from './Input.tsx';
+import { Typography } from './Typography.tsx';
 import {
   clearSearchedUsers,
   clearUsersByEmails,
@@ -86,12 +87,10 @@ export const TripMembersStep = ({ setStep }: TripMembersStepProps) => {
   return (
     <div className="flex flex-col h-full">
       <div className="flex gap-2 flex-col justify-center mt-4 mx-4 min-h-[70px]">
-        <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
-          누구와 함께 가나요?
-        </h1>
-        <p className="text-sm text-gray-400 dark:text-gray-500">
+        <Typography variant="h1">누구와 함께 가나요?</Typography>
+        <Typography variant="helper" color="muted">
           일행을 추가하면 여행 계획을 공유할 수 있어요
-        </p>
+        </Typography>
       </div>
 
       <div className="mx-4 mt-6 relative z-20">

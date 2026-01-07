@@ -8,6 +8,7 @@ import type { DestinationType } from '../types/trip.ts';
 import { Button } from './Button.tsx';
 import { CTA } from './CTA.tsx';
 import clsx from 'clsx';
+import { Typography } from './Typography.tsx';
 
 interface TripDestinationStepProps {
   setStep: (step: number) => void;
@@ -55,10 +56,10 @@ export const TripDestinationStep = ({ setStep }: TripDestinationStepProps) => {
   return (
     <div className="flex flex-col h-full">
       <div className="flex gap-2 items-center mt-4 mx-4 min-h-[70px]">
-        <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
-          어디로 떠나시나요
-        </h1>
-        <p className="text-sm text-primary-base">필수</p>
+        <Typography variant="h1">어디로 떠나시나요</Typography>
+        <Typography variant="bodySmall" color="primary">
+          필수
+        </Typography>
       </div>
       <div className="mb-4 mx-4 flex gap-2">
         <div className="relative flex-[1]">

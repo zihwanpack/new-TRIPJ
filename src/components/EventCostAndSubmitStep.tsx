@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from '../redux/hooks/useCustomRedux.tsx';
 import { createEvent, updateEvent, type EventState } from '../redux/slices/eventSlice.ts';
 import toast from 'react-hot-toast';
 import clsx from 'clsx';
+import { Typography } from './Typography.tsx';
 
 const COST_CATEGORIES = ['식비', '교통비', '숙박비', '기타'];
 
@@ -104,8 +105,10 @@ export const EventCostAndSubmitStep = ({ setStep, mode }: EventCostAndSubmitStep
   return (
     <div className="flex flex-col h-full">
       <div className="flex gap-2 items-center mt-4 mx-4 min-h-[70px]">
-        <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">경비</h1>
-        <p className="text-sm text-primary-base">선택</p>
+        <Typography variant="h1">경비</Typography>
+        <Typography variant="body" color="primary">
+          선택
+        </Typography>
       </div>
       <div className="mx-4 space-y-3">
         {costs.map((item) => (

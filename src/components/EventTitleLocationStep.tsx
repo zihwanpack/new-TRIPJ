@@ -5,6 +5,7 @@ import { useFormContext } from 'react-hook-form';
 import type { EventFormValues } from '../schemas/eventSchema.ts';
 import { CTA } from './CTA.tsx';
 import { Input } from './Input.tsx';
+import { Typography } from './Typography.tsx';
 
 interface EventTitleLocationStepProps {
   setStep: (step: number) => void;
@@ -119,30 +120,31 @@ export const EventTitleLocationStep = ({ setStep }: EventTitleLocationStepProps)
   return (
     <div className="flex flex-col h-full">
       <div className="flex gap-2 items-center mt-4 mx-4 min-h-[70px]">
-        <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
-          이벤트 이름을 적어주세요
-        </h1>
-        <p className="text-sm text-primary-base">필수</p>
+        <Typography variant="h1">이벤트 이름을 적어주세요</Typography>
+        <Typography variant="body" color="primary">
+          필수
+        </Typography>
       </div>
       <div className="mx-4 mt-2 flex items-center gap-3 border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-3 focus-within:ring-2 focus-within:ring-primary-base focus-within:border-transparent transition-all bg-white dark:bg-slate-900">
         <Input
           type="text"
           placeholder="예) 식당 예약"
           {...register('eventName')}
-          className="w-full"
           containerClassName="w-full"
         />
       </div>
       <div className="mx-4 mt-1 min-h-[20px]">
         {errors.eventName && (
-          <p className="text-sm text-red-500 pl-1">{errors.eventName.message}</p>
+          <Typography variant="helper" color="error" className="pl-1">
+            {errors.eventName.message}
+          </Typography>
         )}
       </div>
       <div className="flex gap-2 items-center mt-4 mx-4 min-h-[70px]">
-        <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
-          장소를 검색해주세요
-        </h1>
-        <p className="text-sm text-primary-base">필수</p>
+        <Typography variant="h1">장소를 검색해주세요</Typography>
+        <Typography variant="body" color="primary">
+          필수
+        </Typography>
       </div>
 
       <div className="mx-4 mt-2 relative">

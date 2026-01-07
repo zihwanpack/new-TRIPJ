@@ -1,6 +1,7 @@
 import { CirclePlus } from 'lucide-react';
 import { Card } from './Card';
 import clsx from 'clsx';
+import { Typography } from './Typography.tsx';
 
 interface BaseTripCardProps {
   size?: 'small' | 'large' | 'largest' | 'myTrips';
@@ -69,10 +70,10 @@ export const TripCard = ({
           cardStyles.container
         )}
       >
-        <p className="text-center text-gray-600 dark:text-gray-300 font-medium text-sm">
+        <Typography variant="body" color="muted" className="text-center">
           새로운 여행을 <br />
           시작해보세요.
-        </p>
+        </Typography>
         <CirclePlus className="size-8 text-primary-base" />
       </Card>
     );
@@ -98,9 +99,9 @@ export const TripCard = ({
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 min-w-0">
-            <p className={clsx(cardStyles.title, 'font-semibold text-gray-900 dark:text-gray-100')}>
+            <Typography variant="h3" className={clsx(cardStyles.title, 'truncate')}>
               {title}
-            </p>
+            </Typography>
             {badgeText && (
               <span className="shrink-0 px-2 py-0.5 rounded-full text-[12px] font-semibold bg-emerald-50 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-300">
                 {badgeText}
@@ -108,9 +109,13 @@ export const TripCard = ({
             )}
           </div>
 
-          <p className={clsx(cardStyles.date, 'text-gray-500 dark:text-gray-400 mt-1 truncate')}>
+          <Typography
+            variant="bodySmall"
+            color="muted"
+            className={clsx(cardStyles.date, 'mt-1 truncate')}
+          >
             {date}
-          </p>
+          </Typography>
         </div>
       </Card>
     );
@@ -125,8 +130,12 @@ export const TripCard = ({
       />
       <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
       <div className="absolute bottom-3 left-4 text-white z-10">
-        <p className={clsx(cardStyles.title, 'font-semibold truncate pr-2')}>{title}</p>
-        <p className={clsx(cardStyles.date, 'opacity-90')}>{date}</p>
+        <Typography variant="h3" className={clsx(cardStyles.title, 'truncate pr-2 text-white')}>
+          {title}
+        </Typography>
+        <Typography variant="bodySmall" className={clsx(cardStyles.date, 'opacity-90 text-white')}>
+          {date}
+        </Typography>
       </div>
     </Card>
   );

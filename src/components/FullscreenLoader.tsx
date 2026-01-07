@@ -1,4 +1,5 @@
 import { HashLoader } from 'react-spinners';
+import { Typography } from './Typography.tsx';
 
 export const FullscreenLoader = ({
   color = 'var(--color-primary-base)',
@@ -17,9 +18,12 @@ export const FullscreenLoader = ({
           aria-label="Loading Spinner"
           data-testid="loader"
         />
-        <p className="mt-4 text-xl font-extrabold bg-gradient-to-r from-primary-base to-purple-400 bg-clip-text text-transparent animate-pulse">
+        <Typography
+          variant="h1"
+          className="mt-4 font-extrabold bg-gradient-to-r from-primary-base to-purple-400 bg-clip-text text-transparent animate-pulse"
+        >
           잠시만 기다려주세요
-        </p>
+        </Typography>
       </div>
     </div>
   );
