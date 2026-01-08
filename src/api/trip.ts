@@ -22,75 +22,85 @@ import type {
 } from '../types/trip.ts';
 import { TripError } from '../errors/customErrors.ts';
 import { requestHandler } from './util/requestHandler.ts';
-
+import { tripSchema, tripListSchema, tripListWithCursorSchema } from '../schemas/tripSchema.ts';
 export const createTripApi = async (body: CreateTripRequest): Promise<Trip> => {
-  return requestHandler(
-    () => authenticatedClient.post<CreateTripResponse>('/trips', body),
-    TripError
-  );
+  return requestHandler({
+    request: () => authenticatedClient.post<CreateTripResponse>('/trips', body),
+    ErrorClass: TripError,
+    schema: tripSchema,
+  });
 };
 
 export const getTripDetailApi = async ({ id }: GetTripDetailParam): Promise<Trip> => {
-  return requestHandler(
-    () => authenticatedClient.get<GetTripDetailResponse>(`/trips/${id}`),
-    TripError
-  );
+  return requestHandler({
+    request: () => authenticatedClient.get<GetTripDetailResponse>(`/trips/${id}`),
+    ErrorClass: TripError,
+    schema: tripSchema,
+  });
 };
 
 export const deleteTripApi = async ({ id }: DeleteTripParam): Promise<null> => {
-  return requestHandler(
-    () => authenticatedClient.delete<DeleteTripResponse>(`/trips/${id}`),
-    TripError
-  );
+  return requestHandler({
+    request: () => authenticatedClient.delete<DeleteTripResponse>(`/trips/${id}`),
+    ErrorClass: TripError,
+  });
 };
 
-export const getMyPastTripsApi = async ({ id }: GetMyPastTripsParam): Promise<Trip[]> => {
-  return requestHandler(
-    () => authenticatedClient.get<GetMyPastTripsResponse>(`/trips/user/${id}/past`),
-    TripError
-  );
+export const getMyPastTripsApi = async ({ userId }: GetMyPastTripsParam): Promise<Trip[]> => {
+  return requestHandler({
+    request: () => authenticatedClient.get<GetMyPastTripsResponse>(`/trips/user/${userId}/past`),
+    ErrorClass: TripError,
+    schema: tripListSchema,
+  });
 };
 
-export const getMyOnGoingTripApi = async ({ id }: GetMyOnGoingTripParam): Promise<Trip> => {
-  return requestHandler(
-    () => authenticatedClient.get<GetMyOnGoingTripResponse>(`/trips/user/${id}/current`),
-    TripError
-  );
+export const getMyOnGoingTripApi = async ({ userId }: GetMyOnGoingTripParam): Promise<Trip> => {
+  return requestHandler({
+    request: () =>
+      authenticatedClient.get<GetMyOnGoingTripResponse>(`/trips/user/${userId}/current`),
+    ErrorClass: TripError,
+    schema: tripSchema,
+  });
 };
 
-export const getMyUpcomingTripsApi = async ({ id }: GetMyUpcomingTripsParam): Promise<Trip[]> => {
-  return requestHandler(
-    () => authenticatedClient.get<GetMyUpcomingTripsResponse>(`/trips/user/${id}/upcoming`),
-    TripError
-  );
+export const getMyUpcomingTripsApi = async ({
+  userId,
+}: GetMyUpcomingTripsParam): Promise<Trip[]> => {
+  return requestHandler({
+    request: () =>
+      authenticatedClient.get<GetMyUpcomingTripsResponse>(`/trips/user/${userId}/upcoming`),
+    ErrorClass: TripError,
+    schema: tripListSchema,
+  });
 };
 
 export const getMyPastTripsCursorApi = async ({
-  id,
+  userId,
   cursor,
   limit,
 }: GetMyPastTripsByCursorParam): Promise<GetMyPastTripsByCursorResponse['result']> => {
-  return requestHandler(
-    () =>
-      authenticatedClient.get<GetMyPastTripsByCursorResponse>(`/trips/user/${id}/past/cursor`, {
+  return requestHandler({
+    request: () =>
+      authenticatedClient.get<GetMyPastTripsByCursorResponse>(`/trips/user/${userId}/past/cursor`, {
         params: {
           cursor,
           limit,
         },
       }),
-    TripError
-  );
+    ErrorClass: TripError,
+    schema: tripListWithCursorSchema,
+  });
 };
 
 export const getMyUpcomingTripsCursorApi = async ({
-  id,
+  userId,
   cursor,
   limit,
 }: GetMyUpcomingTripsByCursorParam): Promise<GetMyUpcomingTripsByCursorResponse['result']> => {
-  return requestHandler(
-    () =>
+  return requestHandler({
+    request: () =>
       authenticatedClient.get<GetMyUpcomingTripsByCursorResponse>(
-        `/trips/user/${id}/upcoming/cursor`,
+        `/trips/user/${userId}/upcoming/cursor`,
         {
           params: {
             cursor,
@@ -98,13 +108,15 @@ export const getMyUpcomingTripsCursorApi = async ({
           },
         }
       ),
-    TripError
-  );
+    ErrorClass: TripError,
+    schema: tripListWithCursorSchema,
+  });
 };
 
 export const updateTripApi = async ({ id, body }: UpdateTripParam): Promise<Trip> => {
-  return requestHandler(
-    () => authenticatedClient.patch<UpdateTripResponse>(`/trips/${id}`, body),
-    TripError
-  );
+  return requestHandler({
+    request: () => authenticatedClient.patch<UpdateTripResponse>(`/trips/${id}`, body),
+    ErrorClass: TripError,
+    schema: tripSchema,
+  });
 };

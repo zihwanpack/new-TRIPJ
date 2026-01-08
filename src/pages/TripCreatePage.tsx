@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import { tripSchema, type TripFormValues } from '../schemas/tripSchema.ts';
+import { tripFormSchema, type TripFormValues } from '../schemas/tripSchema.ts';
 import { useStorage } from '../hooks/useStorage.tsx';
 
 import { useAuthStatus } from '../hooks/useAuthStatus.tsx';
@@ -34,7 +34,7 @@ export const TripCreatePage = () => {
       };
 
   const form = useForm<TripFormValues>({
-    resolver: zodResolver(tripSchema),
+    resolver: zodResolver(tripFormSchema),
     mode: 'onChange',
     defaultValues,
   });

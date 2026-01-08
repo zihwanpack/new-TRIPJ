@@ -163,7 +163,7 @@ export const EventTitleLocationStep = ({ setStep }: EventTitleLocationStepProps)
             {places.map((placeItem) => (
               <li
                 key={placeItem.placePrediction.placeId}
-                onClick={() => handleSelectPlace(placeItem.formattedAddress)} // formattedAddress 전달
+                onClick={() => handleSelectPlace(placeItem.formattedAddress)}
                 className="px-4 py-3 hover:bg-gray-100 dark:hover:bg-slate-800 cursor-pointer text-sm text-slate-700 dark:text-slate-100 border-b border-gray-100 dark:border-gray-700 last:border-none"
               >
                 <div className="font-semibold text-slate-800 dark:text-slate-100">

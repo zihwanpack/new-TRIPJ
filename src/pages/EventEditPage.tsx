@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from '../redux/hooks/useCustomRedux.tsx';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { eventSchema, type EventFormValues } from '../schemas/eventSchema.ts';
+import { eventFormSchema, type EventFormValues } from '../schemas/eventSchema.ts';
 import { fetchEventDetail, type EventState } from '../redux/slices/eventSlice.ts';
 import { FullscreenLoader } from '../components/FullscreenLoader.tsx';
 
@@ -26,14 +26,14 @@ export const EventEditPage = () => {
   };
 
   const form = useForm<EventFormValues>({
-    resolver: zodResolver(eventSchema),
+    resolver: zodResolver(eventFormSchema),
     mode: 'onChange',
     defaultValues: defaultValues as EventFormValues,
   });
 
   useEffect(() => {
     if (eventId) {
-      dispatch(fetchEventDetail({ id: Number(eventId) }));
+      dispatch(fetchEventDetail({ eventId: Number(eventId) }));
     }
   }, [dispatch, eventId]);
 

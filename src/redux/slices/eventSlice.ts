@@ -6,7 +6,7 @@ import {
   getMyAllEventsApi,
   updateEventApi,
 } from '../../api/event.ts';
-import type { CreateEventRequest, Event, UpdateEventParam } from '../../types/event.ts';
+import type { CreateEventRequest, Event, UpdateEventRequest } from '../../types/event.ts';
 
 export const fetchAllEvents = createAsyncThunk<
   Event[],
@@ -20,22 +20,23 @@ export const fetchAllEvents = createAsyncThunk<
   }
 });
 
-export const fetchEventDetail = createAsyncThunk<Event, { id: number }, { rejectValue: string }>(
-  'events/fetchEventDetail',
-  async ({ id }, { rejectWithValue }) => {
-    try {
-      return await getEventDetailApi({ id });
-    } catch (error) {
-      return rejectWithValue(String(error));
-    }
+export const fetchEventDetail = createAsyncThunk<
+  Event,
+  { eventId: number },
+  { rejectValue: string }
+>('events/fetchEventDetail', async ({ eventId }, { rejectWithValue }) => {
+  try {
+    return await getEventDetailApi({ eventId });
+  } catch (error) {
+    return rejectWithValue(String(error));
   }
-);
+});
 
-export const deleteEvent = createAsyncThunk<null, { id: number }, { rejectValue: string }>(
+export const deleteEvent = createAsyncThunk<null, { eventId: number }, { rejectValue: string }>(
   'events/deleteEvent',
-  async ({ id }, { rejectWithValue }) => {
+  async ({ eventId }, { rejectWithValue }) => {
     try {
-      await deleteEventApi({ id });
+      await deleteEventApi({ eventId });
       return null;
     } catch (error) {
       return rejectWithValue(String(error));
@@ -54,16 +55,17 @@ export const createEvent = createAsyncThunk<Event, CreateEventRequest, { rejectV
   }
 );
 
-export const updateEvent = createAsyncThunk<Event, UpdateEventParam, { rejectValue: string }>(
-  'events/updateEvent',
-  async ({ id, body }, { rejectWithValue }) => {
-    try {
-      return await updateEventApi({ id, body });
-    } catch (error) {
-      return rejectWithValue(String(error));
-    }
+export const updateEvent = createAsyncThunk<
+  Event,
+  { eventId: number; body: UpdateEventRequest },
+  { rejectValue: string }
+>('events/updateEvent', async ({ eventId, body }, { rejectWithValue }) => {
+  try {
+    return await updateEventApi({ eventId, body });
+  } catch (error) {
+    return rejectWithValue(String(error));
   }
-);
+});
 export interface EventState {
   eventDetail: Event | null;
   allEvents: Event[];

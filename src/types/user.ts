@@ -3,13 +3,13 @@ import type { SuccessResponse } from './defaultResponse.ts';
 export type Provider = 'google' | 'kakao' | 'naver';
 
 export type User = {
-  id: number;
+  id: string;
   provider: Provider;
   email: string;
   profileImage: string | null;
   nickname: string;
   userMemo?: string;
-  createdAt: string;
+  createdAt?: string;
   createdBy?: string;
 };
 
@@ -20,7 +20,7 @@ export type SearchUsersResponse = SuccessResponse<UserSummary[]>;
 export type GetUsersByEmailResponse = SuccessResponse<UserSummary[]>;
 
 export type WithdrawParam = {
-  id: number;
+  id: string;
 };
 
 export type WithdrawResponse = SuccessResponse<null>;

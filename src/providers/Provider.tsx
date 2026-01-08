@@ -22,7 +22,7 @@ export const Provider = ({ children }: PropsWithChildren) => {
         <ThemeProvider defaultTheme="dark" storageKey="theme-storage-key">
           <AuthProvider>
             {children}
-            {import.meta.env.VITE_ENV === 'development' && (
+            {import.meta.env.DEV && (
               <ReactQueryDevtools buttonPosition="bottom-left" initialIsOpen={false} />
             )}
           </AuthProvider>

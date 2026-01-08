@@ -30,7 +30,7 @@ export const HomePage = () => {
 
   useEffect(() => {
     if (user?.id) {
-      dispatch(fetchAllMyTrips({ id: user.id }));
+      dispatch(fetchAllMyTrips({ userId: user.id }));
     }
   }, [dispatch, user?.id]);
 

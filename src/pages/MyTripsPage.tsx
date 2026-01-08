@@ -69,7 +69,7 @@ export const MyTripsPage = () => {
       setIsLoading(true);
 
       if (tabStatus === 'ongoing') {
-        const response = await getMyOnGoingTripApi({ id: user.id as number });
+        const response = await getMyOnGoingTripApi({ userId: user.id });
 
         setTrips((draft) => {
           draft.length = 0;
@@ -82,7 +82,7 @@ export const MyTripsPage = () => {
           tabStatus === 'upcoming' ? getMyUpcomingTripsCursorApi : getMyPastTripsCursorApi;
 
         const response = await currentApi({
-          id: user.id,
+          userId: user.id,
           cursor: nextCursor,
           limit: LIMIT,
         });

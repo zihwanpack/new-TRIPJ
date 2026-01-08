@@ -30,7 +30,7 @@ export const EventDetailPage = () => {
 
   useEffect(() => {
     if (eventId) {
-      dispatch(fetchEventDetail({ id: Number(eventId) }));
+      dispatch(fetchEventDetail({ eventId: Number(eventId) }));
     }
     return () => {
       dispatch(clearEventDetail());
@@ -38,7 +38,7 @@ export const EventDetailPage = () => {
   }, [eventId, dispatch]);
 
   const deleteEventHandler = async () => {
-    const result = await dispatch(deleteEvent({ id: Number(eventId) }));
+    const result = await dispatch(deleteEvent({ eventId: Number(eventId) }));
     if (deleteEvent.fulfilled.match(result)) {
       toast.success('이벤트 삭제에 성공했습니다.');
       navigate(`/trips/${tripId}`);

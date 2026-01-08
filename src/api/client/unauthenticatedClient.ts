@@ -1,7 +1,8 @@
 import axios from 'axios';
+import { env } from '../../schemas/envSchema.ts';
 
 export const unauthenticatedClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: env.VITE_API_URL,
   withCredentials: true,
 });
 

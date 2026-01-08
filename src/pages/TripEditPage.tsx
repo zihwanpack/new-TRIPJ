@@ -3,7 +3,7 @@ import { fetchTripDetail, type TripState } from '../redux/slices/tripSlice.ts';
 import { useDispatch, useSelector } from '../redux/hooks/useCustomRedux.tsx';
 import { TripFormTemplate } from '../components/TripFormTemplate.tsx';
 import { useEffect, useState } from 'react';
-import { tripSchema, type TripFormValues } from '../schemas/tripSchema.ts';
+import { tripFormSchema, type TripFormValues } from '../schemas/tripSchema.ts';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { FullscreenLoader } from '../components/FullscreenLoader.tsx';
@@ -28,7 +28,7 @@ export const TripEditPage = () => {
   };
 
   const form = useForm<TripFormValues>({
-    resolver: zodResolver(tripSchema),
+    resolver: zodResolver(tripFormSchema),
     mode: 'onChange',
     defaultValues: defaultValues as TripFormValues,
   });

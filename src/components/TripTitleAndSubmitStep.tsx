@@ -60,6 +60,7 @@ export const TripTitleAndSubmitStep = ({ setStep, mode }: TripTitleAndSubmitStep
   return (
     <div className="flex flex-col h-full">
       <div className="flex gap-2 items-center mt-4 mx-4 min-h-[70px]">
+        <Typography variant="h1">마지막으로 여행의 이름을 적어주세요</Typography>
         <Typography variant="body" color="primary">
           필수
         </Typography>

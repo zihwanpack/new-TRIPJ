@@ -90,7 +90,7 @@ export const EventCostAndSubmitStep = ({ setStep, mode }: EventCostAndSubmitStep
     const formData = getValues();
     const result = await dispatch(
       updateEvent({
-        id: eventDetail?.eventId ?? 0,
+        eventId: eventDetail?.eventId ?? 0,
         body: { ...formData, tripId: Number(tripId) },
       })
     );

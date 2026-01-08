@@ -11,6 +11,7 @@ import { useAuthStatus } from '../hooks/useAuthStatus.tsx';
 import { Button } from '../components/Button.tsx';
 import type { Provider } from '../types/user.ts';
 import { Typography } from '../components/Typography.tsx';
+import { env } from '../schemas/envSchema.ts';
 
 const WORDS = ['누구나', 'J처럼', '여행하기'];
 
@@ -31,7 +32,7 @@ export const LoginPage = () => {
   }
 
   const handleSocialLogin = (provider: Provider) => {
-    window.location.href = `${import.meta.env.VITE_API_URL}/auth/${provider}`;
+    window.location.href = `${env.VITE_API_URL}/auth/${provider}`;
   };
 
   return (
@@ -41,10 +42,9 @@ export const LoginPage = () => {
         className="absolute inset-0 h-full w-full object-cover"
         alt="login background"
       />
-
       <div className="relative z-10 flex flex-col min-h-dvh">
         <section className="flex-1 flex items-center justify-center">
-          <Typography variant="h1" color="secondary" className="animate-fade">
+          <Typography variant="h1" className="animate-fade text-white text-[30px]">
             {WORDS[index]}
           </Typography>
         </section>

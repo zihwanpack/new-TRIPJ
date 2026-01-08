@@ -21,47 +21,48 @@ export const fetchTripDetail = createAsyncThunk<Trip, { id: number }, { rejectVa
   }
 );
 
-export const fetchOngoingTrip = createAsyncThunk<Trip, { id: number }, { rejectValue: string }>(
+export const fetchOngoingTrip = createAsyncThunk<Trip, { userId: string }, { rejectValue: string }>(
   'trips/fetchOngoingTrip',
-  async ({ id }, { rejectWithValue }) => {
+  async ({ userId }, { rejectWithValue }) => {
     try {
-      return await getMyOnGoingTripApi({ id });
+      return await getMyOnGoingTripApi({ userId });
     } catch (error) {
       return rejectWithValue(String(error));
     }
   }
 );
 
-export const fetchUpcomingTrips = createAsyncThunk<Trip[], { id: number }, { rejectValue: string }>(
-  'trips/fetchUpcomingTrips',
-  async ({ id }, { rejectWithValue }) => {
-    try {
-      return await getMyUpcomingTripsApi({ id });
-    } catch (error) {
-      return rejectWithValue(String(error));
-    }
+export const fetchUpcomingTrips = createAsyncThunk<
+  Trip[],
+  { userId: string },
+  { rejectValue: string }
+>('trips/fetchUpcomingTrips', async ({ userId }, { rejectWithValue }) => {
+  try {
+    return await getMyUpcomingTripsApi({ userId });
+  } catch (error) {
+    return rejectWithValue(String(error));
   }
-);
+});
 
-export const fetchPastTrips = createAsyncThunk<Trip[], { id: number }, { rejectValue: string }>(
+export const fetchPastTrips = createAsyncThunk<Trip[], { userId: string }, { rejectValue: string }>(
   'trips/fetchPastTrips',
-  async ({ id }, { rejectWithValue }) => {
+  async ({ userId }, { rejectWithValue }) => {
     try {
-      return await getMyPastTripsApi({ id });
+      return await getMyPastTripsApi({ userId });
     } catch (error) {
       return rejectWithValue(String(error));
     }
   }
 );
 
-export const fetchAllMyTrips = createAsyncThunk<void, { id: number }, { rejectValue: string }>(
+export const fetchAllMyTrips = createAsyncThunk<void, { userId: string }, { rejectValue: string }>(
   'trip/fetchAllMyTrips',
-  async ({ id }, { dispatch, rejectWithValue }) => {
+  async ({ userId }, { dispatch, rejectWithValue }) => {
     try {
       await Promise.allSettled([
-        dispatch(fetchOngoingTrip({ id })),
-        dispatch(fetchUpcomingTrips({ id })),
-        dispatch(fetchPastTrips({ id })),
+        dispatch(fetchOngoingTrip({ userId })),
+        dispatch(fetchUpcomingTrips({ userId })),
+        dispatch(fetchPastTrips({ userId })),
       ]);
     } catch (error) {
       return rejectWithValue(String(error));

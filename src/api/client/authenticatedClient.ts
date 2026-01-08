@@ -1,10 +1,11 @@
 import axios, { type InternalAxiosRequestConfig } from 'axios';
+import { env } from '../../schemas/envSchema.ts';
 interface CustomInternalAxiosRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean;
 }
 
 export const authenticatedClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: env.VITE_API_URL,
   withCredentials: true,
 });
 
