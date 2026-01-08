@@ -30,18 +30,21 @@ export type GetTripDetailResponse = TripResponse;
 export type DeleteTripResponse = SuccessResponse<null>;
 
 export type GetTripDetailParam = {
-  id: number;
+  tripId: number;
 };
 
 export type DeleteTripParam = GetTripDetailParam;
 
-export type GetMyPastTripsParam = GetTripDetailParam;
+export type GetMyPastTripsParam = {
+  userId: string;
+};
 
-export type GetMyOnGoingTripParam = GetTripDetailParam;
+export type GetMyOnGoingTripParam = GetMyPastTripsParam;
 
-export type GetMyUpcomingTripsParam = GetTripDetailParam;
+export type GetMyUpcomingTripsParam = GetMyPastTripsParam;
 
-export type GetMyPastTripsByCursorParam = GetTripDetailParam & {
+export type GetMyPastTripsByCursorParam = {
+  userId: string;
   cursor: number | null;
   limit?: number;
 };

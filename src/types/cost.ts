@@ -1,5 +1,5 @@
 export type Cost = {
-  id: number;
+  id?: number;
   category: string;
   value: number;
 };

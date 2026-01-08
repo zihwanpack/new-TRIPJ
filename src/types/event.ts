@@ -21,7 +21,7 @@ export type CreateEventResponse = EventResponse;
 export type CreateEventRequest = Omit<Event, 'eventId'>;
 
 export type GetEventDetailParams = {
-  id: number;
+  eventId: number;
 };
 
 export type GetEventDetailResponse = SuccessResponse<Event>;
@@ -31,7 +31,7 @@ export type GetMyAllEventsParam = {
 };
 
 export type GetEventDetailParam = {
-  id: number;
+  eventId: number;
 };
 
 export type DeleteEventParam = GetEventDetailParam;
