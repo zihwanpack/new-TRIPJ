@@ -1,10 +1,10 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient } from '@tanstack/react-query';
 import type { PropsWithChildren } from 'react';
 import { AuthProvider } from '../context/AuthContext.tsx';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { store } from '../redux/store.ts';
-import { Provider as ReduxProvider } from 'react-redux';
 import { ThemeProvider } from '../context/ThemeContext.tsx';
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
+import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -14,20 +14,27 @@ const queryClient = new QueryClient({
     },
   },
 });
+const persister = createAsyncStoragePersister({
+  storage: window.localStorage,
+});
 
 export const Provider = ({ children }: PropsWithChildren) => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ReduxProvider store={store}>
-        <ThemeProvider defaultTheme="dark" storageKey="theme-storage-key">
-          <AuthProvider>
-            {children}
-            {import.meta.env.DEV && (
-              <ReactQueryDevtools buttonPosition="bottom-left" initialIsOpen={false} />
-            )}
-          </AuthProvider>
-        </ThemeProvider>
-      </ReduxProvider>
-    </QueryClientProvider>
+    <PersistQueryClientProvider
+      client={queryClient}
+      persistOptions={{
+        persister,
+        maxAge: 24 * 60 * 60 * 1000, // 24시간
+      }}
+    >
+      <ThemeProvider defaultTheme="dark" storageKey="theme-storage-key">
+        <AuthProvider>
+          {children}
+          {import.meta.env.DEV && (
+            <ReactQueryDevtools buttonPosition="bottom-left" initialIsOpen={false} />
+          )}
+        </AuthProvider>
+      </ThemeProvider>
+    </PersistQueryClientProvider>
   );
 };

@@ -6,11 +6,13 @@ import { useRef, useState, useEffect } from 'react';
 import { formatDate, formatTimeDisplay } from '../utils/date.ts';
 import { Button } from './Button.tsx';
 import type { EventFormValues } from '../schemas/eventSchema.ts';
-import { useDispatch, useSelector } from '../redux/hooks/useCustomRedux.tsx';
-import { fetchTripDetail, type TripState } from '../redux/slices/tripSlice.ts';
 import clsx from 'clsx';
 import { Calendar } from './Calendar.tsx';
 import { Typography } from './Typography.tsx';
+import { useQuery } from '@tanstack/react-query';
+import { tripQueryKeys } from '../constants/queryKeys.ts';
+import type { Trip } from '../types/trip.ts';
+import { getTripDetailApi } from '../api/trip.ts';
 
 interface EventDateTimeStepProps {
   setStep: (step: number) => void;
@@ -19,17 +21,20 @@ interface EventDateTimeStepProps {
 export const EventDateTimeStep = ({ setStep }: EventDateTimeStepProps) => {
   const { watch, setValue } = useFormContext<EventFormValues>();
   const { tripId } = useParams();
-  const dispatch = useDispatch();
+  const tripIdNumber = Number(tripId!);
 
-  const { tripDetail, isTripDetailLoading, tripDetailError } = useSelector(
-    (state: { trip: TripState }) => state.trip
-  );
-
-  useEffect(() => {
-    if (tripId && !tripDetail) {
-      dispatch(fetchTripDetail({ id: Number(tripId) }));
-    }
-  }, [tripId, dispatch, tripDetail]);
+  const {
+    data: tripDetail,
+    isLoading: isTripDetailLoading,
+    isError: isTripDetailError,
+    error: tripDetailError,
+  } = useQuery<Trip>({
+    queryKey: tripQueryKeys.detail(tripIdNumber),
+    queryFn: () => getTripDetailApi({ id: tripIdNumber }),
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    enabled: !!tripId,
+  });
 
   const [activeDate, setActiveDate] = useState<'startDate' | 'endDate' | null>(null);
 
@@ -53,10 +58,10 @@ export const EventDateTimeStep = ({ setStep }: EventDateTimeStepProps) => {
     return <FullscreenLoader />;
   }
 
-  if (tripDetailError) {
+  if (isTripDetailError) {
     return (
       <div className="text-red-500">
-        여행 정보를 불러오는 중 오류가 발생했습니다. : {tripDetailError}
+        여행 정보를 불러오는 중 오류가 발생했습니다. : {tripDetailError.message}
       </div>
     );
   }

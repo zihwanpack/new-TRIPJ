@@ -14,22 +14,19 @@ import {
 import { FullscreenLoader } from '../components/FullscreenLoader.tsx';
 import type { Event } from '../types/event.ts';
 import { Button } from '../components/Button.tsx';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { getDateRange, filteringByDateRange, formatDate } from '../utils/date.ts';
 import { GoogleMapView } from '../components/GoogleMapView.tsx';
 import { getTotal } from '../utils/getTotal.ts';
-import { useDispatch, useSelector } from '../redux/hooks/useCustomRedux.tsx';
-import {
-  clearTripDetail,
-  deleteTrip,
-  fetchTripDetail,
-  type TripState,
-} from '../redux/slices/tripSlice.ts';
-import { fetchAllEvents, type EventState } from '../redux/slices/eventSlice.ts';
-import { clearUsersByEmails, getUsersByEmails, type UserState } from '../redux/slices/userSlice.ts';
+
 import toast from 'react-hot-toast';
 import clsx from 'clsx';
 import { Typography } from '../components/Typography.tsx';
+import { eventQueryKeys, tripQueryKeys, userQueryKeys } from '../constants/queryKeys.ts';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { deleteTripApi, getTripDetailApi } from '../api/trip.ts';
+import { getUsersByEmailApi } from '../api/user.ts';
+import { getMyAllEventsApi } from '../api/event.ts';
 
 type EventViewStatus = 'loading' | 'error' | 'empty' | 'success' | 'map';
 
@@ -59,37 +56,61 @@ const getMemberViewStatus = (
 
 export const TripDetailPage = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-
-  const { tripDetail, isTripDetailLoading, tripDetailError } = useSelector(
-    (state: { trip: TripState }) => state.trip
-  );
-  const { allEvents, isAllEventsLoading, allEventsError } = useSelector(
-    (state: { event: EventState }) => state.event
-  );
-  const { usersByEmails, isUsersByEmailsLoading, usersByEmailsError } = useSelector(
-    (state: { user: UserState }) => state.user
-  );
-
+  const queryClient = useQueryClient();
   const { tripId } = useParams();
+  const tripIdNumber = Number(tripId);
+  const {
+    data: tripDetail,
+    isPending: isTripDetailPending,
+    isError: isTripDetailError,
+    error: tripDetailError,
+  } = useQuery({
+    queryKey: tripQueryKeys.detail(tripIdNumber),
+    queryFn: () => getTripDetailApi({ id: tripIdNumber }),
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    enabled: !!tripIdNumber,
+  });
 
-  useEffect(() => {
-    if (tripId) {
-      dispatch(fetchTripDetail({ id: Number(tripId) }));
-      dispatch(fetchAllEvents({ tripId: Number(tripId) }));
-    }
-    return () => {
-      dispatch(clearTripDetail());
-    };
-  }, [dispatch, tripId]);
+  const {
+    data: allEvents = [],
+    isLoading: isEventsLoading,
+    isError: isEventsError,
+    error: eventsError,
+  } = useQuery({
+    queryKey: eventQueryKeys.list(tripIdNumber),
+    queryFn: () => getMyAllEventsApi({ tripId: tripIdNumber }),
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    enabled: !!tripIdNumber,
+  });
 
-  useEffect(() => {
-    if (!tripDetail?.members) return;
-    dispatch(getUsersByEmails(tripDetail.members));
-    return () => {
-      dispatch(clearUsersByEmails());
-    };
-  }, [dispatch, tripDetail?.members]);
+  const members = tripDetail?.members ?? [];
+  const {
+    data: usersByEmails,
+    isLoading: isMembersLoading,
+    isError: isMembersError,
+    error: membersError,
+  } = useQuery({
+    queryKey: userQueryKeys.byEmails(members),
+    queryFn: () => getUsersByEmailApi(members),
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    enabled: !!members.length,
+  });
+
+  const deleteTripMutation = useMutation({
+    mutationFn: () => deleteTripApi({ id: tripIdNumber }),
+    onSuccess: () => {
+      toast.success('여행 삭제에 성공했습니다.');
+      queryClient.invalidateQueries({ queryKey: tripQueryKeys.all });
+      queryClient.invalidateQueries({ queryKey: eventQueryKeys.all });
+      navigate('/');
+    },
+    onError: () => {
+      toast.error('여행 삭제에 실패했습니다.');
+    },
+  });
 
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
@@ -97,14 +118,19 @@ export const TripDetailPage = () => {
 
   const OVERLAP = 18;
 
-  const visibleUsers = usersByEmails.slice(0, 3);
-  const restUsers = Math.max(usersByEmails.length - 3, 0);
+  const visibleUsers = usersByEmails?.slice(0, 3) ?? [];
+  const restUsers = Math.max(usersByEmails?.length ?? 0 - 3, 0);
 
   const containerWidth = visibleUsers.length * OVERLAP + (restUsers > 0 ? OVERLAP : 0);
 
-  if (isTripDetailLoading || isAllEventsLoading) return <FullscreenLoader />;
-  if (tripDetailError || allEventsError)
-    return <div>에러가 발생했습니다: {tripDetailError || allEventsError}</div>;
+  if (isTripDetailPending || isEventsLoading) return <FullscreenLoader />;
+  if (isTripDetailError || isEventsError || isMembersError)
+    return (
+      <div>
+        에러가 발생했습니다:
+        {tripDetailError?.message || eventsError?.message || membersError?.message}
+      </div>
+    );
   if (!tripDetail) return <div>여행 데이터가 없습니다.</div>;
 
   const { startDate, endDate, title } = tripDetail;
@@ -116,27 +142,20 @@ export const TripDetailPage = () => {
   const filteredEvents = filteringByDateRange<Event>(allEvents ?? [], selectedDate || '');
 
   const handleDeleteTrip = async () => {
-    const result = await dispatch(deleteTrip({ id: Number(tripId) }));
-    if (deleteTrip.fulfilled.match(result)) {
-      toast.success('여행 삭제에 성공했습니다.');
-      navigate('/');
-    } else {
-      toast.error('여행 삭제에 실패했습니다.');
-    }
+    deleteTripMutation.mutate();
   };
-
   const editTripEventHandler = () => {
     navigate(`/trips/${tripId}/edit`);
   };
 
   const eventViewState = getEventViewStatus(
     isMapViewOpen,
-    isAllEventsLoading,
-    Boolean(allEventsError),
+    isEventsLoading,
+    Boolean(eventsError),
     filteredEvents
   );
 
-  const memberViewState = getMemberViewStatus(isUsersByEmailsLoading, Boolean(usersByEmailsError));
+  const memberViewState = getMemberViewStatus(isMembersLoading, Boolean(membersError));
 
   return (
     <div className="flex flex-col h-dvh overflow-hidden relative bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">

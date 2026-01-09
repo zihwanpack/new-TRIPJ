@@ -1,13 +1,14 @@
 import { useFormContext } from 'react-hook-form';
 import type { TripFormValues } from '../schemas/tripSchema.ts';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { TRIP_CREATE_STEP_KEY, TRIP_CREATE_STORAGE_KEY } from '../constants/trip.ts';
 import { CTA } from './CTA.tsx';
 import { Input } from './Input.tsx';
-import { useDispatch, useSelector } from '../redux/hooks/useCustomRedux.tsx';
-import { createTrip, updateTrip, type TripState } from '../redux/slices/tripSlice.ts';
 import toast from 'react-hot-toast';
 import { Typography } from './Typography.tsx';
+import { createTripApi, updateTripApi } from '../api/trip.ts';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { tripQueryKeys } from '../constants/queryKeys.ts';
 
 interface TripTitleAndSubmitStepProps {
   setStep: (step: number) => void;
@@ -21,40 +22,68 @@ export const TripTitleAndSubmitStep = ({ setStep, mode }: TripTitleAndSubmitStep
     getValues,
     formState: { errors },
   } = useFormContext<TripFormValues>();
-
-  const dispatch = useDispatch();
-  const { isCreateTripLoading, createTripError, isUpdateTripLoading, updateTripError, tripDetail } =
-    useSelector((state: { trip: TripState }) => state.trip);
+  const { tripId } = useParams();
+  const tripIdNumber = Number(tripId);
+  const queryClient = useQueryClient();
 
   const navigate = useNavigate();
   const title = watch('title');
   const isTitleStepValid = Boolean(title && title.trim().length > 0);
-  const isLoading = mode === 'create' ? isCreateTripLoading : isUpdateTripLoading;
+
+  const {
+    mutate: createTrip,
+    isPending: isCreatePending,
+    isError: isCreateError,
+    error: createError,
+  } = useMutation({
+    mutationFn: (data: TripFormValues) => createTripApi({ ...data }),
+    onSuccess: (createdTrip) => {
+      sessionStorage.removeItem(TRIP_CREATE_STEP_KEY);
+      sessionStorage.removeItem(TRIP_CREATE_STORAGE_KEY);
+
+      queryClient.invalidateQueries({ queryKey: tripQueryKeys.all });
+
+      toast.success('여행 생성에 성공했습니다.');
+      navigate(`/trips/${createdTrip.id}`);
+    },
+    onError: () => {
+      toast.error('여행 생성에 실패했습니다.');
+    },
+  });
+
+  const {
+    mutate: updateTrip,
+    isPending: isUpdatePending,
+    isError: isUpdateError,
+    error: updateError,
+  } = useMutation({
+    mutationFn: (data: TripFormValues) =>
+      updateTripApi({
+        id: tripIdNumber,
+        body: data,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: tripQueryKeys.detail(tripIdNumber),
+      });
+      toast.success('여행 수정에 성공했습니다.');
+      navigate(`/trips/${tripId}`);
+    },
+    onError: () => {
+      toast.error('여행 수정에 실패했습니다.');
+    },
+  });
+
+  const isLoading = mode === 'create' ? isCreatePending : isUpdatePending;
 
   const handleCreateTrip = async () => {
     const formData = getValues();
-    const result = await dispatch(createTrip({ body: formData }));
-    if (createTrip.fulfilled.match(result)) {
-      sessionStorage.removeItem(TRIP_CREATE_STEP_KEY);
-      sessionStorage.removeItem(TRIP_CREATE_STORAGE_KEY);
-      navigate(`/trips/${result.payload.id}`);
-    } else {
-      toast.error('여행 생성에 실패했습니다.');
-    }
+    createTrip(formData);
   };
 
   const handleUpdateTrip = async () => {
     const formData = getValues();
-    if (!tripDetail?.id) {
-      toast.error('여행 정보를 찾을 수 없습니다.');
-      return;
-    }
-    const result = await dispatch(updateTrip({ id: tripDetail.id, body: formData }));
-    if (updateTrip.fulfilled.match(result)) {
-      navigate(`/trips/${tripDetail.id}`);
-    } else {
-      toast.error('여행 수정에 실패했습니다.');
-    }
+    updateTrip(formData);
   };
 
   return (
@@ -75,11 +104,11 @@ export const TripTitleAndSubmitStep = ({ setStep, mode }: TripTitleAndSubmitStep
       </div>
       <div className="mx-4 mt-1 min-h-[20px]">
         {errors.title && <p className="text-sm text-red-500 pl-1">{errors.title.message}</p>}
-        {!errors.title && mode === 'create' && createTripError && (
-          <p className="text-sm text-red-500 pl-1">{createTripError}</p>
+        {!errors.title && mode === 'create' && isCreateError && (
+          <p className="text-sm text-red-500 pl-1">{createError.message}</p>
         )}
-        {!errors.title && mode === 'edit' && updateTripError && (
-          <p className="text-sm text-red-500 pl-1">{updateTripError}</p>
+        {!errors.title && mode === 'edit' && isUpdateError && (
+          <p className="text-sm text-red-500 pl-1">{updateError.message}</p>
         )}
       </div>
       <div className="flex-1" />

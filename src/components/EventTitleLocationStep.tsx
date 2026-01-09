@@ -6,6 +6,7 @@ import type { EventFormValues } from '../schemas/eventSchema.ts';
 import { CTA } from './CTA.tsx';
 import { Input } from './Input.tsx';
 import { Typography } from './Typography.tsx';
+import { loadGoogleMaps } from '../utils/loadGoogleMaps.ts';
 
 interface EventTitleLocationStepProps {
   setStep: (step: number) => void;
@@ -49,6 +50,7 @@ export const EventTitleLocationStep = ({ setStep }: EventTitleLocationStepProps)
     let cancelled = false;
 
     const search = async () => {
+      await loadGoogleMaps();
       if (!window.google?.maps) return;
 
       setIsLoading(true);

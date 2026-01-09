@@ -1,23 +1,18 @@
 import { Search, Loader2, X, UserPlus, Check } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
 import type { TripFormValues } from '../schemas/tripSchema.ts';
-import { useEffect, useMemo, useState, type ChangeEvent } from 'react';
+import { useMemo, useState, type ChangeEvent } from 'react';
 import type { UserSummary } from '../types/user.ts';
 import { useDebounce } from '../hooks/useDebounce.tsx';
 import { Button } from './Button.tsx';
 import { CTA } from './CTA.tsx';
 import { Input } from './Input.tsx';
 import { Typography } from './Typography.tsx';
-import {
-  clearSearchedUsers,
-  clearUsersByEmails,
-  getSearchUsers,
-  getUsersByEmails,
-  type UserState,
-} from '../redux/slices/userSlice.ts';
-import { useDispatch, useSelector } from '../redux/hooks/useCustomRedux.tsx';
+
+import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
-import type { TripState } from '../redux/slices/tripSlice.ts';
+import { userQueryKeys } from '../constants/queryKeys.ts';
+import { getSearchUsersApi, getUsersByEmailApi } from '../api/user.ts';
 
 interface TripMembersStepProps {
   setStep: (step: number) => void;
@@ -25,31 +20,32 @@ interface TripMembersStepProps {
 
 export const TripMembersStep = ({ setStep }: TripMembersStepProps) => {
   const { setValue, watch } = useFormContext<TripFormValues>();
-  const dispatch = useDispatch();
-
-  const { user: userState, trip: tripState } = useSelector(
-    (state: { user: UserState; trip: TripState }) => ({
-      user: state.user,
-      trip: state.trip,
-    })
-  );
-
-  const { searchedUsers, isSearchUsersLoading, searchUsersError, usersByEmails } = userState;
-  const { tripDetail } = tripState;
-
   const members = watch('members');
   const [searchValue, setSearchValue] = useState<string>('');
   const [locallyAddedUsers, setLocallyAddedUsers] = useState<UserSummary[]>([]);
   const debouncedSearchValue = useDebounce(searchValue, 300);
 
-  useEffect(() => {
-    if (!tripDetail?.members?.length) return;
-    dispatch(getUsersByEmails(tripDetail.members));
+  const {
+    data: usersByEmails = [],
+    isLoading: isUsersByEmailsLoading,
+    isError: isUsersByEmailsError,
+    error: usersByEmailsError,
+  } = useQuery({
+    queryKey: userQueryKeys.byEmails(members),
+    queryFn: () => getUsersByEmailApi(members),
+    enabled: members.length > 0,
+  });
 
-    return () => {
-      dispatch(clearUsersByEmails());
-    };
-  }, [tripDetail?.members]);
+  const {
+    data: searchedUsers = [],
+    isLoading: isSearchUsersLoading,
+    isError: isSearchUsersError,
+    error: searchUsersError,
+  } = useQuery({
+    queryKey: userQueryKeys.search(debouncedSearchValue),
+    queryFn: () => getSearchUsersApi(debouncedSearchValue),
+    enabled: debouncedSearchValue.trim().length > 0,
+  });
 
   const selectedMembers = useMemo(() => {
     const allUsers = [...usersByEmails, ...locallyAddedUsers];
@@ -59,15 +55,6 @@ export const TripMembersStep = ({ setStep }: TripMembersStepProps) => {
     });
   }, [usersByEmails, locallyAddedUsers, members]);
 
-  useEffect(() => {
-    if (!debouncedSearchValue.trim()) {
-      dispatch(clearSearchedUsers());
-      return;
-    }
-
-    dispatch(getSearchUsers({ query: debouncedSearchValue }));
-  }, [debouncedSearchValue, dispatch]);
-
   const addMember = (user: UserSummary) => {
     if (!members.includes(user.email)) {
       setValue('members', [...members, user.email]);
@@ -75,7 +62,6 @@ export const TripMembersStep = ({ setStep }: TripMembersStepProps) => {
       setLocallyAddedUsers((prev) => [...prev, user]);
     }
     setSearchValue('');
-    dispatch(clearSearchedUsers());
   };
 
   const removeMember = (email: string) => {
@@ -105,7 +91,16 @@ export const TripMembersStep = ({ setStep }: TripMembersStepProps) => {
           />
           {isSearchUsersLoading && <Loader2 className="size-5 text-primary-base animate-spin" />}
         </div>
-        {debouncedSearchValue && searchedUsers && searchedUsers.length > 0 && (
+        {isUsersByEmailsLoading && (
+          <div className="mx-4 mt-4 text-sm text-gray-400">멤버 정보를 불러오는 중...</div>
+        )}
+
+        {isUsersByEmailsError && (
+          <div className="mx-4 mt-4 text-sm text-red-500">
+            {(usersByEmailsError as Error)?.message ?? '멤버 정보를 불러오지 못했습니다.'}
+          </div>
+        )}
+        {!isSearchUsersLoading && searchedUsers && searchedUsers.length > 0 && (
           <div className="absolute top-full left-0 w-full mt-2 bg-white dark:bg-slate-900 border border-gray-100 dark:border-gray-700 rounded-lg shadow-xl max-h-60 z-50">
             {searchedUsers.map((user) => {
               const isAdded = members.includes(user.email);
@@ -140,8 +135,7 @@ export const TripMembersStep = ({ setStep }: TripMembersStepProps) => {
             })}
           </div>
         )}
-        {searchValue &&
-          debouncedSearchValue &&
+        {debouncedSearchValue &&
           !isSearchUsersLoading &&
           searchedUsers &&
           searchedUsers.length === 0 && (
@@ -149,8 +143,8 @@ export const TripMembersStep = ({ setStep }: TripMembersStepProps) => {
               검색 결과가 없습니다.
             </div>
           )}
-        {searchUsersError && (
-          <div className="text-red-500 text-sm mt-1 px-1">{searchUsersError}</div>
+        {isSearchUsersError && (
+          <div className="text-red-500 text-sm mt-1 px-1">{searchUsersError.message}</div>
         )}
       </div>
 
