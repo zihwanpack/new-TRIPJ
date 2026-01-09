@@ -1,9 +1,6 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
-import { useImmer } from 'use-immer';
-
+import { useEffect, useRef, useState } from 'react';
 import { Header } from '../layouts/Header.tsx';
 import { Footer } from '../layouts/Footer.tsx';
-import type { Trip } from '../types/trip.ts';
 import {
   getMyPastTripsCursorApi,
   getMyUpcomingTripsCursorApi,
@@ -19,30 +16,72 @@ import { Button } from '../components/common/Button.tsx';
 import { ArrowUpIcon } from 'lucide-react';
 import clsx from 'clsx';
 import { Typography } from '../components/common/Typography.tsx';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import { tripQueryKeys } from '../constants/queryKeys.ts';
+import type { Trip } from '../types/trip.ts';
+import { FullscreenLoader } from '../components/common/FullscreenLoader.tsx';
 
-type TripTabStatus = 'upcoming' | 'ongoing' | 'completed';
+export type TripTabStatus = 'upcoming' | 'ongoing' | 'completed';
 
 export const MyTripsPage = () => {
   const navigate = useNavigate();
   const { user } = useAuthStatus();
   const [tabStatus, setTabStatus] = useState<TripTabStatus>('upcoming');
-  const [trips, setTrips] = useImmer<Trip[]>([]);
-
-  const [nextCursor, setNextCursor] = useState<number | null>(null);
-  const [hasNext, setHasNext] = useState<boolean>(true);
-
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-
   const LIMIT = 10;
+
+  const {
+    data: tripsData,
+    fetchNextPage,
+    hasNextPage,
+    isLoading: isTripsLoading,
+    isFetchingNextPage,
+    error: tripsError,
+  } = useInfiniteQuery({
+    queryKey: tripQueryKeys.listByCursor(user?.id ?? '', tabStatus),
+    queryFn: ({ pageParam }: { pageParam: number | null }) => {
+      const currentApi =
+        tabStatus === 'upcoming' ? getMyUpcomingTripsCursorApi : getMyPastTripsCursorApi;
+
+      return currentApi({
+        userId: user!.id,
+        cursor: pageParam,
+        limit: LIMIT,
+      });
+    },
+    initialPageParam: null,
+    getNextPageParam: (lastPage) =>
+      lastPage.pagination.hasNext ? lastPage.pagination.nextCursor : undefined,
+    enabled: !!user?.id && tabStatus !== 'ongoing',
+  });
+
+  const {
+    data: ongoingTrip,
+    isLoading: isOngoingLoading,
+    error: ongoingTripError,
+  } = useQuery({
+    queryKey: tripQueryKeys.ongoing(user!.id),
+    queryFn: () => getMyOnGoingTripApi({ userId: user!.id }),
+    enabled: tabStatus === 'ongoing' && !!user?.id,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+  });
+
+  const tripsFromCursor = tripsData?.pages.flatMap((page) => page.items) ?? [];
+  const trips: Trip[] =
+    tabStatus === 'ongoing' ? (ongoingTrip ? [ongoingTrip] : []) : tripsFromCursor;
+
+  const isInitialLoading = tabStatus === 'ongoing' ? isOngoingLoading : isTripsLoading;
+  const isPageLoading = tabStatus === 'ongoing' ? isOngoingLoading : isTripsLoading;
+  const pageError = tabStatus === 'ongoing' ? ongoingTripError : tripsError;
+
   const infiniteScrollTriggerRef = useRef<HTMLDivElement>(null);
 
-  const [showTopBtn, setShowTopBtn] = useState(false);
+  const [showTopButton, setShowTopButton] = useState<boolean>(false);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
   const handleScroll = () => {
     if (scrollContainerRef.current) {
-      setShowTopBtn(scrollContainerRef.current.scrollTop > 300);
+      setShowTopButton(scrollContainerRef.current.scrollTop > 300);
     }
   };
   const handleScrollToTop = () => {
@@ -55,60 +94,12 @@ export const MyTripsPage = () => {
   };
 
   useEffect(() => {
-    setTrips([]);
-    setNextCursor(null);
-    setHasNext(true);
-    setIsLoading(false);
-    setError(null);
-  }, [tabStatus, setTrips]);
-
-  const fetchTrips = useCallback(async () => {
-    if (isLoading || (!hasNext && tabStatus !== 'ongoing') || !user?.id) return;
-
-    try {
-      setIsLoading(true);
-
-      if (tabStatus === 'ongoing') {
-        const response = await getMyOnGoingTripApi({ userId: user.id });
-
-        setTrips((draft) => {
-          draft.length = 0;
-          draft.push(response);
-        });
-        setHasNext(false);
-        setNextCursor(null);
-      } else {
-        const currentApi =
-          tabStatus === 'upcoming' ? getMyUpcomingTripsCursorApi : getMyPastTripsCursorApi;
-
-        const response = await currentApi({
-          userId: user.id,
-          cursor: nextCursor,
-          limit: LIMIT,
-        });
-
-        setTrips((draft) => {
-          draft.push(...response.items);
-        });
-
-        setNextCursor(response.pagination.nextCursor);
-        setHasNext(response.pagination.hasNext);
-      }
-    } catch (error) {
-      setError(error instanceof Error ? error.message : 'An unknown error occurred');
-    } finally {
-      setIsLoading(false);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tabStatus, nextCursor, hasNext, isLoading, user?.id]);
-
-  useEffect(() => {
-    if (tabStatus === 'ongoing' || isLoading || !hasNext) return;
+    if (tabStatus === 'ongoing' || !hasNextPage) return;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          fetchTrips();
+          fetchNextPage();
         }
       },
       { threshold: 0.5, rootMargin: '100px' }
@@ -119,15 +110,7 @@ export const MyTripsPage = () => {
     }
 
     return () => observer.disconnect();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fetchTrips, hasNext, tabStatus]);
-
-  useEffect(() => {
-    if (tabStatus === 'ongoing') {
-      fetchTrips();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tabStatus]);
+  }, [fetchNextPage, hasNextPage, tabStatus]);
 
   const TRIP_TAB_UI = {
     upcoming: {
@@ -148,6 +131,10 @@ export const MyTripsPage = () => {
   } as const;
 
   const tabUI = TRIP_TAB_UI[tabStatus];
+
+  if (isInitialLoading) {
+    return <FullscreenLoader />;
+  }
 
   return (
     <div className="flex flex-col h-dvh relative bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
@@ -190,13 +177,13 @@ export const MyTripsPage = () => {
               badgeText={tabUI.getBadge(trip?.startDate ?? '', trip?.endDate ?? '')}
             />
           ))}
-        {isLoading && (
+        {isFetchingNextPage && (
           <>
             <TripCardSkeleton />
             <TripCardSkeleton />
           </>
         )}
-        {!isLoading && trips.length === 0 && !error && (
+        {trips.length === 0 && !pageError && (
           <div className="flex flex-col items-center justify-center h-full mt-20">
             <span className="text-4xl mb-2">✈️</span>
             <Typography variant="helper" color="muted">
@@ -209,24 +196,24 @@ export const MyTripsPage = () => {
             )}
           </div>
         )}
-        {tabStatus !== 'ongoing' && !isLoading && hasNext && (
+        {tabStatus !== 'ongoing' && !isPageLoading && hasNextPage && (
           <div ref={infiniteScrollTriggerRef} className="h-4" />
         )}
       </div>
 
-      {error && (
+      {pageError && (
         <div className="text-center py-4">
           <Typography variant="helper" color="error">
-            {error}
+            {pageError?.message}
           </Typography>
         </div>
       )}
-      {showTopBtn && (
+      {showTopButton && (
         <Button
           onClick={handleScrollToTop}
           className={clsx(
             'absolute bottom-30 right-5 z-50 p-3 rounded-full shadow-lg bg-white dark:bg-slate-900 border border-gray-100 dark:border-gray-700 transition-all duration-300 ease-in-out active:scale-90 active:bg-gray-50 dark:active:bg-slate-800',
-            showTopBtn
+            showTopButton
               ? 'opacity-100 translate-y-0'
               : 'opacity-0 translate-y-10 pointer-events-none'
           )}
