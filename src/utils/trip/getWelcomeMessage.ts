@@ -1,5 +1,5 @@
-import type { Trip } from '../types/trip.ts';
-import { calculateDday } from './date.ts';
+import type { Trip } from '../../types/trip.ts';
+import { calculateDday } from '../../utils/common/date.ts';
 
 type WelcomeMessageParams = {
   ongoingTrip: Trip | null;

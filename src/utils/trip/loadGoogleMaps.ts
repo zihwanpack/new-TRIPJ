@@ -1,4 +1,4 @@
-import { env } from '../schemas/envSchema.ts';
+import { env } from '../../schemas/common/envSchema.ts';
 
 let googleMapsPromise: Promise<void> | null = null;
 export const loadGoogleMaps = () => {
