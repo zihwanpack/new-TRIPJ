@@ -2,6 +2,7 @@ import { useRef, useEffect, useState } from 'react';
 import type { Event } from '../types/event.ts';
 import { geocodeAddress } from '../utils/map.ts';
 import { useThrottle } from '../hooks/useThrottle.tsx';
+import { env } from '../schemas/envSchema.ts';
 
 interface GoogleMapViewProps {
   events: Event[];
@@ -42,7 +43,7 @@ export const GoogleMapView = ({ events }: GoogleMapViewProps) => {
       mapInstanceRef.current = new google.maps.Map(mapRef.current, {
         center: { lat: 37.5665, lng: 126.978 },
         zoom: 15,
-        mapId: import.meta.env.VITE_GOOGLE_MAP_ID,
+        mapId: env.VITE_GOOGLE_MAP_ID,
       });
 
       setIsMapReady(true);
@@ -113,7 +114,7 @@ const loadGoogleMaps = () => {
     }
 
     const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&language=ko`;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${env.VITE_GOOGLE_MAPS_API_KEY}&language=ko`;
     script.async = true;
     script.defer = true;
     script.onload = () => resolve();
