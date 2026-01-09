@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
-import { useDebounce } from '../hooks/useDebounce.tsx';
+import { useDebounce } from '../../hooks/useDebounce.tsx';
 import { Loader2 } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
-import type { EventFormValues } from '../schemas/eventSchema.ts';
-import { CTA } from './CTA.tsx';
-import { Input } from './Input.tsx';
-import { Typography } from './Typography.tsx';
-import { loadGoogleMaps } from '../utils/loadGoogleMaps.ts';
+import type { EventFormValues } from '../../schemas/eventSchema.ts';
+import { CTA } from '../common/CTA.tsx';
+import { Input } from '../common/Input.tsx';
+import { Typography } from '../common/Typography.tsx';
+import { loadGoogleMaps } from '../../utils/trip/loadGoogleMaps.ts';
 
 interface EventTitleLocationStepProps {
   setStep: (step: number) => void;

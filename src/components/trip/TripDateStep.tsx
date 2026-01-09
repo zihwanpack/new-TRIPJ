@@ -1,9 +1,9 @@
 import { useFormContext } from 'react-hook-form';
 
-import type { TripFormValues } from '../schemas/tripSchema.ts';
-import { CTA } from './CTA.tsx';
-import { Calendar } from './Calendar.tsx';
-import { Typography } from './Typography.tsx';
+import type { TripFormValues } from '../../schemas/tripSchema.ts';
+import { CTA } from '../common/CTA.tsx';
+import { Calendar } from '../common/Calendar.tsx';
+import { Typography } from '../common/Typography.tsx';
 interface TripDateStepProps {
   setStep: (step: number) => void;
 }

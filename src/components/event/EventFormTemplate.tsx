@@ -1,8 +1,8 @@
-import { Header } from '../layouts/Header.tsx';
-import type { EventFormValues } from '../schemas/eventSchema.ts';
+import { Header } from '../../layouts/Header.tsx';
+import type { EventFormValues } from '../../schemas/eventSchema.ts';
 import { FormProvider, type UseFormReturn } from 'react-hook-form';
-import { ProgressBar } from './ProgressBar.tsx';
-import { EVENT_FORM_TOTAL_STEPS } from '../constants/event.ts';
+import { ProgressBar } from '../common/ProgressBar.tsx';
+import { EVENT_FORM_TOTAL_STEPS } from '../../constants/event.ts';
 import { EventTitleLocationStep } from './EventTitleLocationStep.tsx';
 import { EventDateTimeStep } from './EventDateTimeStep.tsx';
 import { EventCostAndSubmitStep } from './EventCostAndSubmitStep.tsx';

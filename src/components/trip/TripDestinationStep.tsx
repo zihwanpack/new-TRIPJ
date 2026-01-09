@@ -1,14 +1,14 @@
 import { useState } from 'react';
-import { DESTINATIONS } from '../constants/destinations.ts';
-import { type TripFormValues } from '../schemas/tripSchema.ts';
+import { DESTINATIONS } from '../../constants/destinations.ts';
+import { type TripFormValues } from '../../schemas/tripSchema.ts';
 import { useFormContext } from 'react-hook-form';
 import { ChevronDownIcon } from 'lucide-react';
-import type { DestinationKey } from '../constants/tripImages.ts';
-import type { DestinationType } from '../types/trip.ts';
-import { Button } from './Button.tsx';
-import { CTA } from './CTA.tsx';
+import type { DestinationKey } from '../../constants/tripImages.ts';
+import type { DestinationType } from '../../types/trip.ts';
+import { Button } from '../common/Button.tsx';
+import { CTA } from '../common/CTA.tsx';
 import clsx from 'clsx';
-import { Typography } from './Typography.tsx';
+import { Typography } from '../common/Typography.tsx';
 
 interface TripDestinationStepProps {
   setStep: (step: number) => void;

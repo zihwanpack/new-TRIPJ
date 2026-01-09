@@ -1,18 +1,18 @@
 import { useFormContext } from 'react-hook-form';
-import { CTA } from './CTA.tsx';
+import { CTA } from '../common/CTA.tsx';
 import { useParams } from 'react-router-dom';
-import { FullscreenLoader } from './FullscreenLoader.tsx';
+import { FullscreenLoader } from '../common/FullscreenLoader.tsx';
 import { useRef, useState, useEffect } from 'react';
-import { formatDate, formatTimeDisplay } from '../utils/date.ts';
-import { Button } from './Button.tsx';
-import type { EventFormValues } from '../schemas/eventSchema.ts';
+import { formatDate, formatTimeDisplay } from '../../utils/common/date.ts';
+import { Button } from '../common/Button.tsx';
+import type { EventFormValues } from '../../schemas/eventSchema.ts';
 import clsx from 'clsx';
-import { Calendar } from './Calendar.tsx';
-import { Typography } from './Typography.tsx';
+import { Calendar } from '../common/Calendar.tsx';
+import { Typography } from '../common/Typography.tsx';
 import { useQuery } from '@tanstack/react-query';
-import { tripQueryKeys } from '../constants/queryKeys.ts';
-import type { Trip } from '../types/trip.ts';
-import { getTripDetailApi } from '../api/trip.ts';
+import { tripQueryKeys } from '../../constants/queryKeys.ts';
+import type { Trip } from '../../types/trip.ts';
+import { getTripDetailApi } from '../../api/trip.ts';
 
 interface EventDateTimeStepProps {
   setStep: (step: number) => void;

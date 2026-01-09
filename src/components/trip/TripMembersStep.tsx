@@ -1,18 +1,18 @@
 import { Search, Loader2, X, UserPlus, Check } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
-import type { TripFormValues } from '../schemas/tripSchema.ts';
+import type { TripFormValues } from '../../schemas/tripSchema.ts';
 import { useMemo, useState, type ChangeEvent } from 'react';
-import type { UserSummary } from '../types/user.ts';
-import { useDebounce } from '../hooks/useDebounce.tsx';
-import { Button } from './Button.tsx';
-import { CTA } from './CTA.tsx';
-import { Input } from './Input.tsx';
-import { Typography } from './Typography.tsx';
+import type { UserSummary } from '../../types/user.ts';
+import { useDebounce } from '../../hooks/useDebounce.tsx';
+import { Button } from '../common/Button.tsx';
+import { CTA } from '../common/CTA.tsx';
+import { Input } from '../common/Input.tsx';
+import { Typography } from '../common/Typography.tsx';
 
 import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
-import { userQueryKeys } from '../constants/queryKeys.ts';
-import { getSearchUsersApi, getUsersByEmailApi } from '../api/user.ts';
+import { userQueryKeys } from '../../constants/queryKeys.ts';
+import { getSearchUsersApi, getUsersByEmailApi } from '../../api/user.ts';
 
 interface TripMembersStepProps {
   setStep: (step: number) => void;

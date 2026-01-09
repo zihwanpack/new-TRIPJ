@@ -1,12 +1,12 @@
 import { FormProvider, type UseFormReturn } from 'react-hook-form';
-import { Header } from '../layouts/Header.tsx';
-import { ProgressBar } from './ProgressBar.tsx';
+import { Header } from '../../layouts/Header.tsx';
+import { ProgressBar } from '../common/ProgressBar.tsx';
 import { TripDestinationStep } from './TripDestinationStep.tsx';
-import type { TripFormValues } from '../schemas/tripSchema.ts';
+import type { TripFormValues } from '../../schemas/tripSchema.ts';
 import { TripDateStep } from './TripDateStep.tsx';
 import { TripMembersStep } from './TripMembersStep.tsx';
 import { TripTitleAndSubmitStep } from './TripTitleAndSubmitStep.tsx';
-import { TRIP_FORM_TOTAL_STEPS } from '../constants/trip.ts';
+import { TRIP_FORM_TOTAL_STEPS } from '../../constants/trip.ts';
 
 interface TripFormTemplateProps {
   step: number;

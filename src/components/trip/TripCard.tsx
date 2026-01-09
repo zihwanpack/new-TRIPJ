@@ -1,7 +1,7 @@
 import { CirclePlus } from 'lucide-react';
-import { Card } from './Card';
+import { Card } from '../common/Card.tsx';
 import clsx from 'clsx';
-import { Typography } from './Typography.tsx';
+import { Typography } from '../common/Typography.tsx';
 
 interface BaseTripCardProps {
   size?: 'small' | 'large' | 'largest' | 'myTrips';

@@ -1,9 +1,9 @@
 import { useRef, useEffect, useState } from 'react';
-import type { Event } from '../types/event.ts';
-import { geocodeAddress } from '../utils/map.ts';
-import { useThrottle } from '../hooks/useThrottle.tsx';
-import { env } from '../schemas/envSchema.ts';
-import { loadGoogleMaps } from '../utils/loadGoogleMaps.ts';
+import type { Event } from '../../types/event.ts';
+import { geocodeAddress } from '../../utils/trip/geocodeAddress.ts';
+import { useThrottle } from '../../hooks/useThrottle.tsx';
+import { env } from '../../schemas/common/envSchema.ts';
+import { loadGoogleMaps } from '../../utils/trip/loadGoogleMaps.ts';
 
 interface GoogleMapViewProps {
   events: Event[];

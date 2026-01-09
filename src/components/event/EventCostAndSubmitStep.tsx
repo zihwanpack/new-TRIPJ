@@ -1,19 +1,19 @@
 import { useFormContext } from 'react-hook-form';
-import type { EventFormValues } from '../schemas/eventSchema.ts';
-import { CTA } from './CTA.tsx';
+import type { EventFormValues } from '../../schemas/eventSchema.ts';
+import { CTA } from '../common/CTA.tsx';
 import { Trash2, Plus, ChevronDownIcon } from 'lucide-react';
-import { Button } from './Button.tsx';
+import { Button } from '../common/Button.tsx';
 import { useState } from 'react';
 import { produce } from 'immer';
-import { EVENT_CREATE_STEP_KEY, EVENT_CREATE_STORAGE_KEY } from '../constants/event.ts';
+import { EVENT_CREATE_STEP_KEY, EVENT_CREATE_STORAGE_KEY } from '../../constants/event.ts';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Input } from './Input.tsx';
+import { Input } from '../common/Input.tsx';
 import toast from 'react-hot-toast';
 import clsx from 'clsx';
-import { Typography } from './Typography.tsx';
-import { createEventApi, updateEventApi } from '../api/event.ts';
+import { Typography } from '../common/Typography.tsx';
+import { createEventApi, updateEventApi } from '../../api/event.ts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { eventQueryKeys } from '../constants/queryKeys.ts';
+import { eventQueryKeys } from '../../constants/queryKeys.ts';
 
 const COST_CATEGORIES = ['식비', '교통비', '숙박비', '기타'];
 

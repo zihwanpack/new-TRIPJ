@@ -1,14 +1,14 @@
 import { useFormContext } from 'react-hook-form';
-import type { TripFormValues } from '../schemas/tripSchema.ts';
+import type { TripFormValues } from '../../schemas/tripSchema.ts';
 import { useNavigate, useParams } from 'react-router-dom';
-import { TRIP_CREATE_STEP_KEY, TRIP_CREATE_STORAGE_KEY } from '../constants/trip.ts';
-import { CTA } from './CTA.tsx';
-import { Input } from './Input.tsx';
+import { TRIP_CREATE_STEP_KEY, TRIP_CREATE_STORAGE_KEY } from '../../constants/trip.ts';
+import { CTA } from '../common/CTA.tsx';
+import { Input } from '../common/Input.tsx';
 import toast from 'react-hot-toast';
-import { Typography } from './Typography.tsx';
-import { createTripApi, updateTripApi } from '../api/trip.ts';
+import { Typography } from '../common/Typography.tsx';
+import { createTripApi, updateTripApi } from '../../api/trip.ts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { tripQueryKeys } from '../constants/queryKeys.ts';
+import { tripQueryKeys } from '../../constants/queryKeys.ts';
 
 interface TripTitleAndSubmitStepProps {
   setStep: (step: number) => void;
