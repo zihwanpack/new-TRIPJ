@@ -8,11 +8,12 @@ import { produce } from 'immer';
 import { EVENT_CREATE_STEP_KEY, EVENT_CREATE_STORAGE_KEY } from '../constants/event.ts';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Input } from './Input.tsx';
-import { useDispatch, useSelector } from '../redux/hooks/useCustomRedux.tsx';
-import { createEvent, updateEvent, type EventState } from '../redux/slices/eventSlice.ts';
 import toast from 'react-hot-toast';
 import clsx from 'clsx';
 import { Typography } from './Typography.tsx';
+import { createEventApi, updateEventApi } from '../api/event.ts';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { eventQueryKeys } from '../constants/queryKeys.ts';
 
 const COST_CATEGORIES = ['식비', '교통비', '숙박비', '기타'];
 
@@ -26,18 +27,58 @@ export const EventCostAndSubmitStep = ({ setStep, mode }: EventCostAndSubmitStep
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const navigate = useNavigate();
   const { tripId } = useParams();
+  const { eventId } = useParams();
+  const eventIdNumber = Number(eventId!);
+  const tripIdNumber = Number(tripId!);
   const costs = watch('cost');
-  const dispatch = useDispatch();
+  const queryClient = useQueryClient();
 
   const {
-    isCreateEventLoading,
-    createEventError,
-    eventDetail,
-    isUpdateEventLoading,
-    updateEventError,
-  } = useSelector((state: { event: EventState }) => state.event);
+    mutate: createEvent,
+    isPending: isCreateEventPending,
+    error: createEventError,
+  } = useMutation({
+    mutationFn: (data: EventFormValues) => createEventApi({ ...data, tripId: tripIdNumber }),
+    onSuccess: (createdEvent) => {
+      sessionStorage.removeItem(EVENT_CREATE_STEP_KEY);
+      sessionStorage.removeItem(EVENT_CREATE_STORAGE_KEY);
 
-  const isLoading = mode === 'create' ? isCreateEventLoading : isUpdateEventLoading;
+      queryClient.invalidateQueries({
+        queryKey: eventQueryKeys.list(tripIdNumber),
+      });
+
+      toast.success('이벤트 생성에 성공했습니다.');
+      navigate(`/trips/${tripIdNumber}/events/${createdEvent.eventId}`);
+    },
+    onError: (error) => {
+      toast.error(`이벤트 생성에 실패했습니다. : ${error.message}`);
+    },
+  });
+
+  const {
+    mutate: updateEvent,
+    isPending: isUpdateEventPending,
+    error: updateEventError,
+  } = useMutation({
+    mutationFn: (data: EventFormValues) =>
+      updateEventApi({
+        eventId: eventIdNumber,
+        body: { ...data, tripId: tripIdNumber },
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: eventQueryKeys.detail(eventIdNumber),
+      });
+
+      toast.success('이벤트 수정에 성공했습니다.');
+      navigate(`/trips/${tripIdNumber}/events/${eventIdNumber}`);
+    },
+    onError: (error) => {
+      toast.error(`이벤트 수정에 실패했습니다. : ${error.message}`);
+    },
+  });
+
+  const isLoading = mode === 'create' ? isCreateEventPending : isUpdateEventPending;
   const error = mode === 'create' ? createEventError : updateEventError;
 
   const addCost = () => {
@@ -75,31 +116,12 @@ export const EventCostAndSubmitStep = ({ setStep, mode }: EventCostAndSubmitStep
 
   const handleCreateEvent = async () => {
     const formData = getValues();
-    const result = await dispatch(createEvent({ ...formData, tripId: Number(tripId) }));
-    if (createEvent.fulfilled.match(result)) {
-      sessionStorage.removeItem(EVENT_CREATE_STEP_KEY);
-      sessionStorage.removeItem(EVENT_CREATE_STORAGE_KEY);
-      toast.success('이벤트 생성에 성공했습니다.');
-      navigate(`/trips/${tripId}/events/${result.payload.eventId}`);
-    } else {
-      toast.error('이벤트 생성에 실패했습니다.');
-    }
+    createEvent(formData);
   };
 
   const handleUpdateEvent = async () => {
     const formData = getValues();
-    const result = await dispatch(
-      updateEvent({
-        eventId: eventDetail?.eventId ?? 0,
-        body: { ...formData, tripId: Number(tripId) },
-      })
-    );
-    if (updateEvent.fulfilled.match(result)) {
-      toast.success('이벤트 수정에 성공했습니다.');
-      navigate(`/trips/${tripId}/events/${eventDetail?.eventId}`);
-    } else {
-      toast.error('이벤트 수정에 실패했습니다.');
-    }
+    updateEvent(formData);
   };
 
   return (
@@ -179,7 +201,7 @@ export const EventCostAndSubmitStep = ({ setStep, mode }: EventCostAndSubmitStep
         <Plus size={16} /> 경비 추가
       </Button>
       <div className="mx-4 mt-1 min-h-[20px]">
-        {error && <p className="text-sm text-red-500 pl-1">{error}</p>}
+        {error && <p className="text-sm text-red-500 pl-1">{error.message}</p>}
       </div>
       <div className="flex-1" />
 

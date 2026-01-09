@@ -1,21 +1,33 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { EventFormTemplate } from '../components/EventFormTemplate.tsx';
-import { useDispatch, useSelector } from '../redux/hooks/useCustomRedux.tsx';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { eventFormSchema, type EventFormValues } from '../schemas/eventSchema.ts';
-import { fetchEventDetail, type EventState } from '../redux/slices/eventSlice.ts';
+
 import { FullscreenLoader } from '../components/FullscreenLoader.tsx';
+import { getEventDetailApi } from '../api/event.ts';
+import { eventQueryKeys } from '../constants/queryKeys.ts';
+import { useQuery } from '@tanstack/react-query';
 
 export const EventEditPage = () => {
   const navigate = useNavigate();
   const { eventId } = useParams();
   const [step, setStep] = useState(1);
-  const { eventDetail, isEventDetailLoading, eventDetailError } = useSelector(
-    (state: { event: EventState }) => state.event
-  );
-  const dispatch = useDispatch();
+  const eventIdNumber = Number(eventId);
+
+  const {
+    data: eventDetail,
+    isPending: isEventDetailPending,
+    isError: isEventDetailError,
+    error: eventDetailError,
+  } = useQuery({
+    queryKey: eventQueryKeys.detail(eventIdNumber),
+    queryFn: () => getEventDetailApi({ eventId: eventIdNumber }),
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    enabled: !!eventId,
+  });
 
   const defaultValues = {
     eventName: '',
@@ -32,12 +44,6 @@ export const EventEditPage = () => {
   });
 
   useEffect(() => {
-    if (eventId) {
-      dispatch(fetchEventDetail({ eventId: Number(eventId) }));
-    }
-  }, [dispatch, eventId]);
-
-  useEffect(() => {
     if (!eventDetail) return;
 
     form.reset({
@@ -49,12 +55,12 @@ export const EventEditPage = () => {
     });
   }, [eventDetail, form]);
 
-  if (isEventDetailLoading) {
+  if (isEventDetailPending) {
     return <FullscreenLoader />;
   }
 
-  if (eventDetailError) {
-    return <div>이벤트 정보를 불러올 수 없습니다.</div>;
+  if (isEventDetailError) {
+    return <div className="text-xl font-semibold text-red-500">{eventDetailError?.message}</div>;
   }
 
   const handleCloseForm = () => {

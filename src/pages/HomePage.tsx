@@ -7,39 +7,60 @@ import { formatDateRange } from '../utils/date.ts';
 import { getWelcomeMessage } from '../utils/getWelcomeMessage.ts';
 import { Footer } from '../layouts/Footer.tsx';
 import { FullscreenLoader } from '../components/FullscreenLoader.tsx';
-import { useSelector, useDispatch } from '../redux/hooks/useCustomRedux.tsx';
-import { fetchAllMyTrips, type TripState } from '../redux/slices/tripSlice.ts';
-import { useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { tripQueryKeys } from '../constants/queryKeys.ts';
+import { getMyOnGoingTripApi, getMyUpcomingTripsApi, getMyPastTripsApi } from '../api/trip';
 
 export const HomePage = () => {
   const { user } = useAuthStatus();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const userId = user?.id ?? '';
 
   const {
-    ongoingTrip,
-    upcomingTrips,
-    pastTrips,
-    isTripOngoingLoading,
-    isTripUpcomingLoading,
-    isTripPastLoading,
-    tripOngoingError,
-    tripUpcomingError,
-    tripPastError,
-  } = useSelector((state: { trip: TripState }) => state.trip);
+    data: ongoingTrip,
+    isPending: isOngoingTripPending,
+    isError: isOngoingTripError,
+    error: ongoingTripError,
+  } = useQuery({
+    queryKey: tripQueryKeys.ongoing(userId),
+    queryFn: () => getMyOnGoingTripApi({ userId }),
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    enabled: !!userId,
+  });
 
-  useEffect(() => {
-    if (user?.id) {
-      dispatch(fetchAllMyTrips({ userId: user.id }));
-    }
-  }, [dispatch, user?.id]);
+  const {
+    data: upcomingTrips,
+    isPending: isUpcomingTripsPending,
+    isError: isUpcomingTripsError,
+    error: upcomingTripsError,
+  } = useQuery({
+    queryKey: tripQueryKeys.upcoming(userId),
+    queryFn: () => getMyUpcomingTripsApi({ userId }),
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    enabled: !!userId,
+  });
 
-  if (isTripOngoingLoading || isTripUpcomingLoading || isTripPastLoading) {
+  const {
+    data: pastTrips,
+    isPending: isPastTripsPending,
+    isError: isPastTripsError,
+    error: pastTripsError,
+  } = useQuery({
+    queryKey: tripQueryKeys.past(userId),
+    queryFn: () => getMyPastTripsApi({ userId }),
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    enabled: !!userId,
+  });
+
+  if (isOngoingTripPending || isUpcomingTripsPending || isPastTripsPending) {
     return <FullscreenLoader />;
   }
   const welcomeMessage = getWelcomeMessage({
-    ongoingTrip,
-    upcomingTrip: upcomingTrips[0] ?? null,
+    ongoingTrip: ongoingTrip ?? null,
+    upcomingTrip: upcomingTrips?.[0] ?? null,
   });
 
   const DEFAULT_TRIP_IMAGE = TRIP_IMAGE_PATHS.beach;
@@ -52,9 +73,9 @@ export const HomePage = () => {
             {welcomeMessage}
           </p>
         </div>
-        {tripOngoingError ? (
+        {isOngoingTripError ? (
           <div className="flex flex-col items-center justify-center ">
-            <p className="text-xl font-semibold text-red-500">{tripOngoingError}</p>
+            <p className="text-xl font-semibold text-red-500">{ongoingTripError?.message}</p>
           </div>
         ) : (
           ongoingTrip && (
@@ -75,9 +96,9 @@ export const HomePage = () => {
             </section>
           )
         )}
-        {tripUpcomingError ? (
+        {isUpcomingTripsError ? (
           <div className="flex flex-col items-center justify-center ">
-            <p className="text-xl font-semibold text-red-500">{tripUpcomingError}</p>
+            <p className="text-xl font-semibold text-red-500">{upcomingTripsError?.message}</p>
           </div>
         ) : (
           <section className="flex flex-col items-start gap-3 ">
@@ -101,9 +122,9 @@ export const HomePage = () => {
           </section>
         )}
 
-        {tripPastError ? (
+        {isPastTripsError ? (
           <div className="flex flex-col items-center justify-center ">
-            <p className="text-xl font-semibold text-red-500">{tripPastError}</p>
+            <p className="text-xl font-semibold text-red-500">{pastTripsError?.message}</p>
           </div>
         ) : (
           pastTrips && (

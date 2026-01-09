@@ -1,67 +1,63 @@
-import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Calendar, Clock, DollarSign, MapPin, Pencil, Trash } from 'lucide-react';
-
 import { Header } from '../layouts/Header.tsx';
 import { FullscreenLoader } from '../components/FullscreenLoader.tsx';
 import { CTA } from '../components/CTA.tsx';
-
-import { useDispatch, useSelector } from '../redux/hooks/useCustomRedux.tsx';
-import {
-  deleteEvent,
-  fetchEventDetail,
-  clearEventDetail,
-  type EventState,
-} from '../redux/slices/eventSlice.ts';
-
 import { formatDate } from '../utils/date.ts';
 import { getTotal } from '../utils/getTotal.ts';
 import toast from 'react-hot-toast';
 import { Typography } from '../components/Typography.tsx';
+import { eventQueryKeys } from '../constants/queryKeys.ts';
+import { deleteEventApi, getEventDetailApi } from '../api/event.ts';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 export const EventDetailPage = () => {
   const { eventId, tripId } = useParams();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const eventIdNumber = Number(eventId);
+  const tripIdNumber = Number(tripId);
 
-  const { eventDetail, isEventDetailLoading, eventDetailError } = useSelector(
-    (state: { event: EventState }) => state.event
-  );
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    if (eventId) {
-      dispatch(fetchEventDetail({ eventId: Number(eventId) }));
-    }
-    return () => {
-      dispatch(clearEventDetail());
-    };
-  }, [eventId, dispatch]);
+  const {
+    data: eventDetail,
+    isPending: isEventDetailPending,
+    isError: isEventDetailError,
+    error: eventDetailError,
+  } = useQuery({
+    queryKey: eventQueryKeys.detail(eventIdNumber),
+    queryFn: () => getEventDetailApi({ eventId: eventIdNumber }),
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    enabled: !!eventId,
+  });
 
-  const deleteEventHandler = async () => {
-    const result = await dispatch(deleteEvent({ eventId: Number(eventId) }));
-    if (deleteEvent.fulfilled.match(result)) {
+  const deleteEventMutation = useMutation({
+    mutationFn: () => deleteEventApi({ eventId: eventIdNumber }),
+    onSuccess: () => {
       toast.success('이벤트 삭제에 성공했습니다.');
+      queryClient.invalidateQueries({
+        queryKey: eventQueryKeys.list(tripIdNumber),
+      });
       navigate(`/trips/${tripId}`);
-    } else {
+    },
+    onError: () => {
       toast.error('이벤트 삭제에 실패했습니다.');
-    }
+    },
+  });
+
+  const deleteEventHandler = () => {
+    deleteEventMutation.mutate();
   };
 
   const editEventHandler = () => {
     navigate(`/trips/${tripId}/events/${eventId}/edit`);
   };
 
-  if (isEventDetailLoading) return <FullscreenLoader />;
-  if (eventDetailError)
-    return (
-      <div className="p-4 text-center text-gray-500 dark:text-gray-400">에러가 발생했습니다.</div>
-    );
-  if (!eventDetail)
-    return (
-      <div className="p-4 text-center text-gray-500 dark:text-gray-400">
-        이벤트 데이터가 없습니다.
-      </div>
-    );
+  if (isEventDetailPending) return <FullscreenLoader />;
+
+  if (isEventDetailError)
+    return <div className="text-xl font-semibold text-red-500">{eventDetailError?.message}</div>;
 
   const totalCost = getTotal(eventDetail.cost.map((c) => c.value) || []);
 

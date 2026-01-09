@@ -11,21 +11,24 @@ importers:
       '@hookform/resolvers':
         specifier: ^5.2.2
         version: 5.2.2(react-hook-form@7.66.1(react@19.2.0))
-      '@reduxjs/toolkit':
-        specifier: ^2.11.2
-        version: 2.11.2(react-redux@9.2.0(@types/react@19.2.6)(react@19.2.0)(redux@5.0.1))(react@19.2.0)
       '@tailwindcss/postcss':
         specifier: ^4.1.17
         version: 4.1.17
       '@tailwindcss/vite':
         specifier: ^4.1.17
         version: 4.1.17(vite@7.2.2(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1))
+      '@tanstack/query-async-storage-persister':
+        specifier: ^5.90.18
+        version: 5.90.18
       '@tanstack/react-query':
         specifier: ^5.90.10
         version: 5.90.10(react@19.2.0)
       '@tanstack/react-query-devtools':
         specifier: ^5.90.2
         version: 5.90.2(@tanstack/react-query@5.90.10(react@19.2.0))(react@19.2.0)
+      '@tanstack/react-query-persist-client':
+        specifier: ^5.90.18
+        version: 5.90.18(@tanstack/react-query@5.90.10(react@19.2.0))(react@19.2.0)
       axios:
         specifier: ^1.13.2
         version: 1.13.2
@@ -62,9 +65,6 @@ importers:
       react-hot-toast:
         specifier: ^2.6.0
         version: 2.6.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
-      react-redux:
-        specifier: ^9.2.0
-        version: 9.2.0(@types/react@19.2.6)(react@19.2.0)(redux@5.0.1)
       react-router-dom:
         specifier: ^7.9.6
         version: 7.9.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -471,17 +471,6 @@ packages:
     resolution: {integrity: sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg==}
     engines: {node: '>= 8'}
 
-  '@reduxjs/toolkit@2.11.2':
-    resolution: {integrity: sha512-Kd6kAHTA6/nUpp8mySPqj3en3dm0tdMIgbttnQ1xFMVpufoj+ADi8pXLBsd4xzTRHQa7t/Jv8W5UnCuW4kuWMQ==}
-    peerDependencies:
-      react: ^16.9.0 || ^17.0.0 || ^18 || ^19
-      react-redux: ^7.2.1 || ^8.1.3 || ^9.0.0
-    peerDependenciesMeta:
-      react:
-        optional: true
-      react-redux:
-        optional: true
-
   '@rolldown/pluginutils@1.0.0-beta.47':
     resolution: {integrity: sha512-8QagwMH3kNCuzD8EWL8R2YPW5e4OrHNSAHRFDdmFqEwEaD/KcNKjVoumo+gP2vW5eKB2UPbM6vTYiGZX0ixLnw==}
 
@@ -599,9 +588,6 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@standard-schema/spec@1.1.0':
-    resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
-
   '@standard-schema/utils@0.3.0':
     resolution: {integrity: sha512-e7Mew686owMaPJVNNLs55PUvgz371nKgwsc4vxE49zsODpJEnxgxRo2y/OKrqueavXgZNMDVj3DdHFlaSAeU8g==}
 
@@ -698,16 +684,31 @@ packages:
     peerDependencies:
       vite: ^5.2.0 || ^6 || ^7
 
+  '@tanstack/query-async-storage-persister@5.90.18':
+    resolution: {integrity: sha512-vCZHpodK3N7MQuRGi79YB/+steiAJnCWD78VbVl79+ysoFHsbD85UX+x40uTicXxml5E2kmxn7Yb4Kbwh6TpLQ==}
+
   '@tanstack/query-core@5.90.10':
     resolution: {integrity: sha512-EhZVFu9rl7GfRNuJLJ3Y7wtbTnENsvzp+YpcAV7kCYiXni1v8qZh++lpw4ch4rrwC0u/EZRnBHIehzCGzwXDSQ==}
 
+  '@tanstack/query-core@5.90.16':
+    resolution: {integrity: sha512-MvtWckSVufs/ja463/K4PyJeqT+HMlJWtw6PrCpywznd2NSgO3m4KwO9RqbFqGg6iDE8vVMFWMeQI4Io3eEYww==}
+
   '@tanstack/query-devtools@5.90.1':
     resolution: {integrity: sha512-GtINOPjPUH0OegJExZ70UahT9ykmAhmtNVcmtdnOZbxLwT7R5OmRztR5Ahe3/Cu7LArEmR6/588tAycuaWb1xQ==}
+
+  '@tanstack/query-persist-client-core@5.91.15':
+    resolution: {integrity: sha512-vnPSfQVo41EKJN8v20nkhWNZPyB1dMJIy5icOvCGzcCJzsmRefYY1owtr63ICOcjOiPPTuNEfPsdjdBhkzYnmA==}
 
   '@tanstack/react-query-devtools@5.90.2':
     resolution: {integrity: sha512-vAXJzZuBXtCQtrY3F/yUNJCV4obT/A/n81kb3+YqLbro5Z2+phdAbceO+deU3ywPw8B42oyJlp4FhO0SoivDFQ==}
     peerDependencies:
       '@tanstack/react-query': ^5.90.2
+      react: ^18 || ^19
+
+  '@tanstack/react-query-persist-client@5.90.18':
+    resolution: {integrity: sha512-ToVRTVpjzTrd9S/p7JIvGdLs+Xtz9aDMM/7+TQGSV9notY8Jt64irfAAAkZ05syftLKS+3KPgyKAnHcVeKVbWQ==}
+    peerDependencies:
+      '@tanstack/react-query': ^5.90.16
       react: ^18 || ^19
 
   '@tanstack/react-query@5.90.10':
@@ -746,9 +747,6 @@ packages:
 
   '@types/react@19.2.6':
     resolution: {integrity: sha512-p/jUvulfgU7oKtj6Xpk8cA2Y1xKTtICGpJYeJXz2YVO2UcvjQgeRMLDGfDeqeRW2Ta+0QNFwcc8X3GH8SxZz6w==}
-
-  '@types/use-sync-external-store@0.0.6':
-    resolution: {integrity: sha512-zFDAD+tlpf2r4asuHEj0XH6pY6i0g5NeAHPn+15wk3BV6JA69eERFXC1gyGThDkVa1zCyKr5jox1+2LbV/AMLg==}
 
   '@typescript-eslint/eslint-plugin@8.47.0':
     resolution: {integrity: sha512-fe0rz9WJQ5t2iaLfdbDc9T80GJy0AeO453q8C3YCilnGozvOyCG5t+EZtg7j7D88+c3FipfP/x+wzGnh1xp8ZA==}
@@ -1278,9 +1276,6 @@ packages:
   immer@10.2.0:
     resolution: {integrity: sha512-d/+XTN3zfODyjr89gM3mPq1WNX2B8pYsu7eORitdwyA2sBubnTl3laYlBk4sXY5FUa5qTZGBDPJICVbvqzjlbw==}
 
-  immer@11.1.0:
-    resolution: {integrity: sha512-dlzb07f5LDY+tzs+iLCSXV2yuhaYfezqyZQc+n6baLECWkOMEWxkECAOnXL0ba7lsA25fM9b2jtzpu/uxo1a7g==}
-
   import-fresh@3.3.1:
     resolution: {integrity: sha512-TR3KfrTZTYLPB6jUjfx6MF9WcWrHL9su5TObK4ZkYgBdWKPOFoSoQIdEuTuR82pmtxH2spWG9h6etwfr1pLBqQ==}
     engines: {node: '>=6'}
@@ -1591,18 +1586,6 @@ packages:
       react: '>=16'
       react-dom: '>=16'
 
-  react-redux@9.2.0:
-    resolution: {integrity: sha512-ROY9fvHhwOD9ySfrF0wmvu//bKCQ6AeZZq1nJNtbDC+kk5DuSuNX/n6YWYF/SYy7bSba4D4FSz8DJeKY/S/r+g==}
-    peerDependencies:
-      '@types/react': ^18.2.25 || ^19
-      react: ^18.0 || ^19
-      redux: ^5.0.0
-    peerDependenciesMeta:
-      '@types/react':
-        optional: true
-      redux:
-        optional: true
-
   react-refresh@0.18.0:
     resolution: {integrity: sha512-QgT5//D3jfjJb6Gsjxv0Slpj23ip+HtOpnNgnb2S5zU3CB26G/IDPGoy4RJB42wzFE46DRsstbW6tKHoKbhAxw==}
     engines: {node: '>=0.10.0'}
@@ -1634,20 +1617,9 @@ packages:
     resolution: {integrity: sha512-tmbWg6W31tQLeB5cdIBOicJDJRR2KzXsV7uSK9iNfLWQ5bIZfxuPEHp7M8wiHyHnn0DD1i7w3Zmin0FtkrwoCQ==}
     engines: {node: '>=0.10.0'}
 
-  redux-thunk@3.1.0:
-    resolution: {integrity: sha512-NW2r5T6ksUKXCabzhL9z+h206HQw/NJkcLm1GPImRQ8IzfXwRGqjVhKJGauHirT0DAuyy6hjdnMZaRoAcy0Klw==}
-    peerDependencies:
-      redux: ^5.0.0
-
-  redux@5.0.1:
-    resolution: {integrity: sha512-M9/ELqF6fy8FwmkpnF0S3YKOqMyoWJ4+CS5Efg2ct3oY9daQvd/Pc71FpGZsVsbl3Cpb+IIcjBDUnnyBdQbq4w==}
-
   relateurl@0.2.7:
     resolution: {integrity: sha512-G08Dxvm4iDN3MLM0EsP62EDV9IuhXPR6blNz6Utcp7zyV3tr4HVNINt6MpaRWbxoOHT3Q7YN2P+jaHX8vUbgog==}
     engines: {node: '>= 0.10'}
-
-  reselect@5.1.1:
-    resolution: {integrity: sha512-K/BG6eIky/SBpzfHZv/dd+9JBFiS4SWV7FIujVyJRux6e45+73RaUHXLmIR1f7WOMaQ0U1km6qwklRQxpJJY0w==}
 
   resolve-from@4.0.0:
     resolution: {integrity: sha512-pb/MYmXstAkysRFx8piNI1tGFNQIFA3vkE3Gq4EuA1dF6gHp/+vgZqsCGJapvy8N3Q+4o7FwvquPJcnZ7RYy4g==}
@@ -1784,11 +1756,6 @@ packages:
     peerDependencies:
       immer: '>=8.0.0'
       react: ^16.8.0 || ^17.0.1 || ^18.0.0 || ^19.0.0
-
-  use-sync-external-store@1.6.0:
-    resolution: {integrity: sha512-Pp6GSwGP/NrPIrxVFAIkOQeyw8lFenOHijQWkUTrDvrF4ALqylP2C/KCkeS9dpUM3KvYRQhna5vt7IL95+ZQ9w==}
-    peerDependencies:
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
   vite-plugin-html@3.2.2:
     resolution: {integrity: sha512-vb9C9kcdzcIo/Oc3CLZVS03dL5pDlOFuhGlZYDCJ840BhWl/0nGeZWf3Qy7NlOayscY4Cm/QRgULCQkEZige5Q==}
@@ -2154,18 +2121,6 @@ snapshots:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.19.1
 
-  '@reduxjs/toolkit@2.11.2(react-redux@9.2.0(@types/react@19.2.6)(react@19.2.0)(redux@5.0.1))(react@19.2.0)':
-    dependencies:
-      '@standard-schema/spec': 1.1.0
-      '@standard-schema/utils': 0.3.0
-      immer: 11.1.0
-      redux: 5.0.1
-      redux-thunk: 3.1.0(redux@5.0.1)
-      reselect: 5.1.1
-    optionalDependencies:
-      react: 19.2.0
-      react-redux: 9.2.0(@types/react@19.2.6)(react@19.2.0)(redux@5.0.1)
-
   '@rolldown/pluginutils@1.0.0-beta.47': {}
 
   '@rollup/pluginutils@4.2.1':
@@ -2238,8 +2193,6 @@ snapshots:
 
   '@rollup/rollup-win32-x64-msvc@4.53.3':
     optional: true
-
-  '@standard-schema/spec@1.1.0': {}
 
   '@standard-schema/utils@0.3.0': {}
 
@@ -2319,13 +2272,30 @@ snapshots:
       tailwindcss: 4.1.17
       vite: 7.2.2(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)
 
+  '@tanstack/query-async-storage-persister@5.90.18':
+    dependencies:
+      '@tanstack/query-core': 5.90.16
+      '@tanstack/query-persist-client-core': 5.91.15
+
   '@tanstack/query-core@5.90.10': {}
 
+  '@tanstack/query-core@5.90.16': {}
+
   '@tanstack/query-devtools@5.90.1': {}
+
+  '@tanstack/query-persist-client-core@5.91.15':
+    dependencies:
+      '@tanstack/query-core': 5.90.16
 
   '@tanstack/react-query-devtools@5.90.2(@tanstack/react-query@5.90.10(react@19.2.0))(react@19.2.0)':
     dependencies:
       '@tanstack/query-devtools': 5.90.1
+      '@tanstack/react-query': 5.90.10(react@19.2.0)
+      react: 19.2.0
+
+  '@tanstack/react-query-persist-client@5.90.18(@tanstack/react-query@5.90.10(react@19.2.0))(react@19.2.0)':
+    dependencies:
+      '@tanstack/query-persist-client-core': 5.91.15
       '@tanstack/react-query': 5.90.10(react@19.2.0)
       react: 19.2.0
 
@@ -2372,8 +2342,6 @@ snapshots:
   '@types/react@19.2.6':
     dependencies:
       csstype: 3.2.3
-
-  '@types/use-sync-external-store@0.0.6': {}
 
   '@typescript-eslint/eslint-plugin@8.47.0(@typescript-eslint/parser@8.47.0(eslint@9.39.1(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.1(jiti@2.6.1))(typescript@5.9.3)':
     dependencies:
@@ -2958,8 +2926,6 @@ snapshots:
 
   immer@10.2.0: {}
 
-  immer@11.1.0: {}
-
   import-fresh@3.3.1:
     dependencies:
       parent-module: 1.0.1
@@ -3224,15 +3190,6 @@ snapshots:
       react: 19.2.0
       react-dom: 19.2.0(react@19.2.0)
 
-  react-redux@9.2.0(@types/react@19.2.6)(react@19.2.0)(redux@5.0.1):
-    dependencies:
-      '@types/use-sync-external-store': 0.0.6
-      react: 19.2.0
-      use-sync-external-store: 1.6.0(react@19.2.0)
-    optionalDependencies:
-      '@types/react': 19.2.6
-      redux: 5.0.1
-
   react-refresh@0.18.0: {}
 
   react-router-dom@7.9.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
@@ -3256,15 +3213,7 @@ snapshots:
 
   react@19.2.0: {}
 
-  redux-thunk@3.1.0(redux@5.0.1):
-    dependencies:
-      redux: 5.0.1
-
-  redux@5.0.1: {}
-
   relateurl@0.2.7: {}
-
-  reselect@5.1.1: {}
 
   resolve-from@4.0.0: {}
 
@@ -3399,10 +3348,6 @@ snapshots:
   use-immer@0.11.0(immer@10.2.0)(react@19.2.0):
     dependencies:
       immer: 10.2.0
-      react: 19.2.0
-
-  use-sync-external-store@1.6.0(react@19.2.0):
-    dependencies:
       react: 19.2.0
 
   vite-plugin-html@3.2.2(vite@7.2.2(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)):

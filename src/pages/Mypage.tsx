@@ -11,24 +11,20 @@ import { useNavigate } from 'react-router-dom';
 import { withdrawApi } from '../api/user.ts';
 import { useState } from 'react';
 import { Modal } from '../components/Modal.tsx';
-import { useDispatch } from '../redux/hooks/useCustomRedux.tsx';
-import { resetTripState } from '../redux/slices/tripSlice.ts';
-import { resetEventState } from '../redux/slices/eventSlice.ts';
-import { resetUserState } from '../redux/slices/userSlice.ts';
 import { useTheme } from '../hooks/useTheme.tsx';
+import { useQueryClient } from '@tanstack/react-query';
 
 export const Mypage = () => {
   const { user, logout } = useAuthStatus();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const dispatch = useDispatch();
   const { theme, setTheme } = useTheme();
   const [open, setOpen] = useState<boolean>(false);
 
   const copyToClipboard = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
-
       toast.success('복사 완료');
     } catch (err) {
       toast.error('복사 실패');
@@ -39,10 +35,9 @@ export const Mypage = () => {
   const handleLogout = async () => {
     try {
       await logout();
-      dispatch(resetEventState());
-      dispatch(resetTripState());
-      dispatch(resetUserState());
+      queryClient.clear();
       sessionStorage.clear();
+      localStorage.clear();
       navigate('/login');
     } catch {
       toast.error('로그아웃 실패');
@@ -50,13 +45,11 @@ export const Mypage = () => {
   };
   const executeWithdrawal = async () => {
     if (!user?.id) return;
-
     try {
       await withdrawApi({ id: user.id });
-      dispatch(resetEventState());
-      dispatch(resetTripState());
-      dispatch(resetUserState());
+      queryClient.clear();
       sessionStorage.clear();
+      localStorage.clear();
       navigate('/login');
       toast.success('회원탈퇴가 완료되었습니다.');
     } catch {
