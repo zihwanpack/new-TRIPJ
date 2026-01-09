@@ -1,10 +1,10 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import { TripFormTemplate } from '../components/TripFormTemplate.tsx';
+import { TripFormTemplate } from '../components/trip/TripFormTemplate.tsx';
 import { useEffect, useState } from 'react';
 import { tripFormSchema, type TripFormValues } from '../schemas/tripSchema.ts';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { FullscreenLoader } from '../components/FullscreenLoader.tsx';
+import { FullscreenLoader } from '../components/common/FullscreenLoader.tsx';
 import { tripQueryKeys } from '../constants/queryKeys.ts';
 import { getTripDetailApi } from '../api/trip.ts';
 import { useQuery } from '@tanstack/react-query';

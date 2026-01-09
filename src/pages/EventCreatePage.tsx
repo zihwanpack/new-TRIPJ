@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { eventFormSchema, type EventFormValues } from '../schemas/eventSchema.ts';
 import { EVENT_CREATE_STEP_KEY, EVENT_CREATE_STORAGE_KEY } from '../constants/event.ts';
 import { useEffect } from 'react';
-import { EventFormTemplate } from '../components/EventFormTemplate.tsx';
+import { EventFormTemplate } from '../components/event/EventFormTemplate.tsx';
 
 export const EventCreatePage = () => {
   const {

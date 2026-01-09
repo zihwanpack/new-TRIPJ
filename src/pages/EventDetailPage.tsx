@@ -1,12 +1,12 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { Calendar, Clock, DollarSign, MapPin, Pencil, Trash } from 'lucide-react';
 import { Header } from '../layouts/Header.tsx';
-import { FullscreenLoader } from '../components/FullscreenLoader.tsx';
-import { CTA } from '../components/CTA.tsx';
-import { formatDate } from '../utils/date.ts';
-import { getTotal } from '../utils/getTotal.ts';
+import { FullscreenLoader } from '../components/common/FullscreenLoader.tsx';
+import { CTA } from '../components/common/CTA.tsx';
+import { formatDate } from '../utils/common/date.ts';
+import { getTotal } from '../utils/common/getTotal.ts';
 import toast from 'react-hot-toast';
-import { Typography } from '../components/Typography.tsx';
+import { Typography } from '../components/common/Typography.tsx';
 import { eventQueryKeys } from '../constants/queryKeys.ts';
 import { deleteEventApi, getEventDetailApi } from '../api/event.ts';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';

@@ -1,5 +1,5 @@
 import './index.css';
-import './schemas/envSchema.ts';
+import './schemas/common/envSchema.ts';
 
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Toaster } from 'react-hot-toast';

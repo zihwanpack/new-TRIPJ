@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Typography } from '../components/Typography.tsx';
+import { Typography } from '../components/common/Typography.tsx';
 
 export const NotFound = () => {
   return (

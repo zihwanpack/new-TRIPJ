@@ -1,6 +1,6 @@
 import { X } from 'lucide-react';
-import { Button } from '../components/Button.tsx';
-import { Typography } from '../components/Typography.tsx';
+import { Button } from '../components/common/Button.tsx';
+import { Typography } from '../components/common/Typography.tsx';
 
 interface HeaderProps {
   title: string;

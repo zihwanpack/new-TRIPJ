@@ -1,11 +1,11 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import { EventFormTemplate } from '../components/EventFormTemplate.tsx';
+import { EventFormTemplate } from '../components/event/EventFormTemplate.tsx';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { eventFormSchema, type EventFormValues } from '../schemas/eventSchema.ts';
 
-import { FullscreenLoader } from '../components/FullscreenLoader.tsx';
+import { FullscreenLoader } from '../components/common/FullscreenLoader.tsx';
 import { getEventDetailApi } from '../api/event.ts';
 import { eventQueryKeys } from '../constants/queryKeys.ts';
 import { useQuery } from '@tanstack/react-query';

@@ -10,15 +10,15 @@ import {
   getMyOnGoingTripApi,
 } from '../api/trip.ts';
 import { useAuthStatus } from '../hooks/useAuthStatus.tsx';
-import { TripCard } from '../components/TripCard.tsx';
+import { TripCard } from '../components/trip/TripCard.tsx';
 import { TRIP_IMAGE_PATHS } from '../constants/tripImages.ts';
 import { useNavigate } from 'react-router-dom';
-import { calculateDday, formatDateRange } from '../utils/date.ts';
-import { Skeleton } from '../components/Skeleton.tsx';
-import { Button } from '../components/Button.tsx';
+import { calculateDday, formatDateRange } from '../utils/common/date.ts';
+import { Skeleton } from '../components/common/Skeleton.tsx';
+import { Button } from '../components/common/Button.tsx';
 import { ArrowUpIcon } from 'lucide-react';
 import clsx from 'clsx';
-import { Typography } from '../components/Typography.tsx';
+import { Typography } from '../components/common/Typography.tsx';
 
 type TripTabStatus = 'upcoming' | 'ongoing' | 'completed';
 

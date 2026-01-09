@@ -1,6 +1,6 @@
 import { AnimatePresence } from 'framer-motion';
 import { Outlet, useLocation } from 'react-router-dom';
-import { PageTransition } from '../components/PageTransition.tsx';
+import { PageTransition } from '../components/common/PageTransition.tsx';
 
 export const BaseLayout = () => {
   const location = useLocation();

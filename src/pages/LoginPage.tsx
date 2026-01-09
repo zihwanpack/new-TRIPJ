@@ -8,10 +8,10 @@ import { useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 
 import { useAuthStatus } from '../hooks/useAuthStatus.tsx';
-import { Button } from '../components/Button.tsx';
+import { Button } from '../components/common/Button.tsx';
 import type { Provider } from '../types/user.ts';
-import { Typography } from '../components/Typography.tsx';
-import { env } from '../schemas/envSchema.ts';
+import { Typography } from '../components/common/Typography.tsx';
+import { env } from '../schemas/common/envSchema.ts';
 
 const WORDS = ['누구나', 'J처럼', '여행하기'];
 

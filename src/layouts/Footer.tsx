@@ -7,7 +7,7 @@ import offUser from '@/assets/navigation/offUser.svg';
 
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { Button } from '../components/Button.tsx';
+import { Button } from '../components/common/Button.tsx';
 
 export const Footer = () => {
   const { pathname } = useLocation();

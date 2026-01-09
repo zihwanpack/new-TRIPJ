@@ -11,17 +11,17 @@ import {
   Plus,
   Trash,
 } from 'lucide-react';
-import { FullscreenLoader } from '../components/FullscreenLoader.tsx';
+import { FullscreenLoader } from '../components/common/FullscreenLoader.tsx';
 import type { Event } from '../types/event.ts';
-import { Button } from '../components/Button.tsx';
+import { Button } from '../components/common/Button.tsx';
 import { useState } from 'react';
-import { getDateRange, filteringByDateRange, formatDate } from '../utils/date.ts';
-import { GoogleMapView } from '../components/GoogleMapView.tsx';
-import { getTotal } from '../utils/getTotal.ts';
+import { getDateRange, filteringByDateRange, formatDate } from '../utils/common/date.ts';
+import { GoogleMapView } from '../components/trip/GoogleMapView.tsx';
+import { getTotal } from '../utils/common/getTotal.ts';
 
 import toast from 'react-hot-toast';
 import clsx from 'clsx';
-import { Typography } from '../components/Typography.tsx';
+import { Typography } from '../components/common/Typography.tsx';
 import { eventQueryKeys, tripQueryKeys, userQueryKeys } from '../constants/queryKeys.ts';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { deleteTripApi, getTripDetailApi } from '../api/trip.ts';

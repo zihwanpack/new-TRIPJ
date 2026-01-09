@@ -1,12 +1,12 @@
 import { Link, useNavigate } from 'react-router-dom';
 
 import { useAuthStatus } from '../hooks/useAuthStatus.tsx';
-import { TripCard } from '../components/TripCard.tsx';
+import { TripCard } from '../components/trip/TripCard.tsx';
 import { TRIP_IMAGE_PATHS } from '../constants/tripImages.ts';
-import { formatDateRange } from '../utils/date.ts';
-import { getWelcomeMessage } from '../utils/getWelcomeMessage.ts';
+import { formatDateRange } from '../utils/common/date.ts';
+import { getWelcomeMessage } from '../utils/trip/getWelcomeMessage.ts';
 import { Footer } from '../layouts/Footer.tsx';
-import { FullscreenLoader } from '../components/FullscreenLoader.tsx';
+import { FullscreenLoader } from '../components/common/FullscreenLoader.tsx';
 import { useQuery } from '@tanstack/react-query';
 import { tripQueryKeys } from '../constants/queryKeys.ts';
 import { getMyOnGoingTripApi, getMyUpcomingTripsApi, getMyPastTripsApi } from '../api/trip';

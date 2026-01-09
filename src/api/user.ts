@@ -9,6 +9,7 @@ import { authenticatedClient } from './client/authenticatedClient.ts';
 import { UserError } from '../errors/customErrors.ts';
 import { requestHandler } from './util/requestHandler.ts';
 import { userListSchema } from '../schemas/userSchema.ts';
+import { unauthenticatedClient } from './client/unauthenticatedClient.ts';
 
 export const getSearchUsersApi = async (query: string): Promise<UserSummary[]> => {
   return requestHandler({
@@ -28,7 +29,7 @@ export const getUsersByEmailApi = async (emails: string[]): Promise<UserSummary[
 
 export const withdrawApi = async ({ id }: WithdrawParam): Promise<null> => {
   return requestHandler({
-    request: () => authenticatedClient.delete<WithdrawResponse>(`/users/${id}`),
+    request: () => unauthenticatedClient.delete<WithdrawResponse>(`/users/${id}`),
     ErrorClass: UserError,
   });
 };

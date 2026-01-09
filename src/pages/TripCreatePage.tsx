@@ -8,7 +8,7 @@ import { useStorage } from '../hooks/useStorage.tsx';
 
 import { useAuthStatus } from '../hooks/useAuthStatus.tsx';
 import { TRIP_CREATE_STEP_KEY, TRIP_CREATE_STORAGE_KEY } from '../constants/trip.ts';
-import { TripFormTemplate } from '../components/TripFormTemplate.tsx';
+import { TripFormTemplate } from '../components/trip/TripFormTemplate.tsx';
 
 export const TripCreatePage = () => {
   const {
