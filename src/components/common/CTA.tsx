@@ -1,6 +1,6 @@
-import { Button } from './Button.tsx';
 import { type ReactNode } from 'react';
 import clsx from 'clsx';
+import { Button } from './Button.tsx';
 
 interface CustomButton {
   text: string;
