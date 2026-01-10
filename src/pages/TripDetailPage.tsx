@@ -18,7 +18,7 @@ import { useState } from 'react';
 import { getDateRange, filteringByDateRange, formatDate } from '../utils/common/date.ts';
 import { GoogleMapView } from '../components/trip/GoogleMapView.tsx';
 import { getTotal } from '../utils/common/getTotal.ts';
-
+import { useLocation } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import clsx from 'clsx';
 import { Typography } from '../components/common/Typography.tsx';
@@ -56,6 +56,7 @@ const getMemberViewStatus = (
 
 export const TripDetailPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const queryClient = useQueryClient();
   const { tripId } = useParams();
   const tripIdNumber = Number(tripId);
@@ -144,6 +145,7 @@ export const TripDetailPage = () => {
   const handleDeleteTrip = async () => {
     deleteTripMutation.mutate();
   };
+
   const editTripEventHandler = () => {
     navigate(`/trips/${tripId}/edit`);
   };
@@ -157,9 +159,17 @@ export const TripDetailPage = () => {
 
   const memberViewState = getMemberViewStatus(isMembersLoading, Boolean(membersError));
 
+  const handleClosePage = () => {
+    if (location.state?.from === 'my-trips') {
+      navigate('/my-trips');
+    } else {
+      navigate('/');
+    }
+  };
+
   return (
     <div className="flex flex-col h-dvh overflow-hidden relative bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
-      <Header title="여행 상세" onClose={() => navigate('/')} />
+      <Header title="여행 상세" onClose={handleClosePage} />
       <section className="flex flex-col gap-3 mt-4 mx-4 flex-1 overflow-y-auto scrollbar-hide pb-10">
         <div className="flex justify-between gap-2 w-full">
           <Typography variant="h1" color="secondary" className="mb-3">
