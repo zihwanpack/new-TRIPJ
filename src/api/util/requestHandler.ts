@@ -4,7 +4,7 @@ import { z } from 'zod';
 interface RequestHandlerParams<T> {
   request: () => Promise<{ data: { result: T } }>;
   ErrorClass: new (message: string, status: number) => Error;
-  schema?: z.ZodSchema<T>;
+  schema?: z.ZodType<T>;
 }
 
 export const requestHandler = async <T>({
@@ -14,12 +14,17 @@ export const requestHandler = async <T>({
 }: RequestHandlerParams<T>): Promise<T> => {
   try {
     const { data } = await request();
+
     if (schema) {
-      const { success, error } = schema.safeParse(data.result);
-      if (!success) {
-        throw new ErrorClass(`Schema validation failed: ${error.message}`, 500);
+      const parsed = schema.safeParse(data.result);
+
+      if (!parsed.success) {
+        throw new ErrorClass(`Schema validation failed: ${parsed.error.message}`, 500);
       }
+
+      return parsed.data;
     }
+
     return data.result;
   } catch (error) {
     if (error instanceof AxiosError) {
