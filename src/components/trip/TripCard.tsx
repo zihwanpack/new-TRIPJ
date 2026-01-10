@@ -6,6 +6,7 @@ import { Typography } from '../common/Typography.tsx';
 interface BaseTripCardProps {
   size?: 'small' | 'large' | 'largest' | 'myTrips';
   onClick: () => void;
+  className?: string;
 }
 
 interface AddTripCardProps extends BaseTripCardProps {
@@ -57,6 +58,7 @@ export const TripCard = ({
   title,
   date,
   badgeText,
+  className,
 }: TripCardProps) => {
   const cardStyles = TRIP_CARD_STYLES[size];
 
@@ -67,7 +69,8 @@ export const TripCard = ({
         className={clsx(
           'flex flex-col items-center justify-center gap-4',
           'border-dashed border-2 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors',
-          cardStyles.container
+          cardStyles.container,
+          className
         )}
       >
         <Typography variant="body" color="muted" className="text-center">
@@ -87,7 +90,8 @@ export const TripCard = ({
           'flex items-center gap-4',
           'bg-white dark:bg-slate-900 border border-gray-200 dark:border-gray-700 shadow-sm',
           'rounded-2xl px-4',
-          cardStyles.container
+          cardStyles.container,
+          className
         )}
       >
         <div className="size-20 rounded-xl overflow-hidden bg-gray-200 dark:bg-gray-700 shrink-0">
@@ -122,7 +126,7 @@ export const TripCard = ({
   }
 
   return (
-    <Card onClick={onClick} className={clsx('relative', cardStyles.container)}>
+    <Card onClick={onClick} className={clsx('relative', cardStyles.container, className)}>
       <img
         src={tripImage}
         alt={`${title} 여행 이미지`}
