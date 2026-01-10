@@ -1,9 +1,13 @@
+import type { TripTabStatus } from '../pages/MyTripsPage.tsx';
+
 export const tripQueryKeys = {
   all: ['trip'] as const,
   ongoing: (userId: string) => [...tripQueryKeys.all, 'ongoing', userId] as const,
   upcoming: (userId: string) => [...tripQueryKeys.all, 'upcoming', userId] as const,
   past: (userId: string) => [...tripQueryKeys.all, 'past', userId] as const,
   detail: (tripId: number) => [...tripQueryKeys.all, 'detail', tripId] as const,
+  listByCursor: (userId: string, tabStatus: TripTabStatus) =>
+    [...tripQueryKeys.all, 'listByCursor', userId, tabStatus] as const,
 };
 
 export const userQueryKeys = {
