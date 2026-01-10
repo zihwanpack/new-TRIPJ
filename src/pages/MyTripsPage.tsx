@@ -6,7 +6,7 @@ import {
   getMyUpcomingTripsCursorApi,
   getMyOnGoingTripApi,
 } from '../api/trip.ts';
-import { useAuthStatus } from '../hooks/auth/useAuthStatus.tsx';
+import { useAuthStatus } from '../hooks/user/useAuthStatus.tsx';
 import { TripCard } from '../components/trip/TripCard.tsx';
 import { TRIP_IMAGE_PATHS } from '../constants/tripImages.ts';
 import { useNavigate } from 'react-router-dom';
@@ -139,25 +139,44 @@ export const MyTripsPage = () => {
   return (
     <div className="flex flex-col h-dvh relative bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
       <Header title="나의 여행" />
-      <div className="flex justify-around items-center p-2 bg-white dark:bg-slate-900 shadow-sm z-10">
-        <Button
-          onClick={() => setTabStatus('upcoming')}
-          className={tabStatus === 'upcoming' ? 'text-primary-base font-bold' : 'text-gray-500'}
-        >
-          예정된 여행
-        </Button>
-        <Button
-          onClick={() => setTabStatus('ongoing')}
-          className={tabStatus === 'ongoing' ? 'text-primary-base font-bold' : 'text-gray-500'}
-        >
-          진행중인 여행
-        </Button>
-        <Button
-          onClick={() => setTabStatus('completed')}
-          className={tabStatus === 'completed' ? 'text-primary-base font-bold' : 'text-gray-500'}
-        >
-          다녀온 여행
-        </Button>
+      <div className="pt-4 bg-white dark:bg-slate-900 z-10 ">
+        <div className="flex p-1 bg-gray-100 dark:bg-slate-800">
+          <Button
+            onClick={() => setTabStatus('upcoming')}
+            className={clsx(
+              'flex-1 py-2 text-sm font-medium rounded-lg transition-all duration-200',
+              tabStatus === 'upcoming'
+                ? 'bg-primary-base text-white shadow-sm'
+                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700'
+            )}
+          >
+            예정된 여행
+          </Button>
+
+          <Button
+            onClick={() => setTabStatus('ongoing')}
+            className={clsx(
+              'flex-1 py-2 text-sm font-medium rounded-lg transition-all duration-200',
+              tabStatus === 'ongoing'
+                ? 'bg-primary-base text-white shadow-sm'
+                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700'
+            )}
+          >
+            진행중
+          </Button>
+
+          <Button
+            onClick={() => setTabStatus('completed')}
+            className={clsx(
+              'flex-1 py-2 text-sm font-medium rounded-lg transition-all duration-200',
+              tabStatus === 'completed'
+                ? 'bg-primary-base text-white shadow-sm'
+                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700'
+            )}
+          >
+            다녀온 여행
+          </Button>
+        </div>
       </div>
 
       <div
@@ -169,7 +188,7 @@ export const MyTripsPage = () => {
           trips.map((trip) => (
             <TripCard
               key={trip?.id ?? 0}
-              onClick={() => navigate(`/trips/${trip.id}`)}
+              onClick={() => navigate(`/trips/${trip.id}`, { state: { from: 'my-trips' } })}
               tripImage={TRIP_IMAGE_PATHS[trip?.destination ?? '']}
               title={trip?.title ?? ''}
               date={formatDateRange(trip?.startDate ?? '', trip?.endDate ?? '')}

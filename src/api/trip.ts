@@ -54,12 +54,14 @@ export const getMyPastTripsApi = async ({ userId }: GetMyPastTripsParam): Promis
   });
 };
 
-export const getMyOnGoingTripApi = async ({ userId }: GetMyOnGoingTripParam): Promise<Trip> => {
+export const getMyOnGoingTripApi = async ({
+  userId,
+}: GetMyOnGoingTripParam): Promise<Trip | null> => {
   return requestHandler({
     request: () =>
       authenticatedClient.get<GetMyOnGoingTripResponse>(`/trips/user/${userId}/current`),
     ErrorClass: TripError,
-    schema: tripSchema,
+    schema: tripSchema.nullable(),
   });
 };
 

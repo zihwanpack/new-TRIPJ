@@ -1,7 +1,16 @@
 import { Header } from '../layouts/Header.tsx';
 import { Footer } from '../layouts/Footer.tsx';
-import { useAuthStatus } from '../hooks/auth/useAuthStatus.tsx';
-import { Moon, SquareArrowOutUpRight, UserRound, Sun, Monitor, ArrowRight } from 'lucide-react';
+import { useAuthStatus } from '../hooks/user/useAuthStatus.tsx';
+import {
+  Moon,
+  SquareArrowOutUpRight,
+  UserRound,
+  Sun,
+  Monitor,
+  LogOut,
+  ChevronRight,
+  Trash2,
+} from 'lucide-react';
 import stamp1Image from '@/assets/mypage/stamp1.webp';
 import stamp2Image from '@/assets/mypage/stamp2.webp';
 import stamp3Image from '@/assets/mypage/stamp3.webp';
@@ -9,10 +18,12 @@ import toast from 'react-hot-toast';
 import { Button } from '../components/common/Button.tsx';
 import { useNavigate } from 'react-router-dom';
 import { withdrawApi } from '../api/user.ts';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Modal } from '../components/common/Modal.tsx';
 import { useTheme } from '../hooks/common/useTheme.tsx';
 import { useQueryClient } from '@tanstack/react-query';
+import clsx from 'clsx';
+import { Typography } from '../components/common/Typography.tsx';
 
 export const Mypage = () => {
   const { user, logout } = useAuthStatus();
@@ -20,15 +31,15 @@ export const Mypage = () => {
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { theme, setTheme } = useTheme();
-  const [open, setOpen] = useState<boolean>(false);
+  const [isThemeDropdownOpen, setIsThemeDropdownOpen] = useState<boolean>(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const copyToClipboard = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
       toast.success('복사 완료');
-    } catch (err) {
+    } catch {
       toast.error('복사 실패');
-      console.error(err);
     }
   };
 
@@ -47,6 +58,8 @@ export const Mypage = () => {
     if (!user?.id) return;
     try {
       await withdrawApi({ id: user.id });
+      await logout();
+
       queryClient.clear();
       sessionStorage.clear();
       localStorage.clear();
@@ -110,78 +123,105 @@ export const Mypage = () => {
             <SquareArrowOutUpRight className="size-5 opacity-90" />
           </Button>
         </div>
-        <section className="mx-4 h-50 bg-white dark:bg-gray-900 overflow-hidden">
-          <div className="px-4 py-3 text-lg font-semibold text-gray-900 dark:text-gray-100">
+        <section className="flex-1 bg-gray-50 dark:bg-slate-900/50 px-6  z-10">
+          <Typography variant="h3" color="secondary" className="mb-3 ml-1">
             설정
-          </div>
-          <div className="relative">
+          </Typography>
+          <div className="flex flex-col gap-3">
+            <div className="relative" ref={dropdownRef}>
+              <Button
+                onClick={() => setIsThemeDropdownOpen((prev) => !prev)}
+                className="w-full flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 active:bg-gray-50 transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <div
+                    className={clsx(
+                      'p-2 rounded-xl transition-colors',
+                      theme === 'light' &&
+                        'bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-400',
+                      theme === 'dark' &&
+                        'bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400',
+                      theme === 'system' &&
+                        'bg-slate-200 text-slate-600 dark:bg-slate-800 dark:text-slate-300'
+                    )}
+                  >
+                    {theme === 'light' && <Sun size={20} />}
+                    {theme === 'dark' && <Moon size={20} />}
+                    {theme === 'system' && <Monitor size={20} />}
+                  </div>
+                  <span className="font-semibold text-gray-700 dark:text-gray-200">화면 테마</span>
+                </div>
+                <div className="flex items-center gap-2 text-gray-400">
+                  <span className="text-sm font-medium">
+                    {theme === 'light' && '라이트'}
+                    {theme === 'dark' && '다크'}
+                    {theme === 'system' && '시스템'}
+                  </span>
+                  <ChevronRight
+                    size={18}
+                    className={clsx('transition-transform', isThemeDropdownOpen && 'rotate-90')}
+                  />
+                </div>
+              </Button>
+
+              {isThemeDropdownOpen && (
+                <div className="absolute left-0 right-0 top-full mt-2 z-50 p-1 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 animate-in fade-in zoom-in-95 duration-200">
+                  {(['light', 'dark', 'system'] as const).map((mode) => (
+                    <Button
+                      key={mode}
+                      onClick={() => {
+                        setTheme(mode);
+                        setIsThemeDropdownOpen(false);
+                      }}
+                      className={clsx(
+                        'w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors',
+                        theme === mode
+                          ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-300'
+                          : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'
+                      )}
+                    >
+                      {mode === 'light' && <Sun size={16} />}
+                      {mode === 'dark' && <Moon size={16} />}
+                      {mode === 'system' && <Monitor size={16} />}
+                      {mode === 'light' && '라이트 모드'}
+                      {mode === 'dark' && '다크 모드'}
+                      {mode === 'system' && '시스템 설정'}
+                    </Button>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <Button
-              onClick={() => setOpen((v) => !v)}
-              className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800 transition"
+              onClick={handleLogout}
+              className="w-full flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 active:bg-gray-50 transition-colors"
             >
-              <div className="flex items-center gap-1">
-                <Moon size={18} />
-                <span className="text-sm font-medium">테마</span>
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
+                  <LogOut size={20} />
+                </div>
+                <span className="font-semibold text-gray-700 dark:text-gray-200">로그아웃</span>
               </div>
-              <div className="text-sm text-gray-400 flex items-center gap-1">
-                {theme === 'light' && '라이트'}
-                {theme === 'dark' && '다크'}
-                {theme === 'system' && '시스템'}
-                <ArrowRight size={18} />
-              </div>
+              <ChevronRight size={18} className="text-gray-400" />
             </Button>
-            {open && (
-              <div className="absolute right-0 top-9 z-50 w-36 rounded-xl border bg-white dark:bg-gray-900 shadow-lg">
-                <Button
-                  onClick={() => {
-                    setTheme('light');
-                    setOpen(false);
-                  }}
-                  className="flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800"
-                >
-                  <Sun size={14} /> 라이트
-                </Button>
-                <Button
-                  onClick={() => {
-                    setTheme('dark');
-                    setOpen(false);
-                  }}
-                  className="flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800"
-                >
-                  <Moon size={14} /> 다크
-                </Button>
-                <Button
-                  onClick={() => {
-                    setTheme('system');
-                    setOpen(false);
-                  }}
-                  className="flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800"
-                >
-                  <Monitor size={14} /> 시스템
-                </Button>
+
+            <Button
+              onClick={() => setIsModalOpen(true)}
+              className="w-full flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 active:bg-red-50 dark:active:bg-red-900/20 transition-colors group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-xl bg-red-100 dark:bg-red-900/30 text-red-500">
+                  <Trash2 size={20} />
+                </div>
+                <span className="font-semibold text-gray-700 dark:text-gray-200 group-hover:text-red-500 transition-colors">
+                  회원탈퇴
+                </span>
               </div>
-            )}
+              <ChevronRight size={18} className="text-gray-400 group-hover:text-red-400" />
+            </Button>
           </div>
-
-          <div className="h-px bg-gray-200 dark:bg-gray-700" />
-          <Button
-            onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800 transition text-sm"
-          >
-            🚪 로그아웃
-          </Button>
-
-          <div className="h-px bg-gray-200 dark:bg-gray-700" />
-
-          <Button
-            onClick={() => setIsModalOpen(true)}
-            className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition"
-          >
-            🗑️ 회원탈퇴
-          </Button>
         </section>
       </div>
-
       <Modal
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}

@@ -109,7 +109,7 @@ export const EventTitleLocationStep = ({ setStep }: EventTitleLocationStepProps)
 
   const eventName = watch('eventName');
   const location = watch('location');
-  const isStep1Valid = eventName?.length > 0 && location?.length > 0;
+  const isEventTitleLocationStepValid = eventName?.length > 0 && location?.length > 0;
 
   const handleSelectPlace = (selectedAddress: string) => {
     setValue('location', selectedAddress);
@@ -151,11 +151,12 @@ export const EventTitleLocationStep = ({ setStep }: EventTitleLocationStepProps)
 
       <div className="mx-4 mt-2 relative">
         <div className="flex items-center gap-3 border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-3 focus-within:ring-2 focus-within:ring-primary-base focus-within:border-transparent transition-all bg-white dark:bg-slate-900">
-          <input
+          <Input
             type="text"
             {...register('location')}
             placeholder="예) 서울"
             autoComplete="off"
+            containerClassName="w-full"
             className="w-full outline-none text-slate-700 dark:text-slate-100 placeholder:text-gray-300 dark:placeholder:text-gray-500 bg-transparent"
           />
           {isLoading && <Loader2 className="size-5 text-primary-base animate-spin" />}
@@ -184,7 +185,7 @@ export const EventTitleLocationStep = ({ setStep }: EventTitleLocationStepProps)
       </div>
       <div className="flex-1" />
       <CTA
-        isValid={isStep1Valid}
+        isValid={isEventTitleLocationStepValid}
         setStep={setStep}
         currentStep={1}
         previousButtonText="이전"

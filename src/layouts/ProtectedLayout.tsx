@@ -1,5 +1,5 @@
 import { Navigate, Outlet } from 'react-router-dom';
-import { useAuthStatus } from '../hooks/auth/useAuthStatus.tsx';
+import { useAuthStatus } from '../hooks/user/useAuthStatus.tsx';
 import { FullscreenLoader } from '../components/common/FullscreenLoader.tsx';
 
 export const ProtectedLayout = () => {

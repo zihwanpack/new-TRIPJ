@@ -14,6 +14,7 @@ import { Typography } from '../common/Typography.tsx';
 import { createEventApi, updateEventApi } from '../../api/event.ts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { eventQueryKeys } from '../../constants/queryKeys.ts';
+import { FullscreenLoader } from '../common/FullscreenLoader.tsx';
 
 const COST_CATEGORIES = ['식비', '교통비', '숙박비', '기타'];
 
@@ -78,6 +79,15 @@ export const EventCostAndSubmitStep = ({ setStep, mode }: EventCostAndSubmitStep
     },
   });
 
+  const validateCosts = () => {
+    const hasInvalidCost = costs.some((item) => !item.category);
+    if (hasInvalidCost) {
+      toast.error('모든 경비 항목의 분류를 선택해주세요.');
+      return false;
+    }
+    return true;
+  };
+
   const isLoading = mode === 'create' ? isCreateEventPending : isUpdateEventPending;
   const error = mode === 'create' ? createEventError : updateEventError;
 
@@ -115,14 +125,18 @@ export const EventCostAndSubmitStep = ({ setStep, mode }: EventCostAndSubmitStep
   };
 
   const handleCreateEvent = async () => {
+    if (!validateCosts()) return;
     const formData = getValues();
     createEvent(formData);
   };
 
   const handleUpdateEvent = async () => {
+    if (!validateCosts()) return;
     const formData = getValues();
     updateEvent(formData);
   };
+
+  if (isLoading) return <FullscreenLoader />;
 
   return (
     <div className="flex flex-col h-full">
@@ -140,13 +154,15 @@ export const EventCostAndSubmitStep = ({ setStep, mode }: EventCostAndSubmitStep
                 type="button"
                 onClick={() => setOpenIndex(openIndex === item.id ? null : item.id)}
                 className={clsx(
-                  'flex items-center justify-between gap-2 border-2 rounded-xl p-3 w-full text-sm bg-white dark:bg-slate-900',
+                  'flex items-center justify-between gap-2 border-1 rounded-xl p-3 w-full text-sm bg-white dark:bg-slate-900 h-13',
                   item.category
                     ? 'border-primary-base text-black dark:text-slate-100'
                     : 'border-gray-200 dark:border-gray-700 text-gray-400 dark:text-gray-500'
                 )}
               >
-                <span>{item.category || '항목 선택'}</span>
+                <span className="text-base text-black dark:text-gray-400">
+                  {item.category || '항목 선택'}
+                </span>
                 <ChevronDownIcon className="size-4" />
               </Button>
 
@@ -186,9 +202,9 @@ export const EventCostAndSubmitStep = ({ setStep, mode }: EventCostAndSubmitStep
             <Button
               type="button"
               onClick={() => removeCost(item.id)}
-              className="p-3 rounded-xl bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700"
+              className="p-3 rounded-xl bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 size-13 flex items-center justify-center"
             >
-              <Trash2 size={18} />
+              <Trash2 size={20} />
             </Button>
           </div>
         ))}

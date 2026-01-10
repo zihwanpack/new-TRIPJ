@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 
-import { useAuthStatus } from '../hooks/auth/useAuthStatus.tsx';
+import { useAuthStatus } from '../hooks/user/useAuthStatus.tsx';
 import { TripCard } from '../components/trip/TripCard.tsx';
 import { TRIP_IMAGE_PATHS } from '../constants/tripImages.ts';
 import { formatDateRange } from '../utils/common/date.ts';
@@ -86,7 +86,7 @@ export const HomePage = () => {
               <div className="w-full flex">
                 <TripCard
                   key={ongoingTrip?.id || 0}
-                  onClick={() => navigate(`/trips/${ongoingTrip?.id}`)}
+                  onClick={() => navigate(`/trips/${ongoingTrip?.id}`, { state: { from: 'home' } })}
                   tripImage={TRIP_IMAGE_PATHS[ongoingTrip.destination] || DEFAULT_TRIP_IMAGE}
                   title={ongoingTrip.title}
                   date={formatDateRange(ongoingTrip.startDate, ongoingTrip.endDate)}
@@ -110,6 +110,7 @@ export const HomePage = () => {
               {upcomingTrips?.map((trip) => (
                 <TripCard
                   key={trip.id}
+                  className="flex-shrink-0"
                   onClick={() => navigate(`/trips/${trip.id}`)}
                   tripImage={TRIP_IMAGE_PATHS[trip.destination] || DEFAULT_TRIP_IMAGE}
                   title={trip.title}
@@ -117,7 +118,11 @@ export const HomePage = () => {
                   size="large"
                 />
               ))}
-              <TripCard variant="add" onClick={() => navigate('/trips/new')} />
+              <TripCard
+                variant="add"
+                onClick={() => navigate('/trips/new')}
+                className="flex-shrink-0"
+              />
             </div>
           </section>
         )}

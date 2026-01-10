@@ -64,7 +64,7 @@ export const Calendar = ({ startDate, endDate, setValue, minDate, maxDate }: Cal
           after:left-[50%]
           after:w-[50%]
           after:h-full
-          after:bg-black/10 dark:after:bg-primary-base/30`, // opacity 8 -> 10으로 조정
+          after:bg-black/10 dark:after:bg-primary-base/30`,
         range_middle: 'bg-black/10 text-black dark:bg-primary-base/30 dark:text-white',
         range_end: `
           relative
@@ -77,7 +77,6 @@ export const Calendar = ({ startDate, endDate, setValue, minDate, maxDate }: Cal
           after:h-full
           after:bg-black/10 dark:after:bg-primary-base/30`,
 
-        /* 비활성화 및 외부 날짜 */
         outside: 'text-gray-300 dark:text-gray-600 opacity-50',
         disabled: 'text-gray-200 dark:text-gray-700 opacity-30 cursor-not-allowed',
       }}

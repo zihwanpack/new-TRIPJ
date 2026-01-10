@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { tripFormSchema, type TripFormValues } from '../schemas/tripSchema.ts';
 import { useStorage } from '../hooks/common/useStorage.tsx';
 
-import { useAuthStatus } from '../hooks/auth/useAuthStatus.tsx';
+import { useAuthStatus } from '../hooks/user/useAuthStatus.tsx';
 import { TRIP_CREATE_STEP_KEY, TRIP_CREATE_STORAGE_KEY } from '../constants/trip.ts';
 import { TripFormTemplate } from '../components/trip/TripFormTemplate.tsx';
 

@@ -17,12 +17,9 @@ export const useStorage = <T,>({
   const [value, setValue] = useState<T>(() => {
     try {
       const storedData = storage.getItem(key);
-      if (storedData) {
-        return JSON.parse(storedData);
-      }
       return storedData ? JSON.parse(storedData) : initialValue;
     } catch (error) {
-      console.error(error);
+      console.error(`${key} storage set error: ${error}`);
       return initialValue;
     }
   });
@@ -31,9 +28,9 @@ export const useStorage = <T,>({
     try {
       storage.setItem(key, JSON.stringify(value));
     } catch (error) {
-      console.error(error);
+      console.error(`${key} storage set error: ${error}`);
     }
-  }, [key, value, storage]);
+  }, [key, value]);
 
   const resetValue = () => {
     storage.removeItem(key);

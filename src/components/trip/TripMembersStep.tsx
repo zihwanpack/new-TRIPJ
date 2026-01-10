@@ -8,8 +8,7 @@ import { Button } from '../common/Button.tsx';
 import { CTA } from '../common/CTA.tsx';
 import { Input } from '../common/Input.tsx';
 import { Typography } from '../common/Typography.tsx';
-
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { userQueryKeys } from '../../constants/queryKeys.ts';
 import { getSearchUsersApi, getUsersByEmailApi } from '../../api/user.ts';
@@ -27,13 +26,15 @@ export const TripMembersStep = ({ setStep }: TripMembersStepProps) => {
 
   const {
     data: usersByEmails = [],
-    isLoading: isUsersByEmailsLoading,
     isError: isUsersByEmailsError,
     error: usersByEmailsError,
   } = useQuery({
     queryKey: userQueryKeys.byEmails(members),
     queryFn: () => getUsersByEmailApi(members),
     enabled: members.length > 0,
+    placeholderData: keepPreviousData,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
   });
 
   const {
@@ -91,9 +92,6 @@ export const TripMembersStep = ({ setStep }: TripMembersStepProps) => {
           />
           {isSearchUsersLoading && <Loader2 className="size-5 text-primary-base animate-spin" />}
         </div>
-        {isUsersByEmailsLoading && (
-          <div className="mx-4 mt-4 text-sm text-gray-400">멤버 정보를 불러오는 중...</div>
-        )}
 
         {isUsersByEmailsError && (
           <div className="mx-4 mt-4 text-sm text-red-500">
@@ -101,7 +99,7 @@ export const TripMembersStep = ({ setStep }: TripMembersStepProps) => {
           </div>
         )}
         {!isSearchUsersLoading && searchedUsers && searchedUsers.length > 0 && (
-          <div className="absolute top-full left-0 w-full mt-2 bg-white dark:bg-slate-900 border border-gray-100 dark:border-gray-700 rounded-lg shadow-xl max-h-60 z-50">
+          <div className="absolute top-full left-0 w-full mt-2 bg-white dark:bg-slate-900 border border-gray-100 dark:border-gray-700 rounded-lg shadow-xl max-h-60 z-50 overflow-y-auto">
             {searchedUsers.map((user) => {
               const isAdded = members.includes(user.email);
               return (
@@ -148,13 +146,13 @@ export const TripMembersStep = ({ setStep }: TripMembersStepProps) => {
         )}
       </div>
 
-      <div className="mx-4 mt-70 flex flex-wrap gap-2 dark:bg-slate-900">
+      <div className="mx-4 mt-50 flex flex-wrap gap-2 dark:bg-slate-900">
         {selectedMembers.map((member) => (
           <div
             key={member?.email}
             className="flex items-center gap-1 pl-3 pr-2 py-1.5 bg-primary-dark dark:bg-slate-800 text-white rounded-full text-sm font-medium border border-blue-100 cursor-pointer"
           >
-            <span className="text-slate-900 dark:text-slate-100">{member?.nickname}</span>
+            <span className="text-white dark:text-slate-100">{member?.nickname}</span>
             <Button
               type="button"
               onClick={() => removeMember(member?.email ?? '')}

@@ -9,6 +9,7 @@ import { Typography } from '../common/Typography.tsx';
 import { createTripApi, updateTripApi } from '../../api/trip.ts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { tripQueryKeys } from '../../constants/queryKeys.ts';
+import { FullscreenLoader } from '../common/FullscreenLoader.tsx';
 
 interface TripTitleAndSubmitStepProps {
   setStep: (step: number) => void;
@@ -85,6 +86,8 @@ export const TripTitleAndSubmitStep = ({ setStep, mode }: TripTitleAndSubmitStep
     const formData = getValues();
     updateTrip(formData);
   };
+
+  if (isLoading) return <FullscreenLoader />;
 
   return (
     <div className="flex flex-col h-full">

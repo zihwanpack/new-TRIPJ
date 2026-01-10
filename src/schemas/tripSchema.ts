@@ -5,7 +5,8 @@ export const tripFormSchema = z.object({
   title: z
     .string()
     .min(1, '여행 제목을 입력해주세요')
-    .max(30, '여행 제목은 30자 이내로 입력해주세요'),
+    .max(30, '여행 제목은 30자 이내로 입력해주세요')
+    .trim(),
   destinationType: z.enum(['domestic', 'overseas'], {
     message: '여행지 타입을 선택해주세요',
   }),
