@@ -6,7 +6,7 @@ import { unauthenticatedClient } from './client/unauthenticatedClient.ts';
 import { requestHandler } from './util/requestHandler.ts';
 import z from 'zod';
 
-export const getUserApi = async (): Promise<UserResponse> => {
+export const getUserInfoApi = async (): Promise<UserResponse> => {
   return requestHandler({
     request: () => authenticatedClient.get<GetUserResponse>('/auth/user'),
     ErrorClass: AuthError,

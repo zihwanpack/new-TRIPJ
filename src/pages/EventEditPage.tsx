@@ -9,6 +9,8 @@ import { FullscreenLoader } from '../components/common/FullscreenLoader.tsx';
 import { getEventDetailApi } from '../api/event.ts';
 import { eventQueryKeys } from '../constants/queryKeys.ts';
 import { useQuery } from '@tanstack/react-query';
+import { useEventDetailQueryOptions } from '../hooks/query/event.ts';
+import type { Event } from '../types/event.ts';
 
 export const EventEditPage = () => {
   const navigate = useNavigate();
@@ -21,12 +23,10 @@ export const EventEditPage = () => {
     isPending: isEventDetailPending,
     isError: isEventDetailError,
     error: eventDetailError,
-  } = useQuery({
+  } = useQuery<Event>({
     queryKey: eventQueryKeys.detail(eventIdNumber),
     queryFn: () => getEventDetailApi({ eventId: eventIdNumber }),
-    staleTime: 5 * 60 * 1000,
-    gcTime: 30 * 60 * 1000,
-    enabled: !!eventId,
+    ...useEventDetailQueryOptions({ eventId: eventIdNumber }),
   });
 
   const defaultValues = {

@@ -20,6 +20,7 @@ import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { tripQueryKeys } from '../constants/queryKeys.ts';
 import type { Trip } from '../types/trip.ts';
 import { FullscreenLoader } from '../components/common/FullscreenLoader.tsx';
+import { useMyTripsQueryOptions, useOngoingTripQueryOptions } from '../hooks/query/trip.ts';
 
 export type TripTabStatus = 'upcoming' | 'ongoing' | 'completed';
 
@@ -41,7 +42,6 @@ export const MyTripsPage = () => {
     queryFn: ({ pageParam }: { pageParam: number | null }) => {
       const currentApi =
         tabStatus === 'upcoming' ? getMyUpcomingTripsCursorApi : getMyPastTripsCursorApi;
-
       return currentApi({
         userId: user!.id,
         cursor: pageParam,
@@ -52,18 +52,18 @@ export const MyTripsPage = () => {
     getNextPageParam: (lastPage) =>
       lastPage.pagination.hasNext ? lastPage.pagination.nextCursor : undefined,
     enabled: !!user?.id && tabStatus !== 'ongoing',
+    ...useMyTripsQueryOptions(),
   });
 
   const {
     data: ongoingTrip,
     isLoading: isOngoingLoading,
     error: ongoingTripError,
-  } = useQuery({
+  } = useQuery<Trip | null>({
     queryKey: tripQueryKeys.ongoing(user!.id),
     queryFn: () => getMyOnGoingTripApi({ userId: user!.id }),
     enabled: tabStatus === 'ongoing' && !!user?.id,
-    staleTime: 5 * 60 * 1000,
-    gcTime: 30 * 60 * 1000,
+    ...useOngoingTripQueryOptions(),
   });
 
   const tripsFromCursor = tripsData?.pages.flatMap((page) => page.items) ?? [];

@@ -10,6 +10,7 @@ import { createTripApi, updateTripApi } from '../../api/trip.ts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { tripQueryKeys } from '../../constants/queryKeys.ts';
 import { FullscreenLoader } from '../common/FullscreenLoader.tsx';
+import type { Trip } from '../../types/trip.ts';
 
 interface TripTitleAndSubmitStepProps {
   setStep: (step: number) => void;
@@ -36,7 +37,7 @@ export const TripTitleAndSubmitStep = ({ setStep, mode }: TripTitleAndSubmitStep
     isPending: isCreatePending,
     isError: isCreateError,
     error: createError,
-  } = useMutation({
+  } = useMutation<Trip, Error, TripFormValues>({
     mutationFn: (data: TripFormValues) => createTripApi({ ...data }),
     onSuccess: (createdTrip) => {
       sessionStorage.removeItem(TRIP_CREATE_STEP_KEY);
@@ -57,7 +58,7 @@ export const TripTitleAndSubmitStep = ({ setStep, mode }: TripTitleAndSubmitStep
     isPending: isUpdatePending,
     isError: isUpdateError,
     error: updateError,
-  } = useMutation({
+  } = useMutation<Trip, Error, TripFormValues>({
     mutationFn: (data: TripFormValues) =>
       updateTripApi({
         id: tripIdNumber,

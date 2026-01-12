@@ -10,6 +10,12 @@ import { FullscreenLoader } from '../components/common/FullscreenLoader.tsx';
 import { useQuery } from '@tanstack/react-query';
 import { tripQueryKeys } from '../constants/queryKeys.ts';
 import { getMyOnGoingTripApi, getMyUpcomingTripsApi, getMyPastTripsApi } from '../api/trip';
+import type { Trip } from '../types/trip.ts';
+import {
+  useOngoingTripQueryOptions,
+  usePastTripsQueryOptions,
+  useUpcomingTripsQueryOptions,
+} from '../hooks/query/trip.ts';
 
 export const HomePage = () => {
   const { user } = useAuthStatus();
@@ -21,12 +27,11 @@ export const HomePage = () => {
     isPending: isOngoingTripPending,
     isError: isOngoingTripError,
     error: ongoingTripError,
-  } = useQuery({
+  } = useQuery<Trip | null>({
     queryKey: tripQueryKeys.ongoing(userId),
     queryFn: () => getMyOnGoingTripApi({ userId }),
-    staleTime: 5 * 60 * 1000,
-    gcTime: 30 * 60 * 1000,
-    enabled: !!userId,
+    enabled: userId.trim().length > 0,
+    ...useOngoingTripQueryOptions(),
   });
 
   const {
@@ -34,12 +39,10 @@ export const HomePage = () => {
     isPending: isUpcomingTripsPending,
     isError: isUpcomingTripsError,
     error: upcomingTripsError,
-  } = useQuery({
+  } = useQuery<Trip[]>({
     queryKey: tripQueryKeys.upcoming(userId),
     queryFn: () => getMyUpcomingTripsApi({ userId }),
-    staleTime: 5 * 60 * 1000,
-    gcTime: 30 * 60 * 1000,
-    enabled: !!userId,
+    ...useUpcomingTripsQueryOptions({ userId }),
   });
 
   const {
@@ -47,12 +50,10 @@ export const HomePage = () => {
     isPending: isPastTripsPending,
     isError: isPastTripsError,
     error: pastTripsError,
-  } = useQuery({
+  } = useQuery<Trip[]>({
     queryKey: tripQueryKeys.past(userId),
     queryFn: () => getMyPastTripsApi({ userId }),
-    staleTime: 5 * 60 * 1000,
-    gcTime: 30 * 60 * 1000,
-    enabled: !!userId,
+    ...usePastTripsQueryOptions({ userId }),
   });
 
   if (isOngoingTripPending || isUpcomingTripsPending || isPastTripsPending) {

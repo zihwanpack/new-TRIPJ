@@ -15,6 +15,7 @@ import { createEventApi, updateEventApi } from '../../api/event.ts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { eventQueryKeys } from '../../constants/queryKeys.ts';
 import { FullscreenLoader } from '../common/FullscreenLoader.tsx';
+import type { Event } from '../../types/event.ts';
 
 const COST_CATEGORIES = ['식비', '교통비', '숙박비', '기타'];
 
@@ -38,16 +39,14 @@ export const EventCostAndSubmitStep = ({ setStep, mode }: EventCostAndSubmitStep
     mutate: createEvent,
     isPending: isCreateEventPending,
     error: createEventError,
-  } = useMutation({
+  } = useMutation<Event, Error, EventFormValues>({
     mutationFn: (data: EventFormValues) => createEventApi({ ...data, tripId: tripIdNumber }),
     onSuccess: (createdEvent) => {
       sessionStorage.removeItem(EVENT_CREATE_STEP_KEY);
       sessionStorage.removeItem(EVENT_CREATE_STORAGE_KEY);
-
       queryClient.invalidateQueries({
         queryKey: eventQueryKeys.list(tripIdNumber),
       });
-
       toast.success('이벤트 생성에 성공했습니다.');
       navigate(`/trips/${tripIdNumber}/events/${createdEvent.eventId}`);
     },
@@ -60,7 +59,7 @@ export const EventCostAndSubmitStep = ({ setStep, mode }: EventCostAndSubmitStep
     mutate: updateEvent,
     isPending: isUpdateEventPending,
     error: updateEventError,
-  } = useMutation({
+  } = useMutation<Event, Error, EventFormValues>({
     mutationFn: (data: EventFormValues) =>
       updateEventApi({
         eventId: eventIdNumber,

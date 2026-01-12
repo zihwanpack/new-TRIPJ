@@ -14,6 +14,7 @@ export const userQueryKeys = {
   all: ['user'] as const,
   byEmails: (emails: string[]) => [...userQueryKeys.all, 'byEmails', [...emails].sort()] as const,
   search: (query: string) => [...userQueryKeys.all, 'search', query] as const,
+  info: () => [...userQueryKeys.all, 'info'] as const,
 };
 
 export const eventQueryKeys = {
