@@ -1,5 +1,6 @@
 import { AxiosError } from 'axios';
 import { z } from 'zod';
+import { ApiError } from '../../errors/customErrors.ts';
 
 interface RequestHandlerParams<T> {
   request: () => Promise<{ data: { result: T } }>;
@@ -27,12 +28,17 @@ export const requestHandler = async <T>({
 
     return data.result;
   } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    }
+
     if (error instanceof AxiosError) {
       throw new ErrorClass(
         error.response?.data?.message ?? error.message,
         error.response?.status ?? 500
       );
     }
+
     if (error instanceof ErrorClass) {
       throw error;
     }
