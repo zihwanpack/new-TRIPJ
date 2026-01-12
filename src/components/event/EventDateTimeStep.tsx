@@ -13,6 +13,7 @@ import { useQuery } from '@tanstack/react-query';
 import { tripQueryKeys } from '../../constants/queryKeys.ts';
 import type { Trip } from '../../types/trip.ts';
 import { getTripDetailApi } from '../../api/trip.ts';
+import { useTripDetailQueryOptions } from '../../hooks/query/trip.ts';
 
 interface EventDateTimeStepProps {
   setStep: (step: number) => void;
@@ -31,9 +32,7 @@ export const EventDateTimeStep = ({ setStep }: EventDateTimeStepProps) => {
   } = useQuery<Trip>({
     queryKey: tripQueryKeys.detail(tripIdNumber),
     queryFn: () => getTripDetailApi({ id: tripIdNumber }),
-    staleTime: 5 * 60 * 1000,
-    gcTime: 30 * 60 * 1000,
-    enabled: !!tripId,
+    ...useTripDetailQueryOptions({ id: tripIdNumber }),
   });
 
   const [activeDate, setActiveDate] = useState<'startDate' | 'endDate' | null>(null);

@@ -27,6 +27,11 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { deleteTripApi, getTripDetailApi } from '../api/trip.ts';
 import { getUsersByEmailApi } from '../api/user.ts';
 import { getMyAllEventsApi } from '../api/event.ts';
+import type { Trip } from '../types/trip.ts';
+import { useTripDetailQueryOptions } from '../hooks/query/trip.ts';
+import { useEventListQueryOptions } from '../hooks/query/event.ts';
+import type { User } from '../types/user.ts';
+import { useUsersByEmailsQueryOptions } from '../hooks/query/user.ts';
 
 type EventViewStatus = 'loading' | 'error' | 'empty' | 'success' | 'map';
 
@@ -65,12 +70,10 @@ export const TripDetailPage = () => {
     isPending: isTripDetailPending,
     isError: isTripDetailError,
     error: tripDetailError,
-  } = useQuery({
+  } = useQuery<Trip | null>({
     queryKey: tripQueryKeys.detail(tripIdNumber),
     queryFn: () => getTripDetailApi({ id: tripIdNumber }),
-    staleTime: 5 * 60 * 1000,
-    gcTime: 30 * 60 * 1000,
-    enabled: !!tripIdNumber,
+    ...useTripDetailQueryOptions({ id: tripIdNumber }),
   });
 
   const {
@@ -78,12 +81,10 @@ export const TripDetailPage = () => {
     isLoading: isEventsLoading,
     isError: isEventsError,
     error: eventsError,
-  } = useQuery({
+  } = useQuery<Event[]>({
     queryKey: eventQueryKeys.list(tripIdNumber),
     queryFn: () => getMyAllEventsApi({ tripId: tripIdNumber }),
-    staleTime: 5 * 60 * 1000,
-    gcTime: 30 * 60 * 1000,
-    enabled: !!tripIdNumber,
+    ...useEventListQueryOptions({ tripId: tripIdNumber }),
   });
 
   const members = tripDetail?.members ?? [];
@@ -92,12 +93,10 @@ export const TripDetailPage = () => {
     isLoading: isMembersLoading,
     isError: isMembersError,
     error: membersError,
-  } = useQuery({
+  } = useQuery<User[]>({
     queryKey: userQueryKeys.byEmails(members),
     queryFn: () => getUsersByEmailApi(members),
-    staleTime: 5 * 60 * 1000,
-    gcTime: 30 * 60 * 1000,
-    enabled: !!members.length,
+    ...useUsersByEmailsQueryOptions({ members }),
   });
 
   const deleteTripMutation = useMutation({

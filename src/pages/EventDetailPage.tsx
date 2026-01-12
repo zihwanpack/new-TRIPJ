@@ -10,6 +10,8 @@ import { eventQueryKeys } from '../constants/queryKeys.ts';
 import { deleteEventApi, getEventDetailApi } from '../api/event.ts';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button } from '../components/common/Button.tsx';
+import { useEventDetailQueryOptions } from '../hooks/query/event.ts';
+import type { Event } from '../types/event.ts';
 
 export const EventDetailPage = () => {
   const { eventId, tripId } = useParams();
@@ -24,15 +26,13 @@ export const EventDetailPage = () => {
     isPending: isEventDetailPending,
     isError: isEventDetailError,
     error: eventDetailError,
-  } = useQuery({
+  } = useQuery<Event>({
     queryKey: eventQueryKeys.detail(eventIdNumber),
     queryFn: () => getEventDetailApi({ eventId: eventIdNumber }),
-    staleTime: 5 * 60 * 1000,
-    gcTime: 30 * 60 * 1000,
-    enabled: !!eventId,
+    ...useEventDetailQueryOptions({ eventId: eventIdNumber }),
   });
 
-  const deleteEventMutation = useMutation({
+  const deleteEventMutation = useMutation<null, Error>({
     mutationFn: () => deleteEventApi({ eventId: eventIdNumber }),
     onSuccess: () => {
       toast.success('이벤트 삭제에 성공했습니다.');

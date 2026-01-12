@@ -8,6 +8,8 @@ import { FullscreenLoader } from '../components/common/FullscreenLoader.tsx';
 import { tripQueryKeys } from '../constants/queryKeys.ts';
 import { getTripDetailApi } from '../api/trip.ts';
 import { useQuery } from '@tanstack/react-query';
+import { useTripDetailQueryOptions } from '../hooks/query/trip.ts';
+import type { Trip } from '../types/trip.ts';
 export const TripEditPage = () => {
   const navigate = useNavigate();
   const { tripId } = useParams();
@@ -19,12 +21,10 @@ export const TripEditPage = () => {
     isPending: isTripDetailPending,
     isError: isTripDetailError,
     error: tripDetailError,
-  } = useQuery({
+  } = useQuery<Trip | null>({
     queryKey: tripQueryKeys.detail(tripIdNumber),
     queryFn: () => getTripDetailApi({ id: tripIdNumber }),
-    enabled: !!tripIdNumber,
-    staleTime: 5 * 60 * 1000,
-    gcTime: 30 * 60 * 1000,
+    ...useTripDetailQueryOptions({ id: tripIdNumber }),
   });
 
   const defaultValues = {

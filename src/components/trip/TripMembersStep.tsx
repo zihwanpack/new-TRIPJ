@@ -12,6 +12,10 @@ import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { userQueryKeys } from '../../constants/queryKeys.ts';
 import { getSearchUsersApi, getUsersByEmailApi } from '../../api/user.ts';
+import {
+  useSearchUsersQueryOptions,
+  useUsersByEmailsQueryOptions,
+} from '../../hooks/query/user.ts';
 
 interface TripMembersStepProps {
   setStep: (step: number) => void;
@@ -28,13 +32,11 @@ export const TripMembersStep = ({ setStep }: TripMembersStepProps) => {
     data: usersByEmails = [],
     isError: isUsersByEmailsError,
     error: usersByEmailsError,
-  } = useQuery({
+  } = useQuery<UserSummary[]>({
     queryKey: userQueryKeys.byEmails(members),
     queryFn: () => getUsersByEmailApi(members),
-    enabled: members.length > 0,
     placeholderData: keepPreviousData,
-    staleTime: 5 * 60 * 1000,
-    gcTime: 30 * 60 * 1000,
+    ...useUsersByEmailsQueryOptions({ members }),
   });
 
   const {
@@ -42,10 +44,10 @@ export const TripMembersStep = ({ setStep }: TripMembersStepProps) => {
     isLoading: isSearchUsersLoading,
     isError: isSearchUsersError,
     error: searchUsersError,
-  } = useQuery({
+  } = useQuery<UserSummary[]>({
     queryKey: userQueryKeys.search(debouncedSearchValue),
     queryFn: () => getSearchUsersApi(debouncedSearchValue),
-    enabled: debouncedSearchValue.trim().length > 0,
+    ...useSearchUsersQueryOptions({ data: debouncedSearchValue }),
   });
 
   const selectedMembers = useMemo(() => {
