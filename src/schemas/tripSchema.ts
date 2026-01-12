@@ -42,3 +42,9 @@ export const tripListWithCursorSchema = z.object({
     limit: z.number(),
   }),
 });
+
+export type TripResponse = z.infer<typeof tripSchema>;
+
+export type TripListResponse = z.infer<typeof tripListSchema>;
+
+export type TripListWithCursorResponse = z.infer<typeof tripListWithCursorSchema>;

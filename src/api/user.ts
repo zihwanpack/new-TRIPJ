@@ -1,17 +1,17 @@
 import type {
   GetUsersByEmailResponse,
   SearchUsersResponse,
-  UserSummary,
   WithdrawParam,
   WithdrawResponse,
 } from '../types/user.ts';
 import { authenticatedClient } from './client/authenticatedClient.ts';
 import { UserError } from '../errors/customErrors.ts';
 import { requestHandler } from './util/requestHandler.ts';
-import { userListSchema } from '../schemas/userSchema.ts';
+import { userListSchema, type UserListResponse } from '../schemas/userSchema.ts';
 import { unauthenticatedClient } from './client/unauthenticatedClient.ts';
+import z from 'zod';
 
-export const getSearchUsersApi = async (query: string): Promise<UserSummary[]> => {
+export const getSearchUsersApi = async (query: string): Promise<UserListResponse> => {
   return requestHandler({
     request: () => authenticatedClient.get<SearchUsersResponse>(`/users/search?query=${query}`),
     ErrorClass: UserError,
@@ -19,7 +19,7 @@ export const getSearchUsersApi = async (query: string): Promise<UserSummary[]> =
   });
 };
 
-export const getUsersByEmailApi = async (emails: string[]): Promise<UserSummary[]> => {
+export const getUsersByEmailApi = async (emails: string[]): Promise<UserListResponse> => {
   return requestHandler({
     request: () => authenticatedClient.post<GetUsersByEmailResponse>(`/users/emails`, { emails }),
     ErrorClass: UserError,
@@ -31,5 +31,6 @@ export const withdrawApi = async ({ id }: WithdrawParam): Promise<null> => {
   return requestHandler({
     request: () => unauthenticatedClient.delete<WithdrawResponse>(`/users/${id}`),
     ErrorClass: UserError,
+    schema: z.null(),
   });
 };

@@ -2,7 +2,6 @@ import { authenticatedClient } from './client/authenticatedClient.ts';
 import type {
   CreateEventRequest,
   CreateEventResponse,
-  Event,
   GetEventDetailResponse,
   GetMyAllEventsResponse,
   GetMyAllEventsParam,
@@ -14,9 +13,17 @@ import type {
 } from '../types/event.ts';
 import { EventError } from '../errors/customErrors.ts';
 import { requestHandler } from './util/requestHandler.ts';
-import { eventListSchema, eventSchema } from '../schemas/eventSchema.ts';
+import {
+  eventListSchema,
+  eventSchema,
+  type EventListResponse,
+  type EventResponse,
+} from '../schemas/eventSchema.ts';
+import z from 'zod';
 
-export const getMyAllEventsApi = async ({ tripId }: GetMyAllEventsParam): Promise<Event[]> => {
+export const getMyAllEventsApi = async ({
+  tripId,
+}: GetMyAllEventsParam): Promise<EventListResponse> => {
   return requestHandler({
     request: () => authenticatedClient.get<GetMyAllEventsResponse>(`/event/all/${tripId}`),
     ErrorClass: EventError,
@@ -24,7 +31,7 @@ export const getMyAllEventsApi = async ({ tripId }: GetMyAllEventsParam): Promis
   });
 };
 
-export const createEventApi = async (body: CreateEventRequest): Promise<Event> => {
+export const createEventApi = async (body: CreateEventRequest): Promise<EventResponse> => {
   return requestHandler({
     request: () => authenticatedClient.post<CreateEventResponse>('/event', body),
     ErrorClass: EventError,
@@ -32,7 +39,9 @@ export const createEventApi = async (body: CreateEventRequest): Promise<Event> =
   });
 };
 
-export const getEventDetailApi = async ({ eventId }: GetEventDetailParam): Promise<Event> => {
+export const getEventDetailApi = async ({
+  eventId,
+}: GetEventDetailParam): Promise<EventResponse> => {
   return requestHandler({
     request: () => authenticatedClient.get<GetEventDetailResponse>(`/event/${eventId}`),
     ErrorClass: EventError,
@@ -44,10 +53,14 @@ export const deleteEventApi = async ({ eventId }: DeleteEventParam): Promise<nul
   return requestHandler({
     request: () => authenticatedClient.delete<DeleteEventResponse>(`/event/${eventId}`),
     ErrorClass: EventError,
+    schema: z.null(),
   });
 };
 
-export const updateEventApi = async ({ eventId, body }: UpdateEventParam): Promise<Event> => {
+export const updateEventApi = async ({
+  eventId,
+  body,
+}: UpdateEventParam): Promise<EventResponse> => {
   return requestHandler({
     request: () => authenticatedClient.patch<UpdateEventResponse>(`/event/${eventId}`, body),
     ErrorClass: EventError,

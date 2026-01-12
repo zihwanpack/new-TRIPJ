@@ -1,12 +1,12 @@
 import { AuthError } from '../errors/customErrors.ts';
-import { userSchema } from '../schemas/userSchema.ts';
+import { userSchema, type UserResponse } from '../schemas/userSchema.ts';
 import type { GetUserResponse, LogoutResponse } from '../types/auth.ts';
-import type { User } from '../types/user.ts';
 import { authenticatedClient } from './client/authenticatedClient.ts';
 import { unauthenticatedClient } from './client/unauthenticatedClient.ts';
 import { requestHandler } from './util/requestHandler.ts';
+import z from 'zod';
 
-export const getUserApi = async (): Promise<User> => {
+export const getUserApi = async (): Promise<UserResponse> => {
   return requestHandler({
     request: () => authenticatedClient.get<GetUserResponse>('/auth/user'),
     ErrorClass: AuthError,
@@ -18,5 +18,6 @@ export const logoutApi = async (): Promise<null> => {
   return requestHandler({
     request: () => unauthenticatedClient.post<LogoutResponse>('/users/logout'),
     ErrorClass: AuthError,
+    schema: z.null(),
   });
 };

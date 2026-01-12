@@ -34,3 +34,7 @@ export const eventSchema = z.object({
 });
 
 export const eventListSchema = z.array(eventSchema);
+
+export type EventResponse = z.infer<typeof eventSchema>;
+
+export type EventListResponse = z.infer<typeof eventListSchema>;

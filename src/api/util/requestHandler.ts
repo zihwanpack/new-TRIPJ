@@ -4,7 +4,7 @@ import { z } from 'zod';
 interface RequestHandlerParams<T> {
   request: () => Promise<{ data: { result: T } }>;
   ErrorClass: new (message: string, status: number) => Error;
-  schema?: z.ZodType<T>;
+  schema: z.ZodType<T>;
 }
 
 export const requestHandler = async <T>({
