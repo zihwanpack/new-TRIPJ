@@ -17,18 +17,17 @@ import stamp3Image from '@/assets/mypage/stamp3.webp';
 import toast from 'react-hot-toast';
 import { Button } from '../components/common/Button.tsx';
 import { useNavigate } from 'react-router-dom';
-import { withdrawApi } from '../api/user.ts';
 import { useRef, useState } from 'react';
 import { Modal } from '../components/common/Modal.tsx';
 import { useTheme } from '../hooks/common/useTheme.tsx';
-import { useQueryClient } from '@tanstack/react-query';
+
 import clsx from 'clsx';
 import { Typography } from '../components/common/Typography.tsx';
 
 export const Mypage = () => {
-  const { user, logout } = useAuthStatus();
+  const { user, logout, withdrawal } = useAuthStatus();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { theme, setTheme } = useTheme();
   const [isThemeDropdownOpen, setIsThemeDropdownOpen] = useState<boolean>(false);
@@ -46,7 +45,6 @@ export const Mypage = () => {
   const handleLogout = async () => {
     try {
       await logout();
-      queryClient.clear();
       sessionStorage.clear();
       localStorage.clear();
       navigate('/login');
@@ -55,15 +53,8 @@ export const Mypage = () => {
     }
   };
   const executeWithdrawal = async () => {
-    if (!user?.id) return;
     try {
-      await withdrawApi({ id: user.id });
-      await logout();
-
-      queryClient.clear();
-      sessionStorage.clear();
-      localStorage.clear();
-      navigate('/login');
+      await withdrawal();
       toast.success('회원탈퇴가 완료되었습니다.');
     } catch {
       toast.error('회원탈퇴 실패');

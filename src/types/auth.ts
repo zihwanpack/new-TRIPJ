@@ -8,5 +8,6 @@ export type LogoutResponse = SuccessResponse<null>;
 export type AuthContextValue = {
   user: User | null;
   logout: () => Promise<void>;
+  withdrawal: () => Promise<void>;
   loading: boolean;
 };
