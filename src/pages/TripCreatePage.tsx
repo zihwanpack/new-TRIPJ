@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -19,7 +19,7 @@ export const TripCreatePage = () => {
 
   const navigate = useNavigate();
   const { user } = useAuthStatus();
-
+  const location = useLocation();
   const initialValues = sessionStorage.getItem(TRIP_CREATE_STORAGE_KEY);
   const defaultValues = initialValues
     ? JSON.parse(initialValues)
@@ -58,7 +58,11 @@ export const TripCreatePage = () => {
   const handleCloseForm = () => {
     resetStep();
     sessionStorage.removeItem(TRIP_CREATE_STORAGE_KEY);
-    navigate('/');
+    if (location.state?.from === 'my-trips') {
+      navigate('/my-trips');
+    } else {
+      navigate('/');
+    }
   };
 
   return (
