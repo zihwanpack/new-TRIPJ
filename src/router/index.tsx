@@ -13,6 +13,9 @@ import { MyTripsPage } from '../pages/MyTripsPage.tsx';
 import { Mypage } from '../pages/Mypage.tsx';
 import { TripEditPage } from '../pages/TripEditPage.tsx';
 import { EventEditPage } from '../pages/EventEditPage.tsx';
+import { ErrorBoundary } from '../errors/ErrorBoundary.tsx';
+import { Suspense } from 'react';
+import { FullscreenLoader } from '../components/common/FullscreenLoader.tsx';
 
 const publicRoutes: RouteObject[] = [
   {
@@ -39,7 +42,13 @@ const protectedRoutes: RouteObject[] = [
         children: [
           {
             index: true,
-            element: <HomePage />,
+            element: (
+              <ErrorBoundary>
+                <Suspense fallback={<FullscreenLoader />}>
+                  <HomePage />
+                </Suspense>
+              </ErrorBoundary>
+            ),
           },
           { path: '*', element: <NotFound /> },
           {
@@ -48,11 +57,23 @@ const protectedRoutes: RouteObject[] = [
           },
           {
             path: 'trips/:tripId/edit',
-            element: <TripEditPage />,
+            element: (
+              <ErrorBoundary>
+                <Suspense fallback={<FullscreenLoader />}>
+                  <TripEditPage />
+                </Suspense>
+              </ErrorBoundary>
+            ),
           },
           {
             path: 'trips/:tripId',
-            element: <TripDetailPage />,
+            element: (
+              <ErrorBoundary>
+                <Suspense fallback={<FullscreenLoader />}>
+                  <TripDetailPage />
+                </Suspense>
+              </ErrorBoundary>
+            ),
           },
           {
             path: 'trips/:tripId/events/new',
@@ -61,11 +82,23 @@ const protectedRoutes: RouteObject[] = [
 
           {
             path: 'trips/:tripId/events/:eventId/edit',
-            element: <EventEditPage />,
+            element: (
+              <ErrorBoundary>
+                <Suspense fallback={<FullscreenLoader />}>
+                  <EventEditPage />
+                </Suspense>
+              </ErrorBoundary>
+            ),
           },
           {
             path: 'trips/:tripId/events/:eventId',
-            element: <EventDetailPage />,
+            element: (
+              <ErrorBoundary>
+                <Suspense fallback={<FullscreenLoader />}>
+                  <EventDetailPage />
+                </Suspense>
+              </ErrorBoundary>
+            ),
           },
           {
             path: 'my-trips',
