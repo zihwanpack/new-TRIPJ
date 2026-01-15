@@ -32,7 +32,8 @@ export const LoginPage = () => {
 
   useEffect(() => {
     queryClient.invalidateQueries({ queryKey: userQueryKeys.info() });
-  }, [queryClient]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (!loading && user) {
     return <Navigate to="/" replace />;
