@@ -14,13 +14,31 @@ import { Typography } from '../components/common/Typography.tsx';
 import { env } from '../schemas/common/envSchema.ts';
 import { useAuthStatus } from '../hooks/user/useAuthStatus.tsx';
 import { userQueryKeys } from '../constants/queryKeys.ts';
+import { useSearchParams } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 const WORDS = ['누구나', 'J처럼', '여행하기'];
+
+const LOGIN_ERROR_MESSAGE_MAP: Record<string, string> = {
+  PROVIDER_MISMATCH: '이전에 가입한 플랫폼으로 로그인해주세요.',
+};
 
 export const LoginPage = () => {
   const { user, loading } = useAuthStatus();
   const queryClient = useQueryClient();
-  const [index, setIndex] = useState(0);
+  const [index, setIndex] = useState<number>(0);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  useEffect(() => {
+    const error = searchParams.get('error');
+    if (!error) return;
+
+    const message = LOGIN_ERROR_MESSAGE_MAP[error] ?? '로그인 중 문제가 발생했습니다.';
+
+    toast.error(message);
+    searchParams.delete('error');
+    setSearchParams(searchParams, { replace: true });
+  }, [searchParams, setSearchParams]);
 
   useEffect(() => {
     const interval = setInterval(() => {
