@@ -20,6 +20,7 @@ import { useNavigate } from 'react-router-dom';
 import { useRef, useState } from 'react';
 import { Modal } from '../components/common/Modal.tsx';
 import { useTheme } from '../hooks/common/useTheme.tsx';
+import { useQueryClient } from '@tanstack/react-query';
 
 import clsx from 'clsx';
 import { Typography } from '../components/common/Typography.tsx';
@@ -27,7 +28,7 @@ import { Typography } from '../components/common/Typography.tsx';
 export const Mypage = () => {
   const { user, logout, withdrawal } = useAuthStatus();
   const navigate = useNavigate();
-
+  const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { theme, setTheme } = useTheme();
   const [isThemeDropdownOpen, setIsThemeDropdownOpen] = useState<boolean>(false);
@@ -47,17 +48,20 @@ export const Mypage = () => {
       await logout();
       sessionStorage.clear();
       localStorage.clear();
-      navigate('/login');
-    } catch {
-      toast.error('로그아웃 실패');
+      queryClient.clear();
+      navigate('/login', { replace: true });
+    } catch (error) {
+      toast.error(`로그아웃 실패: ${error}`);
     }
   };
   const executeWithdrawal = async () => {
     try {
       await withdrawal();
       toast.success('회원탈퇴가 완료되었습니다.');
-    } catch {
-      toast.error('회원탈퇴 실패');
+      queryClient.clear();
+      navigate('/login', { replace: true });
+    } catch (error) {
+      toast.error(`회원탈퇴 실패: ${error}`);
     }
   };
   return (
