@@ -6,17 +6,20 @@ import kakaoLogo from '@/assets/login/logoKakao.svg';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { Button } from '../components/common/Button.tsx';
 import type { Provider } from '../types/user.ts';
 import { Typography } from '../components/common/Typography.tsx';
 import { env } from '../schemas/common/envSchema.ts';
 import { useAuthStatus } from '../hooks/user/useAuthStatus.tsx';
+import { userQueryKeys } from '../constants/queryKeys.ts';
 
 const WORDS = ['누구나', 'J처럼', '여행하기'];
 
 export const LoginPage = () => {
   const { user, loading } = useAuthStatus();
+  const queryClient = useQueryClient();
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
@@ -26,6 +29,10 @@ export const LoginPage = () => {
 
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    queryClient.invalidateQueries({ queryKey: userQueryKeys.info() });
+  }, [queryClient]);
 
   if (!loading && user) {
     return <Navigate to="/" replace />;

@@ -98,7 +98,7 @@ export const TripDestinationStep = ({ setStep }: TripDestinationStepProps) => {
             className={clsx(
               'flex items-center justify-between w-full p-2 border-2 rounded-md transition',
               !currentType
-                ? 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed'
+                ? 'border-gray-200 bg-gray-100 dark:bg-slate-900 dark:border-gray-700 cursor-not-allowed'
                 : 'border-primary-base bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 cursor-pointer'
             )}
           >

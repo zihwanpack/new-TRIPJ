@@ -39,11 +39,13 @@ export const TripTitleAndSubmitStep = ({ setStep, mode }: TripTitleAndSubmitStep
     error: createError,
   } = useMutation<Trip, Error, TripFormValues>({
     mutationFn: (data: TripFormValues) => createTripApi({ ...data }),
-    onSuccess: (createdTrip) => {
+    onSuccess: async (createdTrip) => {
       sessionStorage.removeItem(TRIP_CREATE_STEP_KEY);
       sessionStorage.removeItem(TRIP_CREATE_STORAGE_KEY);
 
-      queryClient.invalidateQueries({ queryKey: tripQueryKeys.all });
+      queryClient.invalidateQueries({
+        queryKey: tripQueryKeys.all,
+      });
 
       toast.success('여행 생성에 성공했습니다.');
       navigate(`/trips/${createdTrip.id}`);

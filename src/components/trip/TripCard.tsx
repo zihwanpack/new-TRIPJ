@@ -133,8 +133,11 @@ export const TripCard = ({
         className="w-full h-full object-cover rounded-2xl"
       />
       <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
-      <div className="absolute bottom-3 left-4 text-white z-10">
-        <Typography variant="h3" className={clsx(cardStyles.title, 'truncate pr-2 text-white')}>
+      <div className="absolute bottom-3 left-4 text-white z-10 w-full">
+        <Typography
+          variant="h3"
+          className={clsx(cardStyles.title, 'truncate w-full pr-9 text-white')}
+        >
           {title}
         </Typography>
         <Typography variant="bodySmall" className={clsx(cardStyles.date, 'opacity-90 text-white')}>

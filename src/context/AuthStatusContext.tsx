@@ -6,6 +6,7 @@ import { userQueryKeys } from '../constants/queryKeys.ts';
 import type { User } from '../types/user.ts';
 import { withdrawApi } from '../api/user.ts';
 import { useUserInfoQueryOptions } from '../hooks/query/auth.ts';
+import { AuthError } from '../errors/customErrors.ts';
 
 const AuthStatusContext = createContext<AuthContextValue | null>(null);
 
@@ -22,12 +23,21 @@ const AuthStatusProvider = ({ children }: { children: React.ReactNode }) => {
         return null;
       }
     },
+    retry: (failureCount, error) => {
+      if (error instanceof AuthError && error.statusCode === 401) {
+        return false;
+      }
+      return failureCount < 1;
+    },
     ...useUserInfoQueryOptions(),
   });
 
   const logout = async () => {
-    await logoutApi();
-    queryClient.clear();
+    try {
+      await logoutApi();
+    } finally {
+      queryClient.setQueryData(userQueryKeys.info(), null);
+    }
   };
 
   const withdrawal = async () => {

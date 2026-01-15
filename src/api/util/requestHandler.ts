@@ -16,6 +16,14 @@ export const requestHandler = async <T>({
   try {
     const { data } = await request();
 
+    if (!data || data.result === undefined) {
+      const parsed = schema.safeParse(null);
+      if (!parsed.success) {
+        throw new ErrorClass(`Schema validation failed: ${parsed.error.message}`, 500);
+      }
+      return parsed.data;
+    }
+
     if (schema) {
       const parsed = schema.safeParse(data.result);
 

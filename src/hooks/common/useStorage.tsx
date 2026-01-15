@@ -30,6 +30,7 @@ export const useStorage = <T,>({
     } catch (error) {
       console.error(`${key} storage set error: ${error}`);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key, value]);
 
   const resetValue = () => {

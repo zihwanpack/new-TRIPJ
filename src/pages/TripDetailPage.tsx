@@ -139,8 +139,11 @@ export const TripDetailPage = () => {
                   <Pencil className="size-4 text-gray-500" />
                   <span>여행 정보 수정</span>
                 </Button>
-                <Button className="flex items-center gap-2 w-full text-left px-3 py-2 hover:bg-red-50 dark:hover:bg-red-950/40 text-red-500 cursor-pointer">
-                  <Trash className="size-4" onClick={handleDeleteTrip} />
+                <Button
+                  className="flex items-center gap-2 w-full text-left px-3 py-2 hover:bg-red-50 dark:hover:bg-red-950/40 text-red-500 cursor-pointer"
+                  onClick={handleDeleteTrip}
+                >
+                  <Trash className="size-4" />
                   <span>여행 삭제</span>
                 </Button>
               </div>

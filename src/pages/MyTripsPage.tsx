@@ -24,7 +24,7 @@ import type { TripListWithCursorResponse } from '../schemas/tripSchema.ts';
 
 const LIMIT = 10;
 
-type TripTabStatus = 'upcoming' | 'ongoing' | 'completed';
+export type TripTabStatus = 'upcoming' | 'ongoing' | 'completed';
 const TAB_STATUS: TripTabStatus[] = ['upcoming', 'ongoing', 'completed'];
 
 export const MyTripsPage = () => {
