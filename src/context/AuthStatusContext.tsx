@@ -16,12 +16,7 @@ const AuthStatusProvider = ({ children }: { children: React.ReactNode }) => {
   const { data: user, isPending: loading } = useQuery<User | null>({
     queryKey: userQueryKeys.info(),
     queryFn: async () => {
-      try {
-        const user = await getUserInfoApi();
-        return user;
-      } catch {
-        return null;
-      }
+      return await getUserInfoApi();
     },
     retry: (failureCount, error) => {
       if (error instanceof AuthError && error.statusCode === 401) {
