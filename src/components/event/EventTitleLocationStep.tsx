@@ -131,7 +131,11 @@ export const EventTitleLocationStep = ({ setStep }: EventTitleLocationStepProps)
         <Input
           type="text"
           placeholder="예) 식당 예약"
-          {...register('eventName')}
+          {...register('eventName', {
+            onBlur: (e) => {
+              setValue('eventName', e.target.value.trim(), { shouldValidate: true });
+            },
+          })}
           containerClassName="w-full"
         />
       </div>
@@ -153,7 +157,11 @@ export const EventTitleLocationStep = ({ setStep }: EventTitleLocationStepProps)
         <div className="flex items-center gap-3 border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-3 focus-within:ring-2 focus-within:ring-primary-base focus-within:border-transparent transition-all bg-white dark:bg-slate-900">
           <Input
             type="text"
-            {...register('location')}
+            {...register('location', {
+              onBlur: (e) => {
+                setValue('location', e.target.value.trim(), { shouldValidate: true });
+              },
+            })}
             placeholder="예) 서울"
             autoComplete="off"
             containerClassName="w-full"
