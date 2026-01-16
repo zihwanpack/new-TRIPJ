@@ -27,6 +27,7 @@ import { eventQueryKeys, tripQueryKeys, userQueryKeys } from '../constants/query
 import { useTripDetailQueryOptions } from '../hooks/query/trip.ts';
 import { useEventListQueryOptions } from '../hooks/query/event.ts';
 import { useUsersByEmailsQueryOptions } from '../hooks/query/user.ts';
+import type { Trip } from '../types/trip.ts';
 
 const OVERLAP = 18;
 
@@ -60,16 +61,30 @@ export const TripDetailPage = () => {
     ...useUsersByEmailsQueryOptions({ members }),
   });
 
-  const deleteTripMutation = useMutation({
+  const deleteTripMutation = useMutation<null, Error, void, { previousTrips: Trip[] | undefined }>({
     mutationFn: () => deleteTripApi({ id: tripIdNumber }),
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: tripQueryKeys.all });
+      const previousTrips = queryClient.getQueryData<Trip[]>(tripQueryKeys.all);
+      queryClient.setQueryData<Trip[]>(tripQueryKeys.all, (old) => {
+        if (!old) return [];
+        return old.filter((trip) => trip.id !== tripIdNumber);
+      });
+      return { previousTrips };
+    },
     onSuccess: () => {
       toast.success('여행 삭제에 성공했습니다.');
-      queryClient.invalidateQueries({ queryKey: tripQueryKeys.all });
-      queryClient.invalidateQueries({ queryKey: eventQueryKeys.all });
       navigate('/');
     },
-    onError: () => {
-      toast.error('여행 삭제에 실패했습니다.');
+    onError: (error, _void, context) => {
+      if (context?.previousTrips) {
+        queryClient.setQueryData(tripQueryKeys.all, context.previousTrips);
+      }
+      toast.error(`여행 삭제에 실패했습니다. : ${error.message}`);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: tripQueryKeys.all });
+      queryClient.invalidateQueries({ queryKey: eventQueryKeys.all });
     },
   });
 

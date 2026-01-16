@@ -37,21 +37,33 @@ export const TripTitleAndSubmitStep = ({ setStep, mode }: TripTitleAndSubmitStep
     isPending: isCreatePending,
     isError: isCreateError,
     error: createError,
-  } = useMutation<Trip, Error, TripFormValues>({
+  } = useMutation<Trip, Error, TripFormValues, { previousTrips: Trip[] | undefined }>({
     mutationFn: (data: TripFormValues) => createTripApi({ ...data }),
+    onMutate: async (newTripData) => {
+      await queryClient.cancelQueries({ queryKey: tripQueryKeys.all });
+      const previousTrips = queryClient.getQueryData<Trip[]>(tripQueryKeys.all);
+      queryClient.setQueryData<Trip[]>(tripQueryKeys.all, (old) => {
+        if (!old) return [];
+        return [...old, { ...newTripData, id: Date.now() }];
+      });
+
+      return { previousTrips };
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: tripQueryKeys.all });
+    },
     onSuccess: async (createdTrip) => {
       sessionStorage.removeItem(TRIP_CREATE_STEP_KEY);
       sessionStorage.removeItem(TRIP_CREATE_STORAGE_KEY);
 
-      queryClient.invalidateQueries({
-        queryKey: tripQueryKeys.all,
-      });
-
       toast.success('여행 생성에 성공했습니다.');
       navigate(`/trips/${createdTrip.id}`);
     },
-    onError: () => {
-      toast.error('여행 생성에 실패했습니다.');
+    onError: (error, _newTripData, context) => {
+      if (context?.previousTrips) {
+        queryClient.setQueryData(tripQueryKeys.all, context.previousTrips);
+      }
+      toast.error(`여행 생성에 실패했습니다. : ${error.message}`);
     },
   });
 
@@ -60,21 +72,33 @@ export const TripTitleAndSubmitStep = ({ setStep, mode }: TripTitleAndSubmitStep
     isPending: isUpdatePending,
     isError: isUpdateError,
     error: updateError,
-  } = useMutation<Trip, Error, TripFormValues>({
+  } = useMutation<Trip, Error, TripFormValues, { previousDetail: Trip | undefined }>({
     mutationFn: (data: TripFormValues) =>
       updateTripApi({
         id: tripIdNumber,
         body: data,
       }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: tripQueryKeys.detail(tripIdNumber),
+    onMutate: async (newTripData) => {
+      await queryClient.cancelQueries({ queryKey: tripQueryKeys.detail(tripIdNumber) });
+      const previousDetail = queryClient.getQueryData<Trip>(tripQueryKeys.detail(tripIdNumber));
+      queryClient.setQueryData<Trip>(tripQueryKeys.detail(tripIdNumber), (old) => {
+        if (!old) return;
+        return { ...old, ...newTripData };
       });
+      return { previousDetail };
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: tripQueryKeys.detail(tripIdNumber) });
+    },
+    onSuccess: () => {
       toast.success('여행 수정에 성공했습니다.');
       navigate(`/trips/${tripId}`);
     },
-    onError: () => {
-      toast.error('여행 수정에 실패했습니다.');
+    onError: (error, _newTripData, context) => {
+      if (context?.previousDetail) {
+        queryClient.setQueryData(tripQueryKeys.detail(tripIdNumber), context.previousDetail);
+      }
+      toast.error(`여행 수정에 실패했습니다. : ${error.message}`);
     },
   });
 
