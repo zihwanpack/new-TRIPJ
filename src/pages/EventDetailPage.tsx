@@ -5,7 +5,7 @@ import { formatDate } from '../utils/common/date.ts';
 import { getTotal } from '../utils/common/getTotal.ts';
 import toast from 'react-hot-toast';
 import { Typography } from '../components/common/Typography.tsx';
-import { eventQueryKeys } from '../constants/queryKeys.ts';
+import { eventQueryKeys, tripQueryKeys } from '../constants/queryKeys.ts';
 import { deleteEventApi, getEventDetailApi } from '../api/event.ts';
 import { useMutation, useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import { Button } from '../components/common/Button.tsx';
@@ -26,19 +26,34 @@ export const EventDetailPage = () => {
     ...useEventDetailQueryOptions({ eventId: eventIdNumber }),
   });
 
-  const deleteEventMutation = useMutation<null, Error>({
-    mutationFn: () => deleteEventApi({ eventId: eventIdNumber }),
-    onSuccess: () => {
-      toast.success('이벤트 삭제에 성공했습니다.');
-      queryClient.invalidateQueries({
-        queryKey: eventQueryKeys.list(tripIdNumber),
-      });
-      navigate(`/trips/${tripId}`);
-    },
-    onError: () => {
-      toast.error('이벤트 삭제에 실패했습니다.');
-    },
-  });
+  const deleteEventMutation = useMutation<null, Error, void, { previousList: Event[] | undefined }>(
+    {
+      mutationFn: () => deleteEventApi({ eventId: eventIdNumber }),
+      onMutate: async () => {
+        await queryClient.cancelQueries({ queryKey: eventQueryKeys.list(tripIdNumber) });
+        const previousList = queryClient.getQueryData<Event[]>(eventQueryKeys.list(tripIdNumber));
+        queryClient.setQueryData<Event[]>(eventQueryKeys.list(tripIdNumber), (old) => {
+          if (!old) return [];
+          return old.filter((event) => event.eventId !== eventIdNumber);
+        });
+        return { previousList };
+      },
+      onSuccess: () => {
+        toast.success('이벤트 삭제에 성공했습니다.');
+        navigate(`/trips/${tripId}`);
+      },
+      onError: (error, _void, context) => {
+        if (context?.previousList) {
+          queryClient.setQueryData(eventQueryKeys.list(tripIdNumber), context.previousList);
+        }
+        toast.error(`이벤트 삭제에 실패했습니다. : ${error.message}`);
+      },
+      onSettled: () => {
+        queryClient.invalidateQueries({ queryKey: eventQueryKeys.list(tripIdNumber) });
+        queryClient.invalidateQueries({ queryKey: tripQueryKeys.detail(tripIdNumber) });
+      },
+    }
+  );
 
   const deleteEventHandler = () => {
     deleteEventMutation.mutate();

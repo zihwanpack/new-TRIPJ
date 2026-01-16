@@ -13,7 +13,7 @@ import clsx from 'clsx';
 import { Typography } from '../common/Typography.tsx';
 import { createEventApi, updateEventApi } from '../../api/event.ts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { eventQueryKeys } from '../../constants/queryKeys.ts';
+import { eventQueryKeys, tripQueryKeys } from '../../constants/queryKeys.ts';
 import { FullscreenLoader } from '../common/FullscreenLoader.tsx';
 import type { Event } from '../../types/event.ts';
 
@@ -39,19 +39,46 @@ export const EventCostAndSubmitStep = ({ setStep, mode }: EventCostAndSubmitStep
     mutate: createEvent,
     isPending: isCreateEventPending,
     error: createEventError,
-  } = useMutation<Event, Error, EventFormValues>({
+  } = useMutation<Event, Error, EventFormValues, { previousEvents: Event[] | undefined }>({
     mutationFn: (data: EventFormValues) => createEventApi({ ...data, tripId: tripIdNumber }),
-    onSuccess: (createdEvent) => {
-      sessionStorage.removeItem(EVENT_CREATE_STEP_KEY);
-      sessionStorage.removeItem(EVENT_CREATE_STORAGE_KEY);
+    onMutate: async (newEventData) => {
+      await queryClient.cancelQueries({ queryKey: eventQueryKeys.list(tripIdNumber) });
+
+      const previousEvents = queryClient.getQueryData<Event[]>(eventQueryKeys.list(tripIdNumber));
+
+      queryClient.setQueryData<Event[]>(eventQueryKeys.list(tripIdNumber), (old) => {
+        const optimisticEvent = {
+          ...newEventData,
+          tripId: tripIdNumber,
+          eventId: Date.now(),
+        };
+
+        return old ? [...old, optimisticEvent] : [optimisticEvent];
+      });
+
+      return { previousEvents };
+    },
+
+    onError: (error, _newEventData, context) => {
+      if (context?.previousEvents) {
+        queryClient.setQueryData(eventQueryKeys.list(tripIdNumber), context.previousEvents);
+      }
+      toast.error(`이벤트 생성에 실패했습니다. : ${error.message}`);
+    },
+
+    onSettled: () => {
       queryClient.invalidateQueries({
         queryKey: eventQueryKeys.list(tripIdNumber),
       });
-      toast.success('이벤트 생성에 성공했습니다.');
-      navigate(`/trips/${tripIdNumber}/events/${createdEvent.eventId}`);
     },
-    onError: (error) => {
-      toast.error(`이벤트 생성에 실패했습니다. : ${error.message}`);
+
+    onSuccess: (createdEvent) => {
+      sessionStorage.removeItem(EVENT_CREATE_STEP_KEY);
+      sessionStorage.removeItem(EVENT_CREATE_STORAGE_KEY);
+
+      toast.success('이벤트 생성에 성공했습니다.');
+
+      navigate(`/trips/${tripIdNumber}/events/${createdEvent.eventId}`);
     },
   });
 
@@ -59,21 +86,55 @@ export const EventCostAndSubmitStep = ({ setStep, mode }: EventCostAndSubmitStep
     mutate: updateEvent,
     isPending: isUpdateEventPending,
     error: updateEventError,
-  } = useMutation<Event, Error, EventFormValues>({
+  } = useMutation<
+    Event,
+    Error,
+    EventFormValues,
+    { previousDetail: Event | undefined; previousList: Event[] | undefined }
+  >({
     mutationFn: (data: EventFormValues) =>
       updateEventApi({
         eventId: eventIdNumber,
         body: { ...data, tripId: tripIdNumber },
       }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: eventQueryKeys.detail(eventIdNumber),
+    onMutate: async (newEventData) => {
+      await queryClient.cancelQueries({ queryKey: eventQueryKeys.detail(eventIdNumber) });
+      await queryClient.cancelQueries({ queryKey: eventQueryKeys.list(tripIdNumber) });
+
+      const previousDetail = queryClient.getQueryData<Event>(eventQueryKeys.detail(eventIdNumber));
+      const previousList = queryClient.getQueryData<Event[]>(eventQueryKeys.list(tripIdNumber));
+
+      queryClient.setQueryData<Event>(eventQueryKeys.detail(eventIdNumber), (oldDetail) => {
+        if (!oldDetail) return;
+        return { ...oldDetail, ...newEventData };
       });
 
+      queryClient.setQueryData<Event[]>(eventQueryKeys.list(tripIdNumber), (oldList) => {
+        if (!oldList) return [];
+
+        return oldList.map((event) =>
+          event.eventId === eventIdNumber ? { ...event, ...newEventData } : event
+        );
+      });
+
+      return { previousDetail, previousList };
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: tripQueryKeys.detail(tripIdNumber) });
+      queryClient.invalidateQueries({ queryKey: eventQueryKeys.list(tripIdNumber) });
+    },
+    onSuccess: () => {
       toast.success('이벤트 수정에 성공했습니다.');
       navigate(`/trips/${tripIdNumber}/events/${eventIdNumber}`);
     },
-    onError: (error) => {
+    onError: (error, _newEventData, context) => {
+      if (context?.previousDetail) {
+        queryClient.setQueryData(eventQueryKeys.detail(eventIdNumber), context.previousDetail);
+      }
+      if (context?.previousList) {
+        queryClient.setQueryData(eventQueryKeys.list(tripIdNumber), context.previousList);
+      }
+
       toast.error(`이벤트 수정에 실패했습니다. : ${error.message}`);
     },
   });
