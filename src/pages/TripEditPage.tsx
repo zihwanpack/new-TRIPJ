@@ -47,7 +47,7 @@ export const TripEditPage = () => {
       startDate: tripDetail.startDate,
       endDate: tripDetail.endDate,
       members: tripDetail.members,
-      title: tripDetail.title,
+      title: tripDetail.title?.trim() || '',
       createdBy: tripDetail.createdBy,
     });
   }, [tripDetail, form]);

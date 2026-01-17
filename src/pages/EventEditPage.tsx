@@ -41,8 +41,8 @@ export const EventEditPage = () => {
 
   useEffect(() => {
     form.reset({
-      eventName: eventDetail.eventName,
-      location: eventDetail.location,
+      eventName: eventDetail.eventName?.trim() || '',
+      location: eventDetail.location?.trim() || '',
       startDate: eventDetail.startDate,
       endDate: eventDetail.endDate,
       cost: eventDetail.cost,
