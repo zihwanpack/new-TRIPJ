@@ -88,7 +88,7 @@ export const TripTitleAndSubmitStep = ({ setStep, mode }: TripTitleAndSubmitStep
       return { previousDetail };
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: tripQueryKeys.detail(tripIdNumber) });
+        queryClient.invalidateQueries({ queryKey: tripQueryKeys.all });
     },
     onSuccess: () => {
       toast.success('여행 수정에 성공했습니다.');
