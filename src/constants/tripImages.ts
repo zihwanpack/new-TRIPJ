@@ -1,3 +1,5 @@
+import { getTypedKeys } from "../utils/common/getTypedKeys.ts";
+
 const BASE_IMAGE_PATH = '/images/';
 
 export const TRIP_IMAGE_PATHS = {
@@ -24,8 +26,7 @@ export const TRIP_IMAGE_PATHS = {
 } as const;
 
 export type DestinationKey = keyof typeof TRIP_IMAGE_PATHS;
+export const DESTINATION_KEYS = getTypedKeys(TRIP_IMAGE_PATHS);
 
-export const DESTINATION_KEYS = Object.keys(TRIP_IMAGE_PATHS) as [
-  DestinationKey,
-  ...DestinationKey[],
-];
+
+

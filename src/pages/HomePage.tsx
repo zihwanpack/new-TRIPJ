@@ -2,7 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 
 import { useAuthStatus } from '../hooks/user/useAuthStatus.tsx';
 import { TripCard } from '../components/trip/TripCard.tsx';
-import { TRIP_IMAGE_PATHS, type DestinationKey } from '../constants/tripImages.ts';
+import { TRIP_IMAGE_PATHS} from '../constants/tripImages.ts';
 import { formatDateRange } from '../utils/common/date.ts';
 import { getWelcomeMessage } from '../utils/trip/getWelcomeMessage.ts';
 import { Footer } from '../layouts/Footer.tsx';
@@ -71,7 +71,7 @@ export const HomePage = () => {
                 key={ongoingTrip.id}
                 onClick={() => navigate(`/trips/${ongoingTrip.id}`, { state: { from: 'home' } })}
                 tripImage={
-                  TRIP_IMAGE_PATHS[ongoingTrip.destination as DestinationKey] || DEFAULT_TRIP_IMAGE
+                  TRIP_IMAGE_PATHS[ongoingTrip.destination] || DEFAULT_TRIP_IMAGE
                 }
                 title={ongoingTrip.title}
                 date={formatDateRange(ongoingTrip.startDate, ongoingTrip.endDate)}

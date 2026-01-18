@@ -8,7 +8,7 @@ import {
 } from '../api/trip.ts';
 import { useAuthStatus } from '../hooks/user/useAuthStatus.tsx';
 import { TripCard } from '../components/trip/TripCard.tsx';
-import { TRIP_IMAGE_PATHS, type DestinationKey } from '../constants/tripImages.ts';
+import { TRIP_IMAGE_PATHS} from '../constants/tripImages.ts';
 import { useNavigate } from 'react-router-dom';
 import { calculateDday, formatDateRange } from '../utils/common/date.ts';
 import { Skeleton } from '../components/common/Skeleton.tsx';
@@ -161,7 +161,7 @@ const UpcomingTripsTab = ({ userId }: { userId: string }) => {
         <TripCard
           key={trip.id}
           onClick={() => navigate(`/trips/${trip.id}`, { state: { from: 'my-trips' } })}
-          tripImage={TRIP_IMAGE_PATHS[trip.destination as DestinationKey]}
+          tripImage={TRIP_IMAGE_PATHS[trip.destination ]}
           title={trip.title}
           date={formatDateRange(trip.startDate, trip.endDate)}
           size="myTrips"
