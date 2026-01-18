@@ -1,4 +1,4 @@
-type DomesticEN =
+export type DomesticEN =
   | 'seoul'
   | 'busan'
   | 'daejeon'
@@ -16,7 +16,7 @@ type DomesticEN =
   | 'jeju'
   | 'ulsan';
 
-type DomesticKO =
+export type DomesticKO =
   | '서울'
   | '부산'
   | '대전'
@@ -53,8 +53,8 @@ export const DOMESTIC_DESTINATIONS: Record<DomesticEN, DomesticKO> = {
   ulsan: '울산',
 } as const;
 
-type OverseasEN = 'japan' | 'china' | 'la';
-type OverseasKO = '일본' | '중국' | 'LA';
+export type OverseasEN = 'japan' | 'china' | 'la';
+export type OverseasKO = '일본' | '중국' | 'LA';
 
 export const OVERSEAS_DESTINATIONS: Record<OverseasEN, OverseasKO> = {
   japan: '일본',
@@ -62,9 +62,9 @@ export const OVERSEAS_DESTINATIONS: Record<OverseasEN, OverseasKO> = {
   la: 'LA',
 } as const;
 
-export type Destination = DomesticEN | OverseasEN;
-
 export const DESTINATIONS = {
-  domestic: DOMESTIC_DESTINATIONS,
+  domestic:DOMESTIC_DESTINATIONS,
   overseas: OVERSEAS_DESTINATIONS,
 } as const;
+
+

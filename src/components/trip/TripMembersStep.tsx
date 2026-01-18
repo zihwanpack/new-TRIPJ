@@ -97,7 +97,7 @@ export const TripMembersStep = ({ setStep }: TripMembersStepProps) => {
 
         {isUsersByEmailsError && (
           <div className="mx-4 mt-4 text-sm text-red-500">
-            {(usersByEmailsError as Error)?.message ?? '멤버 정보를 불러오지 못했습니다.'}
+            {usersByEmailsError?.message ?? '멤버 정보를 불러오지 못했습니다.'}
           </div>
         )}
         {!isSearchUsersLoading && searchedUsers && searchedUsers.length > 0 && (
