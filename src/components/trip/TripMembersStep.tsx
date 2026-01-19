@@ -16,12 +16,14 @@ import {
   useSearchUsersQueryOptions,
   useUsersByEmailsQueryOptions,
 } from '../../hooks/query/user.ts';
+import { useAuthStatus } from '../../hooks/user/useAuthStatus.tsx';
 
 interface TripMembersStepProps {
   setStep: (step: number) => void;
 }
 
 export const TripMembersStep = ({ setStep }: TripMembersStepProps) => {
+  const { user } = useAuthStatus();
   const { setValue, watch } = useFormContext<TripFormValues>();
   const members = watch('members');
   const [searchValue, setSearchValue] = useState<string>('');
@@ -53,10 +55,11 @@ export const TripMembersStep = ({ setStep }: TripMembersStepProps) => {
   const selectedMembers = useMemo(() => {
     const allUsers = [...usersByEmails, ...locallyAddedUsers];
 
-    return members.map((email) => {
+    return members.filter((email) => email !== user?.email)
+    .map((email) => {
       return allUsers.find((user) => user.email === email);
-    });
-  }, [usersByEmails, locallyAddedUsers, members]);
+      });
+    }, [usersByEmails, locallyAddedUsers, members, user?.email]);
 
   const addMember = (user: UserSummary) => {
     if (!members.includes(user.email)) {
@@ -73,6 +76,7 @@ export const TripMembersStep = ({ setStep }: TripMembersStepProps) => {
       members.filter((m) => m !== email)
     );
   };
+
   return (
     <div className="flex flex-col h-full">
       <div className="flex gap-2 flex-col justify-center mt-4 mx-4 min-h-[70px]">
