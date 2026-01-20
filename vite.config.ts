@@ -9,7 +9,11 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [
-      react(),
+      react({
+        babel: {
+          plugins: [],
+        },
+      }),
       tailwindcss(),
       createHtmlPlugin({
         minify: true,
