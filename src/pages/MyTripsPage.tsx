@@ -1,4 +1,4 @@
-import { Suspense, useState } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import { Header } from '../layouts/Header.tsx';
 import { Footer } from '../layouts/Footer.tsx';
 import {
@@ -22,7 +22,7 @@ import { useOngoingTripQueryOptions } from '../hooks/query/trip.ts';
 import { ErrorBoundary } from '../errors/ErrorBoundary.tsx';
 import type { TripListWithCursorResponse } from '../schemas/tripSchema.ts';
 
-const LIMIT = 10;
+const LIMIT = 5;
 
 export type TripTabStatus = 'upcoming' | 'ongoing' | 'completed';
 const TAB_STATUS: TripTabStatus[] = ['upcoming', 'ongoing', 'completed'];
@@ -30,6 +30,7 @@ const TAB_STATUS: TripTabStatus[] = ['upcoming', 'ongoing', 'completed'];
 export const MyTripsPage = () => {
   const { user } = useAuthStatus();
   const [tabStatus, setTabStatus] = useState<TripTabStatus>('upcoming');
+  
 
   return (
     <div className="flex flex-col h-dvh relative bg-slate-50 dark:bg-slate-950">
@@ -90,6 +91,7 @@ const TripTabContent = ({ tabStatus, userId }: { tabStatus: TripTabStatus; userI
 
 const OngoingTripTab = ({ userId }: { userId: string }) => {
   const navigate = useNavigate();
+  
 
   const { data: ongoingTrip } = useSuspenseQuery<Trip | null>({
     queryKey: tripQueryKeys.ongoing(userId),
@@ -122,8 +124,9 @@ const OngoingTripTab = ({ userId }: { userId: string }) => {
 
 const UpcomingTripsTab = ({ userId }: { userId: string }) => {
   const navigate = useNavigate();
+  const observerTarget = useRef<HTMLDivElement| null>(null);
 
-  const { data } = useSuspenseInfiniteQuery({
+  const { data, fetchNextPage, isFetchingNextPage, hasNextPage } = useSuspenseInfiniteQuery({
     queryKey: tripQueryKeys.listByCursor(userId, 'upcoming'),
     queryFn: ({ pageParam }) =>
       getMyUpcomingTripsCursorApi({
@@ -141,6 +144,24 @@ const UpcomingTripsTab = ({ userId }: { userId: string }) => {
         : undefined;
     },
   });
+
+  useEffect(() => {
+
+    if (!observerTarget.current || !hasNextPage) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 0.6 }
+    );
+
+    observer.observe(observerTarget.current);
+
+    return () => observer.disconnect();
+  }, [hasNextPage, fetchNextPage, isFetchingNextPage]);
 
   const trips = data.pages.flatMap((p) => p?.items ?? []);
 
@@ -161,21 +182,25 @@ const UpcomingTripsTab = ({ userId }: { userId: string }) => {
         <TripCard
           key={trip.id}
           onClick={() => navigate(`/trips/${trip.id}`, { state: { from: 'my-trips' } })}
-          tripImage={TRIP_IMAGE_PATHS[trip.destination ]}
+          tripImage={TRIP_IMAGE_PATHS[trip.destination]}
           title={trip.title}
           date={formatDateRange(trip.startDate, trip.endDate)}
           size="myTrips"
           badgeText={`D-${calculateDday(trip.startDate)}`}
         />
       ))}
+      <div ref={observerTarget} className="h-10 w-full flex justify-center items-center">
+        {isFetchingNextPage && <TripCardSkeleton />}
+      </div>
     </>
   );
 };
 
 const CompletedTripsTab = ({ userId }: { userId: string }) => {
   const navigate = useNavigate();
+  const observerTarget = useRef<HTMLDivElement| null>(null);
 
-  const { data } = useSuspenseInfiniteQuery({
+  const { data, fetchNextPage, isFetchingNextPage, hasNextPage } = useSuspenseInfiniteQuery({
     queryKey: tripQueryKeys.listByCursor(userId, 'completed'),
     queryFn: ({ pageParam }) =>
       getMyPastTripsCursorApi({
@@ -193,6 +218,23 @@ const CompletedTripsTab = ({ userId }: { userId: string }) => {
         : undefined;
     },
   });
+
+  useEffect(() => {
+    if (!observerTarget.current || !hasNextPage) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 0.6 }
+    );
+
+    observer.observe(observerTarget.current);
+
+    return () => observer.disconnect();
+  }, [hasNextPage, fetchNextPage, isFetchingNextPage]);
 
   const trips = data.pages.flatMap((p) => p?.items ?? []);
 
@@ -219,6 +261,9 @@ const CompletedTripsTab = ({ userId }: { userId: string }) => {
           size="myTrips"
         />
       ))}
+      <div ref={observerTarget} className="h-10 w-full flex justify-center items-center">
+        {isFetchingNextPage && <TripCardSkeleton />}
+      </div>
     </>
   );
 };
@@ -263,7 +308,7 @@ export const EmptyState = ({
 
 const TripCardSkeleton = () => {
   return (
-    <div className="h-[100px] flex items-center gap-4 bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-transparent shrink-0">
+    <div className="h-[100px] w-full flex items-center gap-4 bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-transparent shrink-0">
       <Skeleton width="70px" height="70px" className="rounded-xl" />
       <div className="flex flex-col gap-2 flex-1">
         <Skeleton width="60%" height="1.25rem" className="rounded-md" />
