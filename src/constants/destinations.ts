@@ -53,13 +53,13 @@ export const DOMESTIC_DESTINATIONS: Record<DomesticEN, DomesticKO> = {
   ulsan: '울산',
 } as const;
 
-export type OverseasEN = 'japan' | 'china' | 'la';
-export type OverseasKO = '일본' | '중국' | 'LA';
+export type OverseasEN = 'japan' | 'china' | 'LA';
+export type OverseasKO = '일본' | '중국' | '로스앤젤레스';
 
 export const OVERSEAS_DESTINATIONS: Record<OverseasEN, OverseasKO> = {
   japan: '일본',
   china: '중국',
-  la: 'LA',
+  LA: '로스앤젤레스',
 } as const;
 
 export const DESTINATIONS = {
