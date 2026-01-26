@@ -40,7 +40,7 @@ export const getDateRange = (start: string, end: string) => {
 
 export const filteringByDateRange = <T extends { startDate: string; endDate: string }>(
   data: T[],
-  selectedDate: string
+  selectedDate: string,
 ) => {
   return data?.filter((datum) => {
     if (!selectedDate) return datum;
