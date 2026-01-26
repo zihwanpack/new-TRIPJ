@@ -30,8 +30,11 @@ jobs:
       - name: Lint
         run: pnpm lint
 
-      - name: Type Check (TypeScript 쓴다면 추천)
+      - name: Type Check
         run: pnpm tsc --noEmit
+
+      - name: Test
+        run: pnpm test
 
       - name: Build Check
         run: pnpm build
