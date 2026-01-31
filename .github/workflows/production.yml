@@ -12,6 +12,8 @@ on:
 jobs:
   Deploy-Production:
     runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Seoul
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
